@@ -1,0 +1,9 @@
+{% extends 'admin/base.html' %}
+{% load static %}
+
+{% block title %}{{ site_title }}{% endblock %}
+{% block branding %}
+<h1 id="head">
+    <img src="{% static 'img/logo.png' %}" alt=""  class="brand_img"> BGC Database
+</h1>
+{% endblock %}

@@ -1,0 +1,82 @@
+internal ID number                      8505
+transmission ID number                  007616
+transmission type                       IRIDIUM
+instrument type                         SOLO2IR_TS9
+IRIDIUM program number                  n/a
+WMO ID number                           4903337
+WMO instrument type (table 1770)        854
+WMO recorder type (table 4770)          64
+start time [dd mm yyyy hh mm (Z)]       18 12 2020 18 15
+status of start time                    estimated
+launch time [dd mm yyyy hh mm (Z)]      23 01 2021 21 44
+status of launch time                   estimated
+launch position [lat latm lon lonm]     19. 3.52 -45. -0.10
+status of launch position               estimated
+delay of first down time [hours]        00
+cycle time [days]                       10.0
+descent time [hours]                    7
+neutral depth time [days]               9.2
+ascent time [hours]                     10
+surface time [hours]                    1.0
+transmission repetition rate [sec]      -999.
+clock drift [hours/hours]               0
+last cycle                              n/a
+========================================
+calib eq 1 for pressure                 P=PGAIN*Pcnt+POFF
+calib coef for pressure                 PGAIN=0.040; POFF=-10.0
+calib eq 1 for temperature              T = CNTS*TGAIN+TOFF
+calib coef for temperature              TGAIN=0.001;TOFF=-5.0
+calib eq 1 for salinity                 S = CNTS*SGAIN+SOFF
+calib coef for salinity                 SGAIN=0.001;SOFF=-1.0
+calib eq 1 for cpu voltage              VCPU = CPUGAIN*CNTS+CPUOFF
+calib coef for cpu voltage              CPUGAIN=0.1;CPUOFF=0
+calib eq 1 for pump voltage             VPMP = PMP_GAIN*CNTS+PMP_OFF
+calib coef for pump voltage             PMP_GAIN=0.1;PMP_OFF=0;
+========================================
+conductivity calibration date           23 08 2019
+temperature calibration date            23 08 2019
+pressure calibration date               19 08 2019
+float manufacturer                      MRV
+float serial number                     7616
+PI                                      WHOI: Wijffels, Jayne, Robbins
+principal investigator address          WHOI, Woods Hole, MA
+originating country                     USA
+float deployer                          unknown
+float deployer address                  AOML
+deployment type                         RV
+deployment platform                     RONALD BROWN
+deployment cruise id                    PNE2021
+profile at deployment                   n/a
+nominal drift pressure [dbar]           1000
+cycles for drift pressure               1
+nominal profile pressure [dbar]         2000
+cycles for profile pressure             1
+Profile Sampling Method                 Primary sampling: averaged
+temperature sensor type                 SBE41CP
+temperature sensor manufacturer         SBE
+temperature sensor serial number        12140
+conductivity sensor type                SBE41CP
+conductivity sensor manufacturer        SBE
+conductivity sensor serial number       12140
+pressure sensor type                    2900 PSIA
+pressure sensor manufacturer            Druck
+pressure sensor serial number           11307831
+transmission IMEI number                300234010003740
+CPU serial number                       7616
+ROM version                             SBE602 15Aug17 ARM V2.4
+manual/decoder version                  2.40
+battery type                            Lithium
+battery manufacturer and model          Tadiran Hybrid
+board battery serial number             267
+pump battery serial number              1034 1017 992
+initial battery voltage                 15 V
+battery packs                           3D Li + 1C Li
+battery details                         PUMP 3 packs of 8D + 4AA cell; CPU 1 pack of 4C cell;
+customisation                           n/a
+ref table PLATFORM_TYPE                 204
+ref table PROJECT_NAME                  Argo WHOI
+ref table DEPLOYMENT_PLATFORM_ID        33RO
+ref table temperature SENSOR_TYPE       SBE41CP_V3.0c
+ref table conductivity SENSOR_TYPE      SBE41CP_V3.0c
+ref table pressure SENSOR_TYPE          DRUCK_2900PSIA
+comment                                 n/a

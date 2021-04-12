@@ -1,0 +1,10 @@
+psycopg2
+django
+djangorestframework
+python-dotenv
+pandas
+prospector
+django-cors-headers
+django-import-export
+django-extensions
+jinja2

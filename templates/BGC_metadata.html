@@ -1,0 +1,88 @@
+internal ID number                      {{ d.INTERNAL_ID_NO }}
+transmission ID number                  {{ d.PTT }}
+transmission type                       {{ d.TRANS_SYSTEM }}
+instrument type                         {{ d.INST_TYPE }}
+IRIDIUM program number                  {{ d.IRIDIUM_PROGRAM_NO }}
+WMO ID number                           {{ d.PLATFORM_NUMBER }}
+WMO instrument type (table 1770)        {{ d.WMO_INST_TYPE }}
+WMO recorder type (table 4770)          {{ d.WMO_RECORDER_TYPE }}
+start time [dd mm yyyy hh mm (Z)]       {{ d.START_DATE }}
+status of start time                    {{ d.START_DATE_QC }}
+launch time [dd mm yyyy hh mm (Z)]      {{ d.LAUNCH_DATE }}
+status of launch time                   {{ d.LAUNCH_DATE_QC }}
+launch position [lat latm lon lonm]     {{ d.LAUNCH_LATITUDE }}{{ d.LAUNCH_LONGITUDE }}
+status of launch position               {{ d.LAUNCH_POSITION_QC }}
+delay of first down time [hours]        ToDo
+cycle time [days]                       ToDo
+descent time [hours]                    ToDo
+neutral depth time [days]               ToDo
+ascent time [hours]                     ToDo
+surface time [hours]                    ToDo
+transmission repetition rate [sec]      ToDo
+clock drift [hours/hours]               ToDo
+last cycle                              ToDo
+========================================
+{% for s in sensors -%}
+calib eq 1 for {{ "%-25s" | format(s.SENSOR,) }}P=PGAIN*Pcnt+POFF
+calib coef for {{ "%-25s" | format(s.SENSOR,) }}PGAIN=@PGAIN@; POFF=@POFF@
+{% endfor -%}
+========================================
+{% for s in sensors -%}
+{{s.SENSOR}}{{ "%-25s" | format(' calibration date',) }}{{s.CALIBRATION_DATE}}
+{% endfor -%}
+float manufacturer                      {{ d.PLATFORM_MAKER }}
+float serial number                     {{ d.FLOAT_SERIAL_NO }}
+PI                                      {{ d.PI_NAME }}
+principal investigator address          {{ d.PI_ADDRESS }}
+originating country                     {{ d.ORIGIN_COUNTRY }}
+float deployer                          {{ d.DEPLOYER }}
+float deployer address                  {{ d.DEPLOYER_ADDRESS }}
+deployment type                         {{ d.DEPLOYMENT_TYPE }}
+deployment platform                     {{ d.DEPLOYMENT_PLATFORM }}
+deployment cruise id                    {{ d.DEPLOYMENT_CRUISE_ID }}
+profile at deployment                   {{ d.DEPLOYMENT_REFERENCE_STATION_ID }}
+nominal drift pressure [dbar]           {{ mission.ADD_DATE}} ToDO JUST TEST
+cycles for drift pressure               ToDo
+nominal profile pressure [dbar]         ToDo
+cycles for profile pressure             ToDo
+Profile Sampling Method                 ToDo
+temperature sensor type                 SBE41CP
+temperature sensor manufacturer         SBE
+temperature sensor serial number        @SBE_SN@
+conductivity sensor type                SBE41CP
+conductivity sensor manufacturer        SBE
+conductivity sensor serial number       @SBE_SN@
+pressure sensor type                    @P_TYPE@
+pressure sensor manufacturer            Druck
+pressure sensor serial number           @P_SN@
+oxygen sensor type                      @O_TYPE@
+oxygen sensor manufacturer              Sea-Bird Electronics
+oxygen sensor serial number             @O_SN@
+nitrate sensor type                     @N_TYPE@
+nitrate sensor manufacturer             Satlantic, Inc.
+nitrate sensor serial number            @N_SN@
+ph sensor type                          DURA
+ph sensor manufacturer                  Sea-Bird Electronics & Monterey Bay Aquarium Research Institute
+ph sensor serial number                 @PH_SN@
+fluorometer sensor type                 MCOMS
+fluorometer manufacturer                WetLabs Inc
+fluorometer serial number               @F_SN@
+transmission IMEI number                @IMEI@
+CPU serial number                       {{ d.CPU_SERIAL_NO }}
+ROM version                             {{ d.ROM_VERSION }}
+manual/decoder version                  ToDo
+battery type                            {{ d.BATTERY_TYPE }}
+battery manufacturer and model          ToDo
+board battery serial number             {{ d.BATTERY_SERIAL_NO }}
+pump battery serial number              {{ d.PUMP_BATTERY_SERIAL_NO }}
+initial battery voltage                 {{ d.BATTERY_VOLTAGE }}
+battery packs                           {{ d.BATTERY_PACKS }}
+battery details                         {{ d.BATTERY_DETAILS }}
+customisation                           {{ d.CUSTOMIZATION }}
+ref table PLATFORM_TYPE                 {{ d.PLATFORM_TYPE }}
+ref table PROJECT_NAME                  {{ d.PROJECT_NAME }}
+ref table DEPLOYMENT_PLATFORM_ID        {{ d.DEPLOYMENT_PLATFORM_ID }}
+ref table temperature SENSOR_TYPE       SBE41CP_V3.0c
+ref table conductivity SENSOR_TYPE      SBE41CP_V3.0c
+ref table pressure SENSOR_TYPE          DRUCK_2900PSIA
+comment                                 ToDo

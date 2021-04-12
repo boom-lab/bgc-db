@@ -1,0 +1,38 @@
+{% extends "admin/change_form.html" %}
+
+{% block content %}
+<h1>Detail View</h1>
+<a href="/admin/deployments/deployment/export_metadata/{{ entry_id }}/" class="button">Export Metadata File</a>
+<h1></h1>
+<h2>Deployment Information</h2>
+{% for name, value in entry.get_fields %}
+  {% if name == "Float" %}
+    <li>{{ name }}: {{ entry.Float.Serial_Number }}</li>
+  {% else %}
+    <li>{{ name }}: {{ value }}</li>
+  {% endif %}
+{% endfor %}
+<h1></h1>
+<h2>Sensors</h2>
+<table>
+  <tr>
+    <td>SENSOR</td>
+    <td>MAKER</td>
+    <td>MODEL</td>
+    <td>SERIAL_NO</td>
+    <td>CALIB_EQUATION</td>
+    <td>CALIB_COEFFICIENT</td>
+  </tr>
+  {% for sensor in entry.sensors.all %}
+  <tr>
+    <td>{{ sensor.SENSOR  }}</td>
+    <td>{{ sensor.SENSOR_MAKER }}</td>
+    <td>{{ sensor.SENSOR_MODEL }}</td>
+    <td>{{ sensor.SENSOR_SERIAL_NO }}</td>
+    <td>{{ sensor.PREDEPLOYMENT_CALIB_EQUATION }}</td>
+    <td>{{ sensor.PREDEPLOYMENT_CALIB_COEFFICIENT }}</td>
+  </tr>
+  {% endfor %}
+</table>
+<h2>Missions</h2>
+{% endblock %}
