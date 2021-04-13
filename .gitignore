@@ -127,6 +127,7 @@ ENV/
 env.bak/
 venv.bak/
 pythonenv*
+.env.dev
 
 # Spyder project settings
 .spyderproject
@@ -156,10 +157,10 @@ Thumbs.db #thumbnail cache on Windows
 # profiling data
 .prof
 
-# secret info
-.env
-
 # End of https://www.toptal.com/developers/gitignore/api/django
 
 #Visual studio files
 .vscode
+
+#Docker
+deployedenv
