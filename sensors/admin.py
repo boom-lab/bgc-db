@@ -17,7 +17,7 @@ class SensorAdmin(ExportMixin, admin.ModelAdmin):
     all_fields = [field.name for field in sensor._meta.fields]
 
     list_display = all_fields
-    list_display_links = None #('Record_Date',)
+    list_display_links = ('id',)
     search_fields = ('DEPLOYMENT',)
     list_per_page = 25
     list_filter = ('DEPLOYMENT',)

@@ -12,23 +12,23 @@ launch time [dd mm yyyy hh mm (Z)]      {{ d.LAUNCH_DATE }}
 status of launch time                   {{ d.LAUNCH_DATE_QC }}
 launch position [lat latm lon lonm]     {{ d.LAUNCH_LATITUDE }}{{ d.LAUNCH_LONGITUDE }}
 status of launch position               {{ d.LAUNCH_POSITION_QC }}
-delay of first down time [hours]        ToDo
+delay of first down time [hours]        {{ mission.MissionPrelude }}
 cycle time [days]                       ToDo
-descent time [hours]                    ToDo
+descent time [hours]                    {{ mission.DownTime }}
 neutral depth time [days]               ToDo
-ascent time [hours]                     ToDo
+ascent time [hours]                     {{ mission.AscentTimeOut }}
 surface time [hours]                    ToDo
-transmission repetition rate [sec]      ToDo
+transmission repetition rate [sec]      {{ mission.TelemetryRetry }}
 clock drift [hours/hours]               ToDo
 last cycle                              ToDo
 ========================================
 {% for s in sensors -%}
-calib eq 1 for {{ "%-25s" | format(s.SENSOR,) }}P=PGAIN*Pcnt+POFF
-calib coef for {{ "%-25s" | format(s.SENSOR,) }}PGAIN=@PGAIN@; POFF=@POFF@
-{% endfor -%}
-========================================
-{% for s in sensors -%}
-{{s.SENSOR}}{{ "%-25s" | format(' calibration date',) }}{{s.CALIBRATION_DATE}}
+{{ "%-40s" | format(s.get_SENSOR_display()+' calibration date',) }}{{s.SENSOR_CALIB_DATE}}
+{{ "%-40s" | format(s.get_SENSOR_display()+' sensor type',) }}{{s.SENSOR_MODEL}}
+{{ "%-40s" | format(s.get_SENSOR_display()+' sensor manufacturer',) }}{{s.SENSOR_MAKER}}
+{{ "%-40s" | format(s.get_SENSOR_display()+' sensor serial number',) }}{{s.SENSOR_SERIAL_NO}}
+{{ "%-40s" | format(s.get_SENSOR_display()+' calib eq',) }}ToDo
+{{ "%-40s" | format(s.get_SENSOR_display()+' calib coef',) }}ToDo
 {% endfor -%}
 float manufacturer                      {{ d.PLATFORM_MAKER }}
 float serial number                     {{ d.FLOAT_SERIAL_NO }}
@@ -42,32 +42,11 @@ deployment platform                     {{ d.DEPLOYMENT_PLATFORM }}
 deployment cruise id                    {{ d.DEPLOYMENT_CRUISE_ID }}
 profile at deployment                   {{ d.DEPLOYMENT_REFERENCE_STATION_ID }}
 nominal drift pressure [dbar]           {{ mission.ADD_DATE}} ToDO JUST TEST
-cycles for drift pressure               ToDo
-nominal profile pressure [dbar]         ToDo
+cycles for drift pressure               {{ mission.PnPCycleLen }}
+nominal profile pressure [dbar]         {{ mission.ParkPressure }}
 cycles for profile pressure             ToDo
 Profile Sampling Method                 ToDo
-temperature sensor type                 SBE41CP
-temperature sensor manufacturer         SBE
-temperature sensor serial number        @SBE_SN@
-conductivity sensor type                SBE41CP
-conductivity sensor manufacturer        SBE
-conductivity sensor serial number       @SBE_SN@
-pressure sensor type                    @P_TYPE@
-pressure sensor manufacturer            Druck
-pressure sensor serial number           @P_SN@
-oxygen sensor type                      @O_TYPE@
-oxygen sensor manufacturer              Sea-Bird Electronics
-oxygen sensor serial number             @O_SN@
-nitrate sensor type                     @N_TYPE@
-nitrate sensor manufacturer             Satlantic, Inc.
-nitrate sensor serial number            @N_SN@
-ph sensor type                          DURA
-ph sensor manufacturer                  Sea-Bird Electronics & Monterey Bay Aquarium Research Institute
-ph sensor serial number                 @PH_SN@
-fluorometer sensor type                 MCOMS
-fluorometer manufacturer                WetLabs Inc
-fluorometer serial number               @F_SN@
-transmission IMEI number                @IMEI@
+transmission IMEI number                ToDo
 CPU serial number                       {{ d.CPU_SERIAL_NO }}
 ROM version                             {{ d.ROM_VERSION }}
 manual/decoder version                  ToDo

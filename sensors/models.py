@@ -1,18 +1,21 @@
 from django.db import models
 from deployments.models import deployment
 
-class Sensors(models.TextChoices): #Nerc R10
-    CTD_PRES = 'CTD_PRES','CTD_PRES'
-    CTD_TEMP = 'CTD_TEMP','CTD_TEMP'
-    CTD_CNDC = 'CTD_CNDC', 'CTD_CNDC'
-    IDO_DOXY = 'IDO_DOXY','IDO_DOXY'
-    OPTODE_DOXY = 'OPTODE_DOXY','OPTODE_DOXY'
+class Sensors(models.TextChoices): #Nerc R25
+    CTD_PRES = 'CTD_PRES','pressure'
+    CTD_TEMP = 'CTD_TEMP','temperature'
+    CTD_CNDC = 'CTD_CNDC', 'conductivity'
+    IDO_DOXY = 'IDO_DOXY','oxygen ido'
+    OPTODE_DOXY = 'OPTODE_DOXY','oxygen optode'
+    TRANSISTOR_PH = 'TRANSISTOR_PH','pH'
+    SPECTROPHOTOMETER_NITRATE = 'SPECTROPHOTOMETER_NITRATE','nitrate'
+    FLUOROMETER_CHLA = 'FLUOROMETER_CHLA','flurometer chla'
 
 class Makers(models.TextChoices): #Nerc R26
     AANDERAA = 'AANDERAA','AANDERAA'
     AMETEK = 'AMETEK','AMETEK'
     SATLANTIC = 'SATLANTIC','SATLANTIC'
-    SBE = 'SEB', 'SBE'
+    SBE = 'SBE', 'SBE'
     WETLABS = 'WETLABS','WETLABS'
 
 class Models(models.TextChoices): #Nerc R27
@@ -28,8 +31,10 @@ class sensor(models.Model):
     SENSOR_MAKER = models.CharField(choices=Makers.choices, max_length=25, blank=True, null=True)
     SENSOR_MODEL = models.CharField(choices=Models.choices, max_length=25, blank=True, null=True)
     SENSOR_SERIAL_NO = models.CharField(max_length=25, blank=True, null=True)
-    PREDEPLOYMENT_CALIB_EQUATION = models.CharField(max_length=100, blank=True, null=True)
-    PREDEPLOYMENT_CALIB_COEFFICIENT =models.CharField(max_length=100, blank=True, null=True)
+    SENSOR_CALIB_DATE = models.DateField(blank=True, null=True)
+    PREDEPLOYMENT_CALIB_EQUATION = models.JSONField(max_length=100, blank=True, null=True)
+    PREDEPLOYMENT_CALIB_COEFFICIENT =models.JSONField(max_length=100, blank=True, null=True)
+    COMMENTS = models.TextField(blank=True, null=True)
 
     #Database constraints
     class Meta:

@@ -38,26 +38,49 @@ for field in meta_date_fields:
 
 
 
-class mission(models.Model):
+class mission_reported(models.Model):
     DEPLOYMENT = models.ForeignKey(deployment, related_name='mission_reported', on_delete=models.DO_NOTHING)
     DATE_ADD = models.DateTimeField() #creation of record in db
     PROFILE_ID = models.CharField(default=0, blank=True, null=True, max_length=20, unique=True)
     
+    AscentTimeOut = models.IntegerField(blank=True, null=True)
+    BuoyancyNudge = models.IntegerField(blank=True, null=True)
+    BuoyancyNudgeInitial = models.IntegerField(blank=True, null=True)
+    ConnectTimeOut = models.IntegerField(blank=True, null=True)
+    CpActivationP = models.IntegerField(blank=True, null=True)
+    DeepProfileDescentTime = models.IntegerField(blank=True, null=True)
+    DeepProfileBuoyancyPos = models.IntegerField(blank=True, null=True)
+    DeepProfilePressure = models.IntegerField(blank=True, null=True)
+    DownTime = models.IntegerField(blank=True, null=True)
+    FloatId = models.CharField(max_length=25, blank=True, null=True)
+    FullExtension = models.IntegerField(blank=True, null=True)
+    FullRetraction = models.IntegerField(blank=True, null=True)
+    IceDetectionP = models.FloatField(blank=True, null=True)
+    IceEvasionP = models.FloatField(blank=True, null=True)
+    IceMLTCritical = models.FloatField(blank=True, null=True)
+    IceMonths = models.CharField(max_length=25, blank=True, null=True)
+    IsusInit = models.IntegerField(blank=True, null=True)
+    HpvEmfK = models.FloatField(blank=True, null=True)
+    HpvRes = models.IntegerField(blank=True, null=True)
+    MaxAirBladder = models.IntegerField(blank=True, null=True)
+    MaxLogKb = models.IntegerField(blank=True, null=True)
+    MissionPrelude = models.IntegerField(blank=True, null=True)
+    OkVacuum = models.IntegerField(blank=True, null=True)
+    PActivationBuoyancyPosition = models.IntegerField(blank=True, null=True)
+    ParkDescentTime = models.IntegerField(blank=True, null=True)
+    ParkBuoyancyPos = models.IntegerField(blank=True, null=True)
+    ParkPressure = models.IntegerField(blank=True, null=True)
+    PnPCycleLen = models.IntegerField(blank=True, null=True)
+    TelemetryRetry = models.IntegerField(blank=True, null=True)
+    TimeOfDay = models.IntegerField(blank=True, null=True)
+    UpTime = models.IntegerField(blank=True, null=True)
+    PhBattMode = models.IntegerField(blank=True, null=True)
+    Verbosity = models.IntegerField(blank=True, null=True)
+    DebugBits = models.CharField(max_length=25, blank=True, null=True)
+
     #Default return
     def __str__(self): 
         return str(self.PROFILE_ID)
-
-
-mission_fields = ['AscentTimeOut', 'AtDialCmd', 'AltDialCmd', 'BuoyancyNudge', 'BuoyancyNudgeInitial', 'ConnectTimeOut', 
-    'CpActivationP', 'DeepProfileDescentTime', 'DeepProfileBuoyancyPos', 'DeepProfilePressure', 'DownTime', 'FloatId', 
-    'FullExtension', 'FullRetraction', 'IceMonths', 'HpvRes', 'MaxAirBladder', 'MaxLogKb', 'MissionPrelude', 'OkVacuum', 
-    'PActivationBuoyancyPosition', 'ParkDescentTime', 'ParkBuoyancyPos', 'ParkPressure', 'PnPCycleLen', 'TelemetryRetry', 
-    'TimeOfDay', 'UpTime', 'Verbosity', 'DebugBits']
-
-for field in mission_fields:
-    mission.add_to_class(field, models.CharField(blank=True, null=True, max_length=50))
-
-
 
 # Tabe in db
 class profile(models.Model):
@@ -68,7 +91,7 @@ class profile(models.Model):
     
     
     DATE_ADD = models.DateTimeField() #creation of record in db
-    MISSION = models.ForeignKey(mission, to_field='PROFILE_ID', on_delete=models.DO_NOTHING)
+    MISSION = models.ForeignKey(mission_reported, to_field='PROFILE_ID', on_delete=models.DO_NOTHING)
     
     #Default return
     def __str__(self): 

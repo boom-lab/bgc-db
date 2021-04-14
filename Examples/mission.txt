@@ -1,0 +1,91 @@
+[f1201draft ::::: 2021-02-25 18:56:09Z]
+MissionPrelude=360
+MissionPreludeUnits=minutes
+MissionPreludeEnabled=True
+AscentTimeout=540
+AscentTimeoutUnits=minutes
+AscentTimeoutEnabled=True
+DownTime=1000
+DownTimeUnits=minutes
+DownTimeEnabled=True
+DownTimeExpiration=1023
+DownTimeExpirationUnits=minutes
+DownTimeExpirationEnabled=True
+ParkDescentTime=300
+ParkDescentTimeUnits=minutes
+ParkDescentTimeEnabled=True
+DeepProfileDescentTime=300
+DeepProfileDescentTimeUnits=minutes
+DeepProfileDescentTimeEnabled=True
+UpTime=660
+UpTimeUnits=minutes
+UpTimeEnabled=True
+ContinuousProfileActivationPressure=985
+ContinuousProfileActivationPressureEnabled=True
+DeepProfilePressure=2000
+DeepProfilePressureEnabled=True
+ParkPressure=1000
+ParkPressureEnabled=True
+ParkAndProfileCycleLength=4
+ParkAndProfileCycleLengthEnabled=True
+AscentInitiationBuoyancyNudge=60
+AscentInitiationBuoyancyNudgeEnabled=True
+DeepProfileBuoyancyPosition=205
+DeepProfileBuoyancyPositionEnabled=True
+AscentMaintenanceBuoyancyNudge=30
+AscentMaintenanceBuoyancyNudgeEnabled=True
+ParkBuoyancyPosition=356
+ParkBuoyancyPositionEnabled=True
+MaxAirBladderPressure=127
+MaxAirBladderPressureEnabled=True
+DialCommandForPrimaryHost=AT+CBST=71,0,1;DT0088160000510
+DialCommandForPrimaryHostEnabled=True
+DialCommandForAlternateHost=ATDT0012066163256
+DialCommandForAlternateHostEnabled=True
+MaxLogfileSize=60
+MaxLogfileSizeEnabled=True
+Verbosity=2
+VerbosityEnabled=True
+FloatId=1201
+FloatIdEnabled=True
+Mode=Initial
+
+Dana’s standard mission
+
+NAVIS version BGCi_SUNAPH ??????  sn ????
+     User: ?????                                    
+     Pwd:  0x????
+     Pri:  AT?????????????????????                    Mhp
+     Alt:  AT?????????????????????                    Mha
+     ISUS: Enable sampling.                           Me
+     INACTV ToD for down-time expiration. (Minutes)   Mtc
+      02500 Down time. (Minutes)                      Mtd
+      00660 Up time. (Minutes)                        Mtu
+      00540 Ascent time-out. (Minutes)                Mta
+      00270 Deep-profile descent time. (Minutes)      Mtj
+      00240 Park descent time. (Minutes)              Mtk
+      00360 Mission prelude. (Minutes)                Mtp
+      00015 Telemetry retry interval. (Minutes)       Mhr
+      00060 Host-connect time-out. (Seconds)          Mht
+        985 Continuous profile activation. (Decibars) Mc
+       1000 Park pressure. (Decibars)                 Mk
+       2000 Deep-profile pressure. (Decibars)         Mj
+       ???? Park buoyancy position. (Counts)          Mbp
+       ???? Deep-profile buoyancy position. (Counts)  Mbj
+       0030 Ascent buoyancy nudge. (Counts)           Mbn
+       0060 Initial buoyancy nudge. (Counts)          Mbi
+        001 Park-n-profile cycle length.              Mn
+       50.0 Ice detection: Mixed-layer Pmax (Decibars)  Mix
+       20.0 Ice detection: Mixed-layer Pmin (Decibars)  Min
+      -1.78 Ice detection: Mixed-layer Tcritical (C)    Mit
+      0x000 Ice detection: Winter months [DNOSAJJMAMFJ] Mib
+        ??? Maximum air bladder pressure. (Counts)    Mfb
+        ??? OK vacuum threshold. (Counts)             Mfv
+       ???? Buoyancy full extension. (Counts)         Mff
+       ???? Buoyancy full retraction. (Counts)        Mfr
+       0250 P-Activation buoyancy position. (Counts)  Mfs
+       ???? HPV b-EMF coefficient (Volt-Sec/Rad)      Mfk
+       ???? HPV winding resistance (Ohms)             Mfw
+          2 Logging verbosity. [0-5]                  D
+       0002 DebugBits.                                D
+

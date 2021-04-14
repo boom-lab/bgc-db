@@ -27,10 +27,10 @@
   },
   "predeployment_calib_equation": {
     "eq1": "L = np.log(1e5*otv / (3.3-otv))",
-    "eq2": "t_o =  1 / polyval(L,cal['TA']) - K0"
-    "eq3": "t_s = np.log((25+K0 - t_o)/(K0 + t_o))"
+    "eq2": "t_o =  1 / polyval(L,cal['TA']) - K0",
+    "eq3": "t_s = np.log((25+K0 - t_o)/(K0 + t_o))",
     "eq4": "phase_corr = phase + (0.115 * pres / 1000)",
-    "eq5": "Pcorr = (0.00022* temp + 0.0419) * pres / 1000 + 1"
+    "eq5": "Pcorr = (0.00022* temp + 0.0419) * pres / 1000 + 1",
     "eq6": "Scorr = np.exp((sal-sref) * polyval(t_s,o2coef['b']) + o2coef['c0'] * (psal**2 - sref**2))",
     "eq7": "V = phase_corr / dPhdV",
     "eq8": "Ksv = polyval(temp,cal['C'])",

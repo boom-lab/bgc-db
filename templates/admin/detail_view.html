@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1>Detail View</h1>
-<a href="/admin/deployments/deployment/export_metadata/{{ entry_id }}/" class="button">Export Metadata File</a>
+<a href="/metadata-admin/deployments/deployment/export_metadata/{{ entry_id }}/" class="button">Export Metadata File</a>
 <h1></h1>
 <h2>Deployment Information</h2>
 {% for name, value in entry.get_fields %}

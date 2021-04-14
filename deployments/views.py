@@ -36,6 +36,7 @@ def deployment_view(request):
             return JsonResponse(deployment_serializer.data, status=status.HTTP_201_CREATED) 
         return JsonResponse(deployment_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     return None
+
     # elif request.method == 'GET':
     #     tutorials = Tutorial.objects.all()
         
@@ -51,6 +52,16 @@ def deployment_view(request):
     #     count = Tutorial.objects.all().delete()
     #     return JsonResponse({'message': '{} Tutorials were deleted successfully!'.format(count[0])}, status=status.HTTP_204_NO_CONTENT)
  
+def get_wmo(request):
+    serial_number = request.GET['serial_number']
+
+    deployment_entry = deployment.objects.filter(FLOAT_SERIAL_NO__exact=serial_number).first()
+    print(deployment_entry)
+    return JsonResponse({
+        'FLOAT_SERIAL_NO':deployment_entry.FLOAT_SERIAL_NO,
+        'WMO':deployment_entry.FLOAT_SERIAL_NO,
+    })
+
 def export_metadata(request, entry_id):
 
     #Get data from deployment, sensor, and mission tables
