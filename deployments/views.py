@@ -1,14 +1,18 @@
 from django.shortcuts import render
-from .models import deployment
 from django.shortcuts import get_object_or_404
-from rest_framework.decorators import api_view
 from django.http.response import JsonResponse
-from rest_framework.parsers import JSONParser 
-from rest_framework import status
-from .serializers import DeploymentSerializer
 from django.http import HttpResponse
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader
+
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.decorators import api_view#, permission_classes
+
+from .models import deployment
+from .serializers import DeploymentSerializer, CurrentDeploymentSerializer
+
 
 #Admin area
 def admin_detail_view(request, admin_site, entry_id):
@@ -23,44 +27,6 @@ def admin_detail_view(request, admin_site, entry_id):
         entry_id=entry_id
     )
     return render(request, 'admin/detail_view.html', context)
-
-#API
-@api_view(['GET', 'POST'])
-def deployment_view(request):
-    if request.method == 'POST':
-        deployment_data = JSONParser().parse(request)
-        deployment_serializer = DeploymentSerializer(data=deployment_data)
-        if deployment_serializer.is_valid():
-            print('valid')
-            deployment_serializer.save()
-            return JsonResponse(deployment_serializer.data, status=status.HTTP_201_CREATED) 
-        return JsonResponse(deployment_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    return None
-
-    # elif request.method == 'GET':
-    #     tutorials = Tutorial.objects.all()
-        
-    #     title = request.query_params.get('title', None)
-    #     if title is not None:
-    #         tutorials = tutorials.filter(title__icontains=title)
-        
-    #     tutorials_serializer = TutorialSerializer(tutorials, many=True)
-    #     return JsonResponse(tutorials_serializer.data, safe=False)
-    #     # 'safe=False' for objects serialization
- 
-    # elif request.method == 'DELETE':
-    #     count = Tutorial.objects.all().delete()
-    #     return JsonResponse({'message': '{} Tutorials were deleted successfully!'.format(count[0])}, status=status.HTTP_204_NO_CONTENT)
- 
-def get_wmo(request):
-    serial_number = request.GET['serial_number']
-
-    deployment_entry = deployment.objects.filter(FLOAT_SERIAL_NO__exact=serial_number).first()
-    print(deployment_entry)
-    return JsonResponse({
-        'FLOAT_SERIAL_NO':deployment_entry.FLOAT_SERIAL_NO,
-        'WMO':deployment_entry.FLOAT_SERIAL_NO,
-    })
 
 def export_metadata(request, entry_id):
 
@@ -79,3 +45,32 @@ def export_metadata(request, entry_id):
     response = HttpResponse(output, content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="sensors_{}.txt"'.format(datetime.now().strftime("%Y_%m_%d"))
     return response
+
+#APIs
+#Add metadata, get metadata
+class MetadataView(generics.ListCreateAPIView): #Read and write only
+    permission_classes=[IsAuthenticated]
+    serializer_class=DeploymentSerializer
+    queryset=deployment.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filter_fields = [field.name for field in deployment._meta.fields]
+
+#Current metadata api, only most recent mission record (all sensors)
+class GetCrtMetadata(generics.ListAPIView): #Read only
+    permission_classes=[IsAuthenticated]
+    serializer_class = CurrentDeploymentSerializer
+    queryset=deployment.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filter_fields = [field.name for field in deployment._meta.fields]
+
+#No token needed
+@api_view(['GET'])
+def get_wmo(request):
+    serial_number = request.GET['serial_number']
+
+    deployment_entry = deployment.objects.filter(FLOAT_SERIAL_NO__exact=serial_number).first()
+    print(deployment_entry)
+    return JsonResponse({
+        'FLOAT_SERIAL_NO':deployment_entry.FLOAT_SERIAL_NO,
+        'WMO':deployment_entry.FLOAT_SERIAL_NO,
+    })

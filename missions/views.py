@@ -1,19 +1,19 @@
-from django.http.response import JsonResponse
-from rest_framework.parsers import JSONParser 
-from .serializers import MissionSerializer
-from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework import generics, permissions
+from django_filters.rest_framework import DjangoFilterBackend
 
-#API for mission
-@api_view(['GET', 'POST'])
-def mission(request):
-    if request.method == 'POST':
-        data = JSONParser().parse(request)
-        serializer = MissionSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED) 
-        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    #Todo: add get
-    return None
+from .serializers import MissionSerializer, AddMissionSerializer
+from .models import mission
+
+class GetMissions(generics.ListAPIView): #Read and write only
+    permission_classes=[permissions.IsAuthenticated]
+    serializer_class = MissionSerializer
+    queryset=mission.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filter_fields = [field.name for field in mission._meta.fields]
+
+class AddMissions(generics.ListCreateAPIView): #Read and write only
+    permission_classes=[permissions.IsAuthenticated]
+    serializer_class = AddMissionSerializer
+    queryset=mission.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filter_fields = [field.name for field in mission._meta.fields]

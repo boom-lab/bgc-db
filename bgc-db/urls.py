@@ -22,6 +22,7 @@ urlpatterns = [
     path('', include("deployments.urls")),
     path('', include("missions.urls")),
     path('', include("sensors.urls")),
+    #path('api-auth/', include('rest_framework.urls')) #web browseable api
 ]
 
 admin.site.site_header = 'BGC Database'

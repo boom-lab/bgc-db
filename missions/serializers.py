@@ -6,4 +6,11 @@ class MissionSerializer(serializers.ModelSerializer):
  
     class Meta:
         model = mission
-        fields = ['ADD_DATE']
+        #fields = [field.name for field in mission._meta.fields]
+        exclude = ['DEPLOYMENT']
+
+class AddMissionSerializer(serializers.ModelSerializer):
+ 
+    class Meta:
+        model = mission
+        fields = "__all__"
