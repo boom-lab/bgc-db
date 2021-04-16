@@ -27,7 +27,7 @@ class sensor(models.Model):
     DEPLOYMENT = models.ForeignKey(deployment, related_name='sensors', on_delete=models.DO_NOTHING)
 
     ADD_DATE = models.DateTimeField() #creation of record in db
-    SENSOR = models.CharField(choices=Sensors.choices, max_length=25, blank=True, null=True)
+    SENSOR = models.CharField(choices=Sensors.choices, max_length=25)
     SENSOR_MAKER = models.CharField(choices=Makers.choices, max_length=25, blank=True, null=True)
     SENSOR_MODEL = models.CharField(choices=Models.choices, max_length=25, blank=True, null=True)
     SENSOR_SERIAL_NO = models.CharField(max_length=25, blank=True, null=True)

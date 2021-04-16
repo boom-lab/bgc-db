@@ -43,7 +43,7 @@ def export_metadata(request, entry_id):
     output = template.render(d=deployments, sensors=sensors, mission=mission)
 
     response = HttpResponse(output, content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="sensors_{}.txt"'.format(datetime.now().strftime("%Y_%m_%d"))
+    response['Content-Disposition'] = 'attachment; filename="aoml_metadata_{}.txt"'.format(datetime.now().strftime("%Y_%m_%d"))
     return response
 
 #APIs

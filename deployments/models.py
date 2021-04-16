@@ -22,6 +22,7 @@ class deployment(models.Model):
     WMO_INST_TYPE = models.CharField(max_length=25, blank=True, null=True)
     WMO_RECORDER_TYPE = models.CharField(max_length=25, blank=True, null=True)
 
+    PTT = models.CharField(max_length=25, blank=True, null=True)
     TRANS_SYSTEM_ID = models.CharField(max_length=25, blank=True, null=True)
     TRANS_SYSTEM = models.CharField(choices=TransmissionSystem.choices, default=TransmissionSystem.IRIDIUM, max_length=25, blank=True, null=True)
     IRIDIUM_PROGRAM_NO = models.CharField(max_length=25, blank=True, null=True)
@@ -48,7 +49,7 @@ class deployment(models.Model):
     DEPLOYMENT_REFERENCE_STATION_ID = models.CharField(max_length=25, blank=True, null=True)
     DEPLOYMENT_PLATFORM_ID = models.CharField(max_length=25, blank=True, null=True)
     
-    PTT = models.CharField(max_length=25, blank=True, null=True)
+
     ROM_VERSION = models.CharField(max_length=25, blank=True, null=True)
 
     BATTERY_TYPE = models.CharField(max_length=25, blank=True, null=True)

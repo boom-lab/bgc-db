@@ -1,14 +1,14 @@
 internal ID number                      {{ d.INTERNAL_ID_NO }}
-transmission ID number                  {{ d.PTT }}  * has to be 6 digits, pad with 0s
-transmission type                       {{ d.TRANS_SYSTEM }} *
-instrument type                                        CUSTOM AOML
+transmission ID number                  {{ '%06d' % d.PTT | int }}
+transmission type                       {{ d.TRANS_SYSTEM }}
+instrument type                         ToDo               CUSTOM AOML
 IRIDIUM program number                  {{ d.IRIDIUM_PROGRAM_NO }}
 WMO ID number                           {{ d.PLATFORM_NUMBER }}
 WMO instrument type (table 1770)        {{ d.WMO_INST_TYPE }}
 WMO recorder type (table 4770)          {{ d.WMO_RECORDER_TYPE }}
-start time [dd mm yyyy hh mm (Z)]       {{ d.START_DATE }} Fix format
+start time [dd mm yyyy hh mm (Z)]       {{ d.START_DATE.strftime('%d %m %Y %H %M') }}
 status of start time                    {{ d.START_DATE_QC }}
-launch time [dd mm yyyy hh mm (Z)]      {{ d.LAUNCH_DATE }}  Fix format
+launch time [dd mm yyyy hh mm (Z)]      {{ d.LAUNCH_DATE.strftime('%d %m %Y %H %M') }}
 status of launch time                   {{ d.LAUNCH_DATE_QC }}
 launch position [lat latm lon lonm]     {{ d.LAUNCH_LATITUDE }}{{ d.LAUNCH_LONGITUDE }} Fix format
 status of launch position               {{ d.LAUNCH_POSITION_QC }}
@@ -20,12 +20,12 @@ clock drift [hours/hours]               0          always 0
 last cycle                              n/a        always n/a
 ========================================
 {% for s in sensors -%}
-{{ "%-40s" | format(s.get_SENSOR_display()+' calibration date',) }}{{s.SENSOR_CALIB_DATE}} Fix format
+{{ "%-40s" | format(s.get_SENSOR_display()+' calibration date',) }}{{s.SENSOR_CALIB_DATE.strftime('%d %m %Y %H %M')}}
 {{ "%-40s" | format(s.get_SENSOR_display()+' sensor type',) }}{{s.SENSOR_MODEL}}
 {{ "%-40s" | format(s.get_SENSOR_display()+' sensor manufacturer',) }}{{s.SENSOR_MAKER}}
 {{ "%-40s" | format(s.get_SENSOR_display()+' sensor serial number',) }}{{s.SENSOR_SERIAL_NO}}
-{{ "%-40s" | format(s.get_SENSOR_display()+' calib eq',) }}ToDo
-{{ "%-40s" | format(s.get_SENSOR_display()+' calib coef',) }}ToDo
+{{ "%-40s" | format(s.get_SENSOR_display()+' calib eq',) }}{{s.PREDEPLOYMENT_CALIB_EQUATION}}
+{{ "%-40s" | format(s.get_SENSOR_display()+' calib coef',) }}{{s.PREDEPLOYMENT_CALIB_COEFFICIENT}}
 {% endfor -%}
 ========================================
 float manufacturer                      {{ d.PLATFORM_MAKER }}
@@ -44,7 +44,7 @@ cycles for drift pressure               1         hand edit, from final mission 
 nominal profile pressure [dbar]         2000      hand edit, from final mission config
 cycles for profile pressure             1         hand edit, from final mission config
 Profile Sampling Method                 mixed [deep: discrete, shallow: continuous]     hand edit, from final mission config
-transmission IMEI number                300534061559540    from checklog can we remove?
+transmission IMEI number                from checklog can we remove?
 CPU serial number                       {{ d.FLOAT_SERIAL_NO }}
 ROM version                             {{ d.ROM_VERSION }} from checklog
 battery type                            {{ d.BATTERY_TYPE }} 

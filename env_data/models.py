@@ -9,6 +9,9 @@ class profile_metadata(models.Model):
     DATE_ADD = models.DateTimeField() #creation of record in db
     PROFILE_ID = models.CharField(default=0, blank=True, null=True, max_length=20, unique=True)
 
+    class Meta:
+        verbose_name_plural = "Profile Metadata"
+
     #Default return
     def __str__(self): 
         return str(self.PROFILE_ID)
@@ -78,6 +81,9 @@ class mission_reported(models.Model):
     Verbosity = models.IntegerField(blank=True, null=True)
     DebugBits = models.CharField(max_length=25, blank=True, null=True)
 
+    class Meta:
+        verbose_name_plural = "Missions Reported"
+
     #Default return
     def __str__(self): 
         return str(self.PROFILE_ID)
@@ -118,6 +124,9 @@ class park(models.Model):
     PSAL = models.FloatField()
     OPH = models.FloatField()
     OTV = models.FloatField()
+
+    class Meta:
+        verbose_name_plural = "Park Data"
 
     #Default return
     def __str__(self): 
