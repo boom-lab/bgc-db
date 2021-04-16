@@ -17,30 +17,42 @@ from .serializers import DeploymentSerializer, CurrentDeploymentSerializer
 #Admin area
 def admin_detail_view(request, admin_site, entry_id):
     entry = get_object_or_404(deployment, pk=entry_id)
-
+    missions = entry.missions.all()
+    
     context = dict(
         # Include common variables for rendering the admin template.
         admin_site.each_context(request),
         opts=deployment._meta,
         # Data for detail list
         entry=entry,
-        entry_id=entry_id
+        entry_id=entry_id,
+        missions=missions
     )
     return render(request, 'admin/detail_view.html', context)
 
 def export_metadata(request, entry_id):
 
     #Get data from deployment, sensor, and mission tables
-    deployments = get_object_or_404(deployment, pk=entry_id)
-    sensors = deployments.sensors.all()
-    mission = deployments.missions.order_by('-ADD_DATE').first() #Only most recent mission record
+    deployment_entry = get_object_or_404(deployment, pk=entry_id)
+    sensors = deployment_entry.sensors.all()
+    mission = deployment_entry.missions.order_by('-ADD_DATE').first() #Only most recent mission record
 
     file_loader = FileSystemLoader('templates') # directory of template file
     env = Environment(loader=file_loader)
 
     template = env.get_template('BGC_metadata.html') # load template file
 
-    output = template.render(d=deployments, sensors=sensors, mission=mission)
+    #Convert decimal degrees to degrees decimal minutes
+    lat_degrees = int(deployment_entry.LAUNCH_LATITUDE)
+    lat_min = (deployment_entry.LAUNCH_LATITUDE - lat_degrees)*60
+
+    long_degrees = int(deployment_entry.LAUNCH_LONGITUDE)
+    long_min = (deployment_entry.LAUNCH_LONGITUDE - long_degrees)*60
+
+    launch_position = str(lat_degrees) +" "+ str(round(lat_min,6)) +" "+ str(long_degrees) +" "+ str(round(long_min,6))
+
+    #Render with jinja template
+    output = template.render(d=deployment_entry, sensors=sensors, mission=mission, launch_position=launch_position)
 
     response = HttpResponse(output, content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="aoml_metadata_{}.txt"'.format(datetime.now().strftime("%Y_%m_%d"))
@@ -63,6 +75,7 @@ class GetCrtMetadata(generics.ListAPIView): #Read only
     filter_backends = [DjangoFilterBackend]
     filter_fields = [field.name for field in deployment._meta.fields]
 
+#Get WMO# by serial number
 #No token needed
 @api_view(['GET'])
 def get_wmo(request):

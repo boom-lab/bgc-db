@@ -10,14 +10,18 @@ start time [dd mm yyyy hh mm (Z)]       {{ d.START_DATE.strftime('%d %m %Y %H %M
 status of start time                    {{ d.START_DATE_QC }}
 launch time [dd mm yyyy hh mm (Z)]      {{ d.LAUNCH_DATE.strftime('%d %m %Y %H %M') }}
 status of launch time                   {{ d.LAUNCH_DATE_QC }}
-launch position [lat latm lon lonm]     {{ d.LAUNCH_LATITUDE }}{{ d.LAUNCH_LONGITUDE }} Fix format
+launch position [lat latm lon lonm]     {{ launch_position }}
 status of launch position               {{ d.LAUNCH_POSITION_QC }}
-delay of first down time [hours]        6        hand edit, from final mission config
-down time [days]                        9.2      hand edit, from final mission config
-up time [hours]                         11.       hand edit, from final mission config
-transmission repetition rate [sec]      -999.      always -999
-clock drift [hours/hours]               0          always 0 
-last cycle                              n/a        always n/a
+delay of first down time [hours]        6
+cycle time [days]                       10.0
+descent time [hours]                    7 
+neutral depth time [days]               9.2
+ascent time [hours]                     10
+surface time [hours]                    1.0
+up time [hours]                         11.
+transmission repetition rate [sec]      -999.
+clock drift [hours/hours]               0
+last cycle                              n/a
 ========================================
 {% for s in sensors -%}
 {{ "%-40s" | format(s.get_SENSOR_display()+' calibration date',) }}{{s.SENSOR_CALIB_DATE.strftime('%d %m %Y %H %M')}}
@@ -33,17 +37,17 @@ float serial number                     {{ d.FLOAT_SERIAL_NO }}
 PI                                      {{ d.PI_NAME }}
 principal investigator address          {{ d.PI_ADDRESS }}
 originating country                     {{ d.ORIGIN_COUNTRY }}
-float deployer                          {{ d.DEPLOYER }}  None = unkown
+float deployer                          {{ d.DEPLOYER }}
 float deployer address                  {{ d.DEPLOYER_ADDRESS }}
-deployment type                         {{ d.DEPLOYMENT_TYPE }}  Domain = RV,VOS
+deployment type                         {{ d.DEPLOYMENT_TYPE }}
 deployment platform                     {{ d.DEPLOYMENT_PLATFORM }}
-deployment cruise id                    {{ d.DEPLOYMENT_CRUISE_ID }}  None= unkown
-profile at deployment                   {{ d.DEPLOYMENT_REFERENCE_STATION_ID }} *  None= n/a or unknown, are they interchangable?
-nominal drift pressure [dbar]           1000      hand edit, from final mission config
-cycles for drift pressure               1         hand edit, from final mission config
-nominal profile pressure [dbar]         2000      hand edit, from final mission config
-cycles for profile pressure             1         hand edit, from final mission config
-Profile Sampling Method                 mixed [deep: discrete, shallow: continuous]     hand edit, from final mission config
+deployment cruise id                    {{ d.DEPLOYMENT_CRUISE_ID }}
+profile at deployment                   {{ d.DEPLOYMENT_REFERENCE_STATION_ID }}
+nominal drift pressure [dbar]           1000
+cycles for drift pressure               1
+nominal profile pressure [dbar]         2000
+cycles for profile pressure             1
+Profile Sampling Method                 mixed [deep: discrete, shallow: continuous]
 transmission IMEI number                from checklog can we remove?
 CPU serial number                       {{ d.FLOAT_SERIAL_NO }}
 ROM version                             {{ d.ROM_VERSION }} from checklog

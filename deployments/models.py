@@ -3,17 +3,23 @@ from django.db import models
 #Domains for choices and db contstraints
 class Status(models.TextChoices):
     ESTIMATED = 'estimated','estimated'
+    AS_RECORDED = 'as recorded','as recorded'
 
 class TransmissionSystem(models.TextChoices): #Nerc R10
     IRIDIUM = 'IRIDIUM','IRIDIUM'
     ARGOS = 'ARGOS','ARGOS'
     ORBCOMM = 'ORBCOMM','ORBCOMM'
 
-# Create your models here.
+class DeploymentType(models.TextChoices): #Not in NERC or netCDF
+    RV = 'RV','RV'
+    VOS = 'VOS','VOS'
+    RRS = 'RRS','RRS'
+
+
 class deployment(models.Model):
-    # fields of the model  
+    # fields of the database
     ADD_DATE = models.DateTimeField() #creation of record in db
-    INTERNAL_ID_NO = models.CharField(max_length=25, blank=True, null=True)
+    AOML_ID = models.CharField(max_length=25, blank=True, null=True)
     PLATFORM_NUMBER = models.CharField(max_length=25, unique=True, blank=True, null=True) #WMO
     FLOAT_SERIAL_NO = models.IntegerField(blank=True, null=True)
     PLATFORM_MAKER = models.CharField(max_length=25, blank=True, null=True)
@@ -43,7 +49,7 @@ class deployment(models.Model):
 
     DEPLOYER = models.CharField(max_length=25, blank=True, null=True)
     DEPLOYER_ADDRESS = models.CharField(max_length=100, blank=True, null=True)
-    DEPLOYMENT_TYPE = models.CharField(max_length=25, blank=True, null=True)
+    DEPLOYMENT_TYPE = models.CharField(choices=DeploymentType.choices, max_length=25, blank=True, null=True)
     DEPLOYMENT_PLATFORM = models.CharField(max_length=25, blank=True, null=True)
     DEPLOYMENT_CRUISE_ID = models.CharField(max_length=25, blank=True, null=True)
     DEPLOYMENT_REFERENCE_STATION_ID = models.CharField(max_length=25, blank=True, null=True)
@@ -72,6 +78,7 @@ class deployment(models.Model):
                 & models.Q(START_DATE_QC__in=Status.values)
                 & models.Q(LAUNCH_DATE_QC__in=Status.values)
                 & models.Q(LAUNCH_POSITION_QC__in=Status.values)
+                & models.Q(DEPLOYMENT_TYPE__in=DeploymentType.values)
                 & models.Q(LAUNCH_LATITUDE__lte=90)
                 & models.Q(LAUNCH_LATITUDE__gte=-90)
                 & models.Q(LAUNCH_LONGITUDE__lte=180)

@@ -3,7 +3,7 @@ from deployments.models import deployment
 
 # Fields of table
 class mission(models.Model): 
-    DEPLOYMENT = models.ForeignKey(deployment, related_name='missions', on_delete=models.DO_NOTHING)
+    DEPLOYMENT = models.ForeignKey(deployment, related_name='missions', on_delete=models.CASCADE)
     ADD_DATE = models.DateTimeField() #creation of record in db
 
     AscentTimeOut = models.IntegerField(blank=True, null=True)
@@ -42,7 +42,11 @@ class mission(models.Model):
     DebugBits = models.CharField(max_length=25, blank=True, null=True)
 
     COMMENTS = models.TextField(blank=True, null=True)
-    
+
+    #For admin detail view
+    def get_fields(self):
+        return [(field.name, field.value_to_string(self)) for field in self._meta.fields]
+
     #Default return
     def __str__(self): 
         return str(self.DEPLOYMENT)

@@ -35,4 +35,18 @@
   {% endfor %}
 </table>
 <h2>Missions</h2>
+<table>
+  <tr>
+    {% for name, value in entry.missions.first.get_fields %} <!--Header -->
+    <td>{{ name }}</td>
+    {% endfor %}
+  </tr>
+  {% for mission  in entry.missions.all %}   <!--Value rows -->
+  <tr>
+    {% for name, value in mission.get_fields %} <!--Values -->
+    <td>{{ value }}</td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+</table>
 {% endblock %}

@@ -5,7 +5,6 @@ class Sensors(models.TextChoices): #Nerc R25
     CTD_PRES = 'CTD_PRES','pressure'
     CTD_TEMP = 'CTD_TEMP','temperature'
     CTD_CNDC = 'CTD_CNDC', 'conductivity'
-    IDO_DOXY = 'IDO_DOXY','oxygen ido'
     OPTODE_DOXY = 'OPTODE_DOXY','oxygen optode'
     TRANSISTOR_PH = 'TRANSISTOR_PH','pH'
     SPECTROPHOTOMETER_NITRATE = 'SPECTROPHOTOMETER_NITRATE','nitrate'
@@ -24,7 +23,7 @@ class Models(models.TextChoices): #Nerc R27
 # Fields of table
 class sensor(models.Model): 
 
-    DEPLOYMENT = models.ForeignKey(deployment, related_name='sensors', on_delete=models.DO_NOTHING)
+    DEPLOYMENT = models.ForeignKey(deployment, related_name='sensors', on_delete=models.CASCADE)
 
     ADD_DATE = models.DateTimeField() #creation of record in db
     SENSOR = models.CharField(choices=Sensors.choices, max_length=25)
