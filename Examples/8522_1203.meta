@@ -1,7 +1,7 @@
 internal ID number                      8522 *
 transmission ID number                  001203  * has to be 6 digits, pad with 0s
 transmission type                       IRIDIUM *
-instrument type                                        CUSTOM AOML
+instrument type                         
 IRIDIUM program number                  n/a
 WMO ID number                           1902304 *
 WMO instrument type (table 1770)        869 *
@@ -58,22 +58,22 @@ cycles for drift pressure               1         hand edit, from final mission 
 nominal profile pressure [dbar]         2000      hand edit, from final mission config
 cycles for profile pressure             1         hand edit, from final mission config
 Profile Sampling Method                 mixed [deep: discrete, shallow: continuous]     hand edit, from final mission config
-temperature sensor type                 SBE41CP
+temperature sensor type                 SBE41CP_V3.0c
 temperature sensor manufacturer         SBE
 temperature sensor serial number        12706
-conductivity sensor type                SBE41CP
+conductivity sensor type                SBE41CP_V3.0c
 conductivity sensor manufacturer        SBE
 conductivity sensor serial number       12706
 pressure sensor type                    2900 PSIA
 pressure sensor manufacturer            Druck
 pressure sensor serial number           11452999
-oxygen sensor type                      SBE63 rev J
+oxygen sensor type                      SBE63_V3.2.2
 oxygen sensor manufacturer              Sea-Bird Electronics
 oxygen sensor serial number             2521
-nitrate sensor type                     SUNA
+nitrate sensor type                     SUNA_V2
 nitrate sensor manufacturer             Satlantic, Inc.
 nitrate sensor serial number            1494
-ph sensor type                          DURA
+ph sensor type                          DURAFET
 ph sensor manufacturer                  Sea-Bird Electronics & Monterey Bay Aquarium Research Institute
 ph sensor serial number                 720-10618
 fluorometer sensor type                 MCOMS
@@ -91,7 +91,4 @@ customisation                           n/a  *
 ref table PLATFORM_TYPE                 501
 ref table PROJECT_NAME                  Argo WHOI
 ref table DEPLOYMENT_PLATFORM_ID        74E3
-ref table temperature SENSOR_TYPE       SBE41CP_V3.0c * SENSOR_MODELS
-ref table conductivity SENSOR_TYPE      SBE41CP_V3.0c
-ref table pressure SENSOR_TYPE          DRUCK_2900PSIA
 comment                                 n/a *

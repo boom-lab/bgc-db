@@ -1,0 +1,15 @@
+Concept URI,Concept URN,prefLabel,altLabel,Definition,Concept version,Deprecated,Version date and time
+http://vocab.nerc.ac.uk/collection/R24/current/TWR/,SDN:R24::TWR,Teledyne Webb Research,TWR,Teledyne Webb Research (formerly Webb Research Corporation),1,false,2020-05-03 20:30:12.0
+http://vocab.nerc.ac.uk/collection/R24/current/HSOE/,SDN:R24::HSOE,Qingdao Hisun Ocean Equipment Corporation Limited,HSOE,Qingdao Hisun Ocean Equipment Corporation Limited,1,false,2020-05-03 20:30:12.0
+http://vocab.nerc.ac.uk/collection/R24/current/SIO_IDG/,SDN:R24::SIO_IDG,Scripps Institution of Oceanography - Instrument Development Group,SIO_IDG,Scripps Institution of Oceanography - Instrument Development Group,1,false,2020-05-03 20:30:12.0
+http://vocab.nerc.ac.uk/collection/R24/current/METOCEAN/,SDN:R24::METOCEAN,Metocean,METOCEAN,Metocean,1,false,2020-05-03 20:30:12.0
+http://vocab.nerc.ac.uk/collection/R24/current/WRC/,SDN:R24::WRC,Webb Research Corporation,WRC,Webb Research Corporation,1,false,2020-05-03 20:30:12.0
+http://vocab.nerc.ac.uk/collection/R24/current/UNKNOWN/,SDN:R24::UNKNOWN,Unknown platform maker,UNKNOWN,"Unknown platform maker. The platform maker should not be unknown, the use of this value should be exceptional",1,false,2020-05-03 20:30:12.0
+http://vocab.nerc.ac.uk/collection/R24/current/WHOI/,SDN:R24::WHOI,Woods Hole Oceanographic Institution,WHOI,Woods Hole Oceanographic Institution,1,false,2020-05-03 20:30:12.0
+http://vocab.nerc.ac.uk/collection/R24/current/MARTEC/,SDN:R24::MARTEC,Martec,MARTEC,Martec,1,false,2020-05-03 20:30:12.0
+http://vocab.nerc.ac.uk/collection/R24/current/SBE/,SDN:R24::SBE,Sea-Bird Scientific,SBE,Sea-Bird Scientific,1,false,2020-05-03 20:30:12.0
+http://vocab.nerc.ac.uk/collection/R24/current/NKE/,SDN:R24::NKE,NKE Instrumentation,NKE,NKE Instrumentation,1,false,2020-05-03 20:30:12.0
+http://vocab.nerc.ac.uk/collection/R24/current/TSK/,SDN:R24::TSK,"Tsurumi-Seiki Co., Ltd.",TSK,"Tsurumi-Seiki Co., Ltd.",1,false,2020-05-03 20:30:12.0
+http://vocab.nerc.ac.uk/collection/R24/current/MRV/,SDN:R24::MRV,MRV Systems,MRV,MRV Systems,1,false,2020-05-03 20:30:12.0
+http://vocab.nerc.ac.uk/collection/R24/current/OPTIMARE/,SDN:R24::OPTIMARE,Optimare,OPTIMARE,Optimare,1,false,2020-05-03 20:30:12.0
+
