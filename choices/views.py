@@ -20,6 +20,6 @@ def get_choices(desired_choices):
 
     choices = model.objects.filter(ACTIVE=True).all()
 
-    entries = [(choice.VALUE, choice.VALUE) for choice in choices]
+    entries = [(choice.VALUE, choice.DISPLAY) for choice in choices]
     
     return entries

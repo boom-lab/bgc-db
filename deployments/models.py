@@ -26,7 +26,7 @@ class deployment(models.Model):
     PLATFORM_MAKER = models.CharField(choices=Platform_Maker_Choices, max_length=25, blank=True, null=True)
     PLATFORM_TYPE = models.CharField(choices=Platform_Types_Choices, max_length=25, blank=True, null=True)
     INST_TYPE = models.CharField(max_length=25, blank=True, null=True)
-    WMO_INST_TYPE = models.CharField(max_length=25, blank=True, null=True)
+    WMO_INST_TYPE = models.CharField(choices=Instrument_Choices, max_length=25, blank=True, null=True)
     WMO_RECORDER_TYPE = models.CharField(max_length=25, blank=True, null=True)
 
     PTT = models.CharField(max_length=25, blank=True, null=True)
@@ -97,4 +97,4 @@ class deployment(models.Model):
     # renames the instances of the model 
     # with their title name 
     def __str__(self): 
-        return 'ID: '+str(self.id) + " WMO: " + str(self.PLATFORM_NUMBER)
+        return 'SN: '+str(self.FLOAT_SERIAL_NO)+' ID: '+str(self.id) + " WMO: " + str(self.PLATFORM_NUMBER)

@@ -35,7 +35,6 @@ def export_metadata(request, entry_id):
     #Get data from deployment, sensor, and mission tables
     deployment_entry = get_object_or_404(deployment, pk=entry_id)
     sensors = deployment_entry.sensors.all()
-    mission = deployment_entry.missions.order_by('-ADD_DATE').first() #Only most recent mission record
 
     file_loader = FileSystemLoader('templates') # directory of template file
     env = Environment(loader=file_loader)
@@ -43,19 +42,38 @@ def export_metadata(request, entry_id):
     template = env.get_template('BGC_metadata.html') # load template file
 
     #Convert decimal degrees to degrees decimal minutes
-    lat_degrees = int(deployment_entry.LAUNCH_LATITUDE)
-    lat_min = (deployment_entry.LAUNCH_LATITUDE - lat_degrees)*60
+    if deployment_entry.LAUNCH_LATITUDE:
+        lat_degrees = int(deployment_entry.LAUNCH_LATITUDE)
+        lat_min = (deployment_entry.LAUNCH_LATITUDE - lat_degrees)*60
 
-    long_degrees = int(deployment_entry.LAUNCH_LONGITUDE)
-    long_min = (deployment_entry.LAUNCH_LONGITUDE - long_degrees)*60
+        long_degrees = int(deployment_entry.LAUNCH_LONGITUDE)
+        long_min = (deployment_entry.LAUNCH_LONGITUDE - long_degrees)*60
 
-    launch_position = str(lat_degrees) +" "+ str(round(lat_min,6)) +" "+ str(long_degrees) +" "+ str(round(long_min,6))
+        launch_position = str(lat_degrees) +" "+ str(round(lat_min,6)) +" "+ str(long_degrees) +" "+ str(round(long_min,6))
+    else:
+        launch_position = None #'99. 99. 999. 99.'
+
+    if deployment_entry.START_DATE:
+        start_date = deployment_entry.START_DATE.strftime('%d %m %Y %H %M')
+    else:
+        start_date = None #'99 99 9999 99 99'
+
+    if deployment_entry.LAUNCH_DATE:
+        launch_date = deployment_entry.LAUNCH_DATE.strftime('%d %m %Y %H %M')
+    else:
+        launch_date = None #'99 99 9999 99 99'
+
+    for s in sensors:
+        if s.SENSOR_CALIB_DATE:
+            s.SENSOR_CALIB_DATE = s.SENSOR_CALIB_DATE.strftime('%d %m %Y')
+        else:
+            s.SENSOR_CALIB_DATE = None #'99 99 9999'
 
     #Render with jinja template
-    output = template.render(d=deployment_entry, sensors=sensors, mission=mission, launch_position=launch_position)
+    output = template.render(d=deployment_entry, sensors=sensors, launch_position=launch_position, start_date=start_date, launch_date=launch_date)
 
     response = HttpResponse(output, content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="aoml_metadata_{}.txt"'.format(datetime.now().strftime("%Y_%m_%d"))
+    response['Content-Disposition'] = 'attachment; filename="{}_{}.meta"'.format(deployment_entry.AOML_ID, str(deployment_entry.FLOAT_SERIAL_NO).zfill(6))
     return response
 
 #APIs

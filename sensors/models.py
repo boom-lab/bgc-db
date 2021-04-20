@@ -36,6 +36,23 @@ class sensor(models.Model):
             )
         ]
 
+    #For aoml metadata template, converts SENSOR into their text format
+    def aoml_sensor(self):
+        translation = {'PUMP_VOLTAGE':'pump voltage',
+            'CPU_VOLTAGE':'cpu voltage',
+            'FLUOROMETER_CHLA':'chla',
+            'BACKSCATTERINGMETER_BBP700':'bbp700',
+            'SPECTROPHOTOMETER_NITRATE':'nitrate',
+            'CTD_CNDC':'conductivity',
+            'TRANSISTOR_PH':'ph',
+            'FLUOROMETER_CDOM':'cdom',
+            'RADIOMETER_PAR':'par',
+            'CTD_TEMP':'temperature',
+            'OPTODE_DOXY':'oxygen',
+            'CTD_PRES':'pressure',
+            'SPECTROPHOTOMETER_NITRATE':'nitrate'}
+        return translation[self.SENSOR]
+
     #Default return
     def __str__(self): 
         return str(self.DEPLOYMENT)
