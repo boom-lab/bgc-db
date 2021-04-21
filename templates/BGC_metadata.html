@@ -6,11 +6,11 @@ IRIDIUM program number                  {{ d.IRIDIUM_PROGRAM_NO }}
 WMO ID number                           {{ d.PLATFORM_NUMBER }}
 WMO instrument type (table 1770)        {{ d.WMO_INST_TYPE }}
 WMO recorder type (table 4770)          {{ d.WMO_RECORDER_TYPE }}
-start time [dd mm yyyy hh mm (Z)]       {{ start_date }}
+start time [dd mm yyyy hh mm (Z)]       {{ d.START_DATE }}
 status of start time                    {{ d.START_DATE_QC }}
-launch time [dd mm yyyy hh mm (Z)]      {{ launch_date }}
+launch time [dd mm yyyy hh mm (Z)]      {{ d.LAUNCH_DATE }}
 status of launch time                   {{ d.LAUNCH_DATE_QC }}
-launch position [lat latm lon lonm]     {{ launch_position }}
+launch position [lat latm lon lonm]     {{ d.LAUNCH_POSITION }}
 status of launch position               {{ d.LAUNCH_POSITION_QC }}
 delay of first down time [hours]        6
 cycle time [days]                       10.0
@@ -19,22 +19,21 @@ neutral depth time [days]               9.2
 ascent time [hours]                     10
 surface time [hours]                    1.0
 up time [hours]                         11.
-transmission repetition rate [sec]      None
-clock drift [hours/hours]               None
-last cycle                              None
+transmission repetition rate [sec]      -999
+clock drift [hours/hours]               0
+last cycle                              n/a
 ========================================
 {% for s in sensors -%}
-{{ "%-40s" | format(s.aoml_sensor()+' calibration date',) }}{{s.SENSOR_CALIB_DATE}}
-{{ "%-40s" | format(s.aoml_sensor()+' sensor type',) }}{{s.SENSOR_MODEL}}
-{{ "%-40s" | format('ref table '+s.aoml_sensor()+' SENSOR_TYPE',) }}{{s.SENSOR_MODEL}}
-{{ "%-40s" | format(s.aoml_sensor()+' sensor manufacturer',) }}{{s.SENSOR_MAKER}}
-{{ "%-40s" | format(s.aoml_sensor()+' sensor serial number',) }}{{s.SENSOR_SERIAL_NO}}
 {{ "%-40s" | format(s.aoml_sensor()+' calib eq',) }}{{s.PREDEPLOYMENT_CALIB_EQUATION}}
 {{ "%-40s" | format(s.aoml_sensor()+' calib coef',) }}{{s.PREDEPLOYMENT_CALIB_COEFFICIENT}}
 {% endfor -%}
 ========================================
+{% for s in sensors -%}
+{{ "%-40s" | format(s.aoml_sensor()+' calibration date',) }}{{s.SENSOR_CALIB_DATE}}
+{% endfor -%}
 float manufacturer                      {{ d.PLATFORM_MAKER }}
 float serial number                     {{ d.FLOAT_SERIAL_NO }}
+Project Name                            {{ d.PROJECT_NAME }}
 PI                                      {{ d.PI_NAME }}
 principal investigator address          {{ d.PI_ADDRESS }}
 originating country                     {{ d.ORIGIN_COUNTRY }}
@@ -48,7 +47,13 @@ nominal drift pressure [dbar]           1000
 cycles for drift pressure               1
 nominal profile pressure [dbar]         2000
 cycles for profile pressure             1
-Profile Sampling Method                 mixed [deep: discrete, shallow: continuous]
+Profile Sampling Method                 Primary sampling: mixed [deep: discrete, shallow: averaged]
+pump type                               
+{% for s in sensors -%}
+{{ "%-40s" | format(s.aoml_sensor()+' sensor type',) }}{{s.SENSOR_MODEL}}
+{{ "%-40s" | format(s.aoml_sensor()+' sensor manufacturer',) }}{{s.SENSOR_MAKER}}
+{{ "%-40s" | format(s.aoml_sensor()+' sensor serial number',) }}{{s.SENSOR_SERIAL_NO}}
+{% endfor -%}
 transmission IMEI number                
 CPU serial number                       {{ d.FLOAT_SERIAL_NO }}
 ROM version                             {{ d.ROM_VERSION }}
@@ -59,6 +64,5 @@ battery packs                           {{ d.BATTERY_PACKS }}
 battery details                         {{ d.BATTERY_DETAILS }}
 customisation                           {{ d.CUSTOMIZATION }}
 ref table PLATFORM_TYPE                 {{ d.PLATFORM_TYPE }}
-ref table PROJECT_NAME                  {{ d.PROJECT_NAME }}
 ref table DEPLOYMENT_PLATFORM_ID        {{ d.DEPLOYMENT_PLATFORM_ID }}
 comment                                 {{ d.COMMENTS }}

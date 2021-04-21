@@ -2,14 +2,15 @@ from django.db import models
 from choices.views import get_choices
 
 #Domains for choices and db contstraints
-class Status(models.TextChoices):
+class Status(models.TextChoices): #AOML, not Argo compliant
     ESTIMATED = 'estimated','estimated'
     AS_RECORDED = 'as recorded','as recorded'
+    UNKNOWN = 'unknown','unknown'
 
-class DeploymentType(models.TextChoices): #Not in NERC or netCDF
-    RV = 'RV','RV'
+class DeploymentType(models.TextChoices): #AOML, not Argo compliant
+    RV = 'R/V','R/V'
     VOS = 'VOS','VOS'
-    RRS = 'RRS','RRS'
+    MV = 'M/V','M/V'
 
 
 Instrument_Choices = get_choices('instrument_types')
@@ -49,7 +50,7 @@ class deployment(models.Model):
 
     DEPLOYER = models.CharField(max_length=25, blank=True, null=True)
     DEPLOYER_ADDRESS = models.CharField(max_length=100, blank=True, null=True)
-    DEPLOYMENT_TYPE = models.CharField(max_length=25, blank=True, null=True)
+    DEPLOYMENT_TYPE = models.CharField(choices=DeploymentType.choices, max_length=25, blank=True, null=True)
     DEPLOYMENT_PLATFORM = models.CharField(max_length=25, blank=True, null=True)
     DEPLOYMENT_CRUISE_ID = models.CharField(max_length=25, blank=True, null=True)
     DEPLOYMENT_REFERENCE_STATION_ID = models.CharField(max_length=25, blank=True, null=True)
