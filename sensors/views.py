@@ -10,5 +10,3 @@ class GetSensors(generics.ListAPIView):
     queryset=sensor.objects.all()
     filter_backends = [DjangoFilterBackend]
     filter_fields = ['ADD_DATE','SENSOR','SENSOR_MAKER','SENSOR_MODEL','SENSOR_SERIAL_NO','SENSOR_CALIB_DATE']
-
-
