@@ -12,6 +12,7 @@ from rest_framework.decorators import api_view#, permission_classes
 
 from .models import deployment
 from .serializers import DeploymentSerializer, CurrentDeploymentSerializer
+import json
 
 
 #Admin area
@@ -91,6 +92,8 @@ def export_metadata(request, entry_id):
             except:
                 pass
 
+        s.PREDEPLOYMENT_CALIB_COEFFICIENT = json.dumps(s.PREDEPLOYMENT_CALIB_COEFFICIENT).replace('"','').strip('{}').replace(':','=').replace(' ','').replace(',',';')
+
     #Render with jinja template
     output = template.render(d=d, sensors=sensors)
 
@@ -115,15 +118,29 @@ class GetCrtMetadata(generics.ListAPIView): #Read only
     filter_backends = [DjangoFilterBackend]
     filter_fields = [field.name for field in deployment._meta.fields]
 
+
 #Get WMO# by serial number
 #No token needed
 @api_view(['GET'])
 def get_wmo(request):
-    serial_number = request.GET['serial_number']
+    serial_number = request.GET['FLOAT_SERIAL_NO']
 
     deployment_entry = deployment.objects.filter(FLOAT_SERIAL_NO__exact=serial_number).first()
     print(deployment_entry)
     return JsonResponse({
         'FLOAT_SERIAL_NO':deployment_entry.FLOAT_SERIAL_NO,
-        'WMO':deployment_entry.FLOAT_SERIAL_NO,
+        'WMO':deployment_entry.PLATFORM_NUMBER,
     })
+
+@api_view(['GET'])
+def get_cal(request):
+    wmo = request.GET['PLATFORM_NUMBER']
+
+    deployment_entry = deployment.objects.filter(PLATFORM_NUMBER__exact=wmo).first()
+    sensors = deployment_entry.sensors.all()
+
+    result = {}
+    for sensor in sensors:
+        result[str(sensor.SENSOR)] = sensor.PREDEPLOYMENT_CALIB_COEFFICIENT
+
+    return JsonResponse(result)

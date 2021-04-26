@@ -1,0 +1,64 @@
+Equations for MSG to useful units
+
+CHLA
+{"eq1":"CHLA=(FLUORESCENCE_CHLA–DARK_CHLA_O)*SCALE_CHLA"}
+
+BBP700
+{
+    "eq1":"BBP700=2*pi*khi*((BETA_BACKSCATTERING700-DARK_BACKSCATTERING700)*SCALE_BACKSCATTERING700-BETASW700)",
+    "eq2":"BETASW700 following Sullivan et al., 2012, Zhang et al., 2009"
+}
+
+{
+    "DARK_BACKSCATTERING700":43,
+    "SCALE_BACKSCATTERING700":1.749e-06,
+    "khi":"1.097",
+    "BETASW700":"calculated at 124 angularDeg"
+}
+
+oxygen
+{
+    "eq1":"o2=[{(RefPhase/LumPhase)-1}/Ksv]*[Scorr]*[Pcorr]",
+    "eq2":"V=Phase/dPhdV",
+    "eq2":"LumPhase= b0 + b1*V",
+    "eq3":"RefPhase= a0 + a1*t63 + a2*V*V",
+    "eq4":"Ksv= c0 + t63*(c1 + t63*c2)",
+    "eq5":"T=ln([298.15+t]/[273.15+t])",
+    "eq6":"Scorr=exp(s*[d0 + T*(d1 + T*(d2 + T*d3))] + s*d4)",
+    "eq7":"Pcorr=exp(E*p/(273.15+t))"
+}
+
+oxygen 1203
+"PREDEPLOYMENT_CALIB_COEFFICIENT": {
+    "TA0": 7.270966e-004,
+    "TA1": 2.437583e-004,
+    "TA2": 1.397296e-006,
+    "TA3": 7.592994e-008,
+    "A0": 1.0513e+000,
+    "A1": -1.5000e-003,
+    "A2": 3.8980e-001,
+    "B0": -2.3773e-001,
+    "B1": 1.6136e+000,
+    "C0": 1.0187e-001,
+    "C1": 4.3836e-003,
+    "C2": 6.1362e-005,
+    "E": 1.1000e-002
+
+}
+
+oxygen 1201
+"PREDEPLOYMENT_CALIB_COEFFICIENT": {
+    "TA0": 7.189533e-004,
+    "TA1": 2.462013e-004,
+    "TA2": 1.169661e-006,
+    "TA3": 8.384281e-008,
+    "A0": 1.0513e+000,
+    "A1": -1.5000e-003,
+    "A2": 3.8832e-001,
+    "B0": -2.4961e-001,
+    "B1": 1.6222e+000,
+    "C0": 1.0624e-001,
+    "C1": 4.5340e-003,
+    "C2": 6.2409e-005,
+    "E": 1.1000e-002
+}

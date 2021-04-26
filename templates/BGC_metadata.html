@@ -1,10 +1,10 @@
 internal ID number                      {{ d.AOML_ID }}
 transmission ID number                  {{ '%06d' % d.PTT | int }}
-transmission type                       {{ d.TRANS_SYSTEM }}
+transmission type                       {{ d.TRANS_SYSTEM.VALUE }}
 instrument type                         
 IRIDIUM program number                  {{ d.IRIDIUM_PROGRAM_NO }}
 WMO ID number                           {{ d.PLATFORM_NUMBER }}
-WMO instrument type (table 1770)        {{ d.WMO_INST_TYPE }}
+WMO instrument type (table 1770)        {{ d.WMO_INST_TYPE.VALUE }}
 WMO recorder type (table 4770)          {{ d.WMO_RECORDER_TYPE }}
 start time [dd mm yyyy hh mm (Z)]       {{ d.START_DATE }}
 status of start time                    {{ d.START_DATE_QC }}
@@ -24,14 +24,16 @@ clock drift [hours/hours]               0
 last cycle                              n/a
 ========================================
 {% for s in sensors -%}
-{{ "%-40s" | format(s.aoml_sensor()+' calib eq',) }}{{s.PREDEPLOYMENT_CALIB_EQUATION}}
-{{ "%-40s" | format(s.aoml_sensor()+' calib coef',) }}{{s.PREDEPLOYMENT_CALIB_COEFFICIENT}}
+{% for eq in s.PREDEPLOYMENT_CALIB_EQUATION.keys() -%}
+{{ "%-40s" | format('calib eq '+eq.strip('eq')+' for '+s.aoml_sensor(),) }}{{s.PREDEPLOYMENT_CALIB_EQUATION[eq]}}
+{% endfor -%}
+{{ "%-40s" | format('calib coef for '+s.aoml_sensor(),) }}{{s.PREDEPLOYMENT_CALIB_COEFFICIENT}}
 {% endfor -%}
 ========================================
 {% for s in sensors -%}
 {{ "%-40s" | format(s.aoml_sensor()+' calibration date',) }}{{s.SENSOR_CALIB_DATE}}
 {% endfor -%}
-float manufacturer                      {{ d.PLATFORM_MAKER }}
+float manufacturer                      {{ d.PLATFORM_MAKER.VALUE }}
 float serial number                     {{ d.FLOAT_SERIAL_NO }}
 Project Name                            {{ d.PROJECT_NAME }}
 PI                                      {{ d.PI_NAME }}
@@ -51,7 +53,7 @@ Profile Sampling Method                 Primary sampling: mixed [deep: discrete,
 pump type                               
 {% for s in sensors -%}
 {{ "%-40s" | format(s.aoml_sensor()+' sensor type',) }}{{s.SENSOR_MODEL}}
-{{ "%-40s" | format(s.aoml_sensor()+' sensor manufacturer',) }}{{s.SENSOR_MAKER}}
+{{ "%-40s" | format(s.aoml_sensor()+' sensor manufacturer',) }}{{s.SENSOR_MAKER.VALUE}}
 {{ "%-40s" | format(s.aoml_sensor()+' sensor serial number',) }}{{s.SENSOR_SERIAL_NO}}
 {% endfor -%}
 transmission IMEI number                
@@ -63,6 +65,7 @@ initial battery voltage                 {{ d.BATTERY_VOLTAGE }} V
 battery packs                           {{ d.BATTERY_PACKS }} 
 battery details                         {{ d.BATTERY_DETAILS }}
 customisation                           {{ d.CUSTOMIZATION }}
-ref table PLATFORM_TYPE                 {{ d.PLATFORM_TYPE }}
+ref table PLATFORM_TYPE                 {{ d.PLATFORM_TYPE.VALUE }}
+ref table PLATFORM_TYPE_KEY             {{ d.PLATFORM_TYPE.KEY}}
 ref table DEPLOYMENT_PLATFORM_ID        {{ d.DEPLOYMENT_PLATFORM_ID }}
 comment                                 {{ d.COMMENTS }}

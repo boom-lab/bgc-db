@@ -1,5 +1,5 @@
 from django.db import models
-from choices.views import get_choices
+from choices.models import platform_makers, platform_types, transmission_systems, instrument_types
 
 #Domains for choices and db contstraints
 class Status(models.TextChoices): #AOML, not Argo compliant
@@ -11,12 +11,7 @@ class DeploymentType(models.TextChoices): #AOML, not Argo compliant
     RV = 'R/V','R/V'
     VOS = 'VOS','VOS'
     MV = 'M/V','M/V'
-
-
-Instrument_Choices = get_choices('instrument_types')
-Platform_Maker_Choices = get_choices('platform_makers')
-Platform_Types_Choices = get_choices('platform_types')
-Transmission_Systems_Choices = get_choices('transmission_systems')
+    AIR = 'AIR','AIR'
 
 class deployment(models.Model):
     # fields of the database
@@ -24,14 +19,14 @@ class deployment(models.Model):
     AOML_ID = models.CharField(max_length=25, blank=True, null=True)
     PLATFORM_NUMBER = models.CharField(max_length=25, unique=True, blank=True, null=True) #WMO
     FLOAT_SERIAL_NO = models.IntegerField(blank=True, null=True)
-    PLATFORM_MAKER = models.CharField(choices=Platform_Maker_Choices, max_length=25, blank=True, null=True)
-    PLATFORM_TYPE = models.CharField(choices=Platform_Types_Choices, max_length=25, blank=True, null=True)
+    PLATFORM_MAKER = models.ForeignKey(platform_makers, to_field="VALUE", max_length=25, blank=True, null=True, on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
+    PLATFORM_TYPE = models.ForeignKey(platform_types, to_field="VALUE", max_length=25, blank=True, null=True, on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     INST_TYPE = models.CharField(max_length=25, blank=True, null=True)
-    WMO_INST_TYPE = models.CharField(choices=Instrument_Choices, max_length=25, blank=True, null=True)
+    WMO_INST_TYPE = models.ForeignKey(instrument_types, to_field="VALUE", max_length=25, blank=True, null=True, on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     WMO_RECORDER_TYPE = models.CharField(max_length=25, blank=True, null=True)
 
     PTT = models.CharField(max_length=25, blank=True, null=True)
-    TRANS_SYSTEM = models.CharField(choices=Transmission_Systems_Choices, max_length=25, blank=True, null=True)
+    TRANS_SYSTEM = models.ForeignKey(transmission_systems, to_field="VALUE", max_length=25, blank=True, null=True, on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     IRIDIUM_PROGRAM_NO = models.CharField(max_length=25, blank=True, null=True)
 
     START_DATE = models.DateTimeField(blank=True, null=True)
@@ -56,7 +51,6 @@ class deployment(models.Model):
     DEPLOYMENT_REFERENCE_STATION_ID = models.CharField(max_length=25, blank=True, null=True)
     DEPLOYMENT_PLATFORM_ID = models.CharField(max_length=25, blank=True, null=True)
     
-
     ROM_VERSION = models.CharField(max_length=25, blank=True, null=True)
 
     BATTERY_TYPE = models.CharField(max_length=25, blank=True, null=True)
@@ -70,26 +64,6 @@ class deployment(models.Model):
 
     CUSTOMIZATION = models.CharField(max_length=200, blank=True, null=True)
     COMMENTS = models.TextField(blank=True, null=True)
-
-    #Database constraints
-    class Meta:
-        constraints = [
-            models.CheckConstraint(
-                name="%(app_label)s_%(class)s_CHECKS",
-                check=models.Q(START_DATE_QC__in=Status.values)
-                & models.Q(LAUNCH_DATE_QC__in=Status.values)
-                & models.Q(LAUNCH_POSITION_QC__in=Status.values)
-                & models.Q(DEPLOYMENT_TYPE__in=DeploymentType.values)
-                & models.Q(WMO_INST_TYPE__in=[pair[0] for pair in Instrument_Choices])
-                & models.Q(PLATFORM_MAKER__in=[pair[0] for pair in Platform_Maker_Choices])
-                & models.Q(PLATFORM_TYPE__in=[pair[0] for pair in Platform_Types_Choices])
-                & models.Q(TRANS_SYSTEM__in=[pair[0] for pair in Transmission_Systems_Choices])
-                & models.Q(LAUNCH_LATITUDE__lte=90)
-                & models.Q(LAUNCH_LATITUDE__gte=-90)
-                & models.Q(LAUNCH_LONGITUDE__lte=180)
-                & models.Q(LAUNCH_LONGITUDE__gte=-180)
-            )
-        ]
 
     #For admin detail view
     def get_fields(self):
