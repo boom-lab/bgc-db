@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'missions.apps.MissionsConfig',
     'sensors.apps.SensorsConfig',
     'choices.apps.ChoicesConfig',
+    'logs.apps.LogsConfig',
     'rest_framework',
     'rest_framework.authtoken',
     'django_extensions',
