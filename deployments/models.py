@@ -1,5 +1,5 @@
 from django.db import models
-from choices.models import platform_makers, platform_types, transmission_systems, instrument_types
+from choices.models import platform_makers, platform_types, transmission_systems, instrument_types, institutions, funders
 
 #Domains for choices and db contstraints
 class Status(models.TextChoices): #AOML, not Argo compliant
@@ -17,7 +17,7 @@ class deployment(models.Model):
     # fields of the database
     ADD_DATE = models.DateTimeField() #creation of record in db
     AOML_ID = models.CharField(max_length=25, blank=True, null=True)
-    PLATFORM_NUMBER = models.CharField(max_length=25, unique=True, blank=True, null=True) #WMO
+    PLATFORM_NUMBER = models.CharField("PLATFORM NUMBER (WMO)", max_length=25, unique=True, blank=True, null=True) #WMO
     FLOAT_SERIAL_NO = models.IntegerField(blank=True, null=True)
     PLATFORM_MAKER = models.ForeignKey(platform_makers, to_field="VALUE", max_length=25, blank=True, null=True, on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     PLATFORM_TYPE = models.ForeignKey(platform_types, to_field="VALUE", max_length=25, blank=True, null=True, on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
@@ -25,7 +25,6 @@ class deployment(models.Model):
     WMO_INST_TYPE = models.ForeignKey(instrument_types, to_field="VALUE", max_length=25, blank=True, null=True, on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     WMO_RECORDER_TYPE = models.CharField(max_length=25, blank=True, null=True)
 
-    PTT = models.CharField(max_length=25, blank=True, null=True)
     TRANS_SYSTEM = models.ForeignKey(transmission_systems, to_field="VALUE", max_length=25, blank=True, null=True, on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     IRIDIUM_PROGRAM_NO = models.CharField(max_length=25, blank=True, null=True)
 
@@ -38,7 +37,8 @@ class deployment(models.Model):
     LAUNCH_LONGITUDE = models.FloatField(blank=True, null=True) #WGS84 decimal degrees
     LAUNCH_POSITION_QC = models.CharField(max_length=25, choices=Status.choices, default=Status.ESTIMATED, blank=True, null=True)
 
-    PROJECT_NAME = models.CharField(max_length=25, blank=True, null=True)
+    INSTITUTION = models.ForeignKey(institutions, to_field="VALUE", max_length=25, blank=True, null=True, on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
+    FUNDER = models.ForeignKey(funders, to_field="VALUE", max_length=25, blank=True, null=True, on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     PI_NAME  = models.CharField(max_length=100, blank=True, null=True)
     PI_ADDRESS = models.CharField(max_length=100, blank=True, null=True)
     ORIGIN_COUNTRY = models.CharField(max_length=25, blank=True, null=True)
@@ -51,6 +51,9 @@ class deployment(models.Model):
     DEPLOYMENT_REFERENCE_STATION_ID = models.CharField(max_length=25, blank=True, null=True)
     DEPLOYMENT_PLATFORM_ID = models.CharField(max_length=25, blank=True, null=True)
     
+    FLOAT_CONTROLLER_SERIAL_NO = models.CharField(max_length=25, blank=True, null=True)
+    LBT_SERIAL_NO = models.CharField(max_length=25, blank=True, null=True)
+    GPS_SERIAL_NO = models.CharField(max_length=25, blank=True, null=True)
     ROM_VERSION = models.CharField(max_length=25, blank=True, null=True)
 
     BATTERY_TYPE = models.CharField(max_length=25, blank=True, null=True)

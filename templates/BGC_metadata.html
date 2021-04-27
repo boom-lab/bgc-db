@@ -1,5 +1,5 @@
 internal ID number                      {{ d.AOML_ID }}
-transmission ID number                  {{ '%06d' % d.PTT | int }}
+transmission ID number                  {{ '%06d' % d.FLOAT_SERIAL_NO | int }}
 transmission type                       {{ d.TRANS_SYSTEM.VALUE }}
 instrument type                         
 IRIDIUM program number                  {{ d.IRIDIUM_PROGRAM_NO }}
@@ -35,7 +35,7 @@ last cycle                              n/a
 {% endfor -%}
 float manufacturer                      {{ d.PLATFORM_MAKER.VALUE }}
 float serial number                     {{ d.FLOAT_SERIAL_NO }}
-Project Name                            {{ d.PROJECT_NAME }}
+Project Name                            {{ d.FUNDER }}, {{ d.INSTITUTION }}
 PI                                      {{ d.PI_NAME }}
 principal investigator address          {{ d.PI_ADDRESS }}
 originating country                     {{ d.ORIGIN_COUNTRY }}
