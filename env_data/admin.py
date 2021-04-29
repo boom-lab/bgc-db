@@ -38,7 +38,7 @@ admin.site.register(discrete_profile, DiscreteProfileAdmin)
 
 
 class ParkAdmin(admin.ModelAdmin):
-    list_display = ('DEPLOYMENT','DATE_ADD', 'DATE_MEASURED', 'PRES','TEMP','PSAL', 'OPH', 'OTV')
+    list_display = [field.name for field in park._meta.fields]
     list_display_links = None
     list_per_page = 25
 

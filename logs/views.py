@@ -5,14 +5,15 @@ from .models import file_processing
 import json
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
+from django.db.models import Q
 
 @permission_classes([IsAuthenticated])
 @api_view(['GET'])
-def get_success_files(request):
+def get_ignore_files(request):
 
-    sfiles = file_processing.objects.filter(STATUS__exact='Success').all()
+    sfiles = file_processing.objects.filter(Q(STATUS='Success') | Q(STATUS='Skip')).all()
 
-    result = {'sucess_files': [s.DIRECTORY for s in sfiles]}
+    result = {'ignore_files': [s.DIRECTORY for s in sfiles]}
 
     return JsonResponse(result)
 

@@ -8,6 +8,8 @@ class cycle_metadata(models.Model):
     
     DATE_ADD = models.DateTimeField() #creation of record in db
     PROFILE_ID = models.CharField(default=0, blank=True, null=True, max_length=20, unique=True)
+    ParkObs = models.CharField(blank=True, null=True, max_length=200)
+    ParkDescentP = models.CharField(blank=True, null=True, max_length=200)
 
     class Meta:
         verbose_name_plural = "Cycle Metadata"
@@ -21,11 +23,11 @@ meta_int_fields = ['ActiveBallastAdjustments', 'AirBladderPressure', 'AirPumpAmp
     'BuoyancyPumpOnTime', 'BuoyancyPumpAmps', 'BuoyancyPumpVolts', 'CurrentBuoyancyPosition', 'DeepProfileBuoyancyPosition', 'FlashErrorsCorrectable', 
     'FlashErrorsUncorrectable', 'FloatId', 'GpsFixTime',  'IceMLSample', 'McomsAmps', 'McomsVolts', 'Ocr504Amps', 
     'Ocr504Volts', 'ParkDescentPCnt', 'ParkBuoyancyPosition', 'ProfileId', 'ObsIndex', 'QuiescentAmps', 'QuiescentVolts', 'Sbe41cpAmps', 'Sbe41cpVolts', 
-       'Sbe63Amps', 'Sbe63Volts',  'SurfaceBuoyancyPosition', 
-     'Vacuum']
-meta_str_fields = ['NpfFwRev', 'IceEvasionRecord', 'IceMLMedianT','Sbe41cpStatus', 'status',]
-meta_float_fields = ['gps_lon', 'gps_lat','Sbe41cpHumidity','Sbe41cpHumidityTemp','SurfacePressure', ]
-meta_date_fields = ['TimeStartDescent', 'TimeStartPark', 'TimeStartProfileDescent', 'TimeStartProfile', 'TimeStopProfile', 'TimeStartTelemetry']
+    'Sbe63Amps', 'Sbe63Volts',  'SurfaceBuoyancyPosition', 'Vacuum', 'GpsNsat', 'IsusPowerCycleCounter','RtcSkew']
+meta_str_fields = ['NpfFwRev', 'IceEvasionRecord', 'IceMLMedianT','Sbe41cpStatus', 'status']
+meta_float_fields = ['GpsLong', 'GpsLat','Sbe41cpHumidity','Sbe41cpHumidityTemp','SurfacePressure', 'pHBaseAmps','pHBatteryInVolts','pHBatteryOutVolts',
+    'pHCounterVolts', 'pHCounterAmps']
+meta_date_fields = ['GpsFixDate','TimeStartDescent', 'TimeStartPark', 'TimeStartProfileDescent', 'TimeStartProfile', 'TimeStopProfile', 'TimeStartTelemetry']
 
 for field in meta_int_fields:
     cycle_metadata.add_to_class(field, models.IntegerField(blank=True, null=True))
@@ -104,7 +106,7 @@ class continuous_profile(models.Model):
     NB_SAMPLE_CTD = models.IntegerField("CTD Sample Count", blank=True, null=True)
     PHASE_DELAY_DOXY = models.FloatField("O2 Phase Delay microsecond", blank=True, null=True)
     TEMP_VOLTAGE_DOXY = models.FloatField("O2 Temperature voltage", blank=True, null=True)
-    NB_SAMPLE_DOXY = models.IntegerField("O2 Sample Count", blank=True, null=True)
+    NB_SAMPLE_OPTODE = models.IntegerField("O2 Sample Count", blank=True, null=True)
     FLUORESCENCE_CHLA = models.FloatField("Fluorescence CHLa count", blank=True, null=True)
     BETA_BACKSCATTERING700 = models.FloatField("Beta Backscattering 700nm count", blank=True, null=True)
     FLUORESCENCE_CDOM = models.FloatField("Fluorescence CDOM count", blank=True, null=True)
@@ -201,8 +203,17 @@ class park(models.Model):
     PRES = models.FloatField(blank=True, null=True) #Blank=True is not required
     TEMP = models.FloatField(blank=True, null=True)
     PSAL = models.FloatField(blank=True, null=True)
-    OPH = models.FloatField(blank=True, null=True)
-    OTV = models.FloatField()
+    PHASE_DELAY_DOXY = models.FloatField(blank=True, null=True)
+    TEMP_VOLTAGE_DOXY = models.FloatField(blank=True, null=True)
+    VRS_PH = models.FloatField(blank=True, null=True)
+    VK_PH = models.FloatField(blank=True, null=True)
+    IB_PH = models.FloatField(blank=True, null=True)
+    IK_PH = models.FloatField(blank=True, null=True)
+    RAW_DOWN_IRRADIANCE380 = models.FloatField(blank=True, null=True)
+    RAW_DOWN_IRRADIANCE412 = models.FloatField(blank=True, null=True)
+    RAW_DOWN_IRRADIANCE490 = models.FloatField(blank=True, null=True)
+    RAW_DOWNWELLING_PAR = models.FloatField(blank=True, null=True)
+    TILT = models.FloatField(blank=True, null=True)
 
     class Meta:
         verbose_name_plural = "Park Data"
