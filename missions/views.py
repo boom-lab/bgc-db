@@ -4,7 +4,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .serializers import MissionSerializer, AddMissionSerializer
 from .models import mission
 
-class GetMissions(generics.ListAPIView): #Read and write only
+class GetMissions(generics.ListAPIView): #Read only
     permission_classes=[permissions.IsAuthenticated]
     serializer_class = MissionSerializer
     queryset=mission.objects.all()
