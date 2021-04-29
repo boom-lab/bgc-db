@@ -1,4 +1,7 @@
 from django.db import models
+from deployments.models import deployment
+from choices.models import events
+from django.conf import settings
 
 class Status(models.TextChoices):
     Success = 'Success','Success'
@@ -16,3 +19,20 @@ class file_processing(models.Model):
 
     def __str__(self): 
         return str(self.DIRECTORY)
+
+class deployment_tracking(models.Model):
+
+    DEPLOYMENT = models.ForeignKey(deployment, on_delete=models.CASCADE)
+    EVENT = models.ForeignKey(events, to_field="VALUE", max_length=50, on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
+    DATE = models.DateField()
+    LOCATION = models.CharField(max_length=100, null=True, blank=True)
+    COMMENT = models.TextField(null=True, blank=True)
+    USER = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.PROTECT)
+
+
+    
+    class Meta:
+        verbose_name_plural = "Deployment Tracking"
+
+    def __str__(self): 
+        return str(self.DEPLOYMENT)

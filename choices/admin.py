@@ -2,7 +2,7 @@ from django.contrib import admin
 from import_export.admin import ExportMixin
 
 # Register your models here.
-from .models import sensor_types, sensor_makers, sensor_models, instrument_types, platform_makers, platform_types, transmission_systems, funders, institutions
+from .models import *
 
 class SensorTypesAdmin(ExportMixin, admin.ModelAdmin):
 
@@ -79,3 +79,11 @@ class FundersAdmin(ExportMixin, admin.ModelAdmin):
 
 
 admin.site.register(funders, FundersAdmin)
+
+class EventsAdmin(ExportMixin, admin.ModelAdmin):
+
+    list_display = ['VALUE','DISPLAY','ACTIVE','DESCRIPTION']
+    list_per_page = 100
+
+
+admin.site.register(events, EventsAdmin)

@@ -122,3 +122,15 @@ class funders(models.Model):
         verbose_name_plural = "Funders"
     def __str__(self): 
         return str(self.VALUE)
+
+class events(models.Model):
+
+    VALUE = models.CharField(max_length=100, unique=True)
+    DISPLAY = models.CharField(max_length=200)
+    ACTIVE = models.BooleanField()
+    DESCRIPTION = models.CharField(max_length=2000, blank=True, null=True)
+    
+    class Meta:
+        verbose_name_plural = "Events"
+    def __str__(self): 
+        return str(self.VALUE)
