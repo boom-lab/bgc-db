@@ -13,12 +13,18 @@ class DeploymentType(models.TextChoices): #AOML, not Argo compliant
     MV = 'M/V','M/V'
     AIR = 'AIR','AIR'
 
+class ModemType(models.TextChoices): #internal, not argo compliant
+    Civilian = 'Civilian','Civilian'
+    DOD = 'DOD','Department of Defence'
+
 class deployment(models.Model):
     # fields of the database
     ADD_DATE = models.DateTimeField() #creation of record in db
     AOML_ID = models.CharField(max_length=25, blank=True, null=True)
     PLATFORM_NUMBER = models.CharField("PLATFORM NUMBER (WMO)", max_length=25, unique=True, blank=True, null=True) #WMO
     FLOAT_SERIAL_NO = models.IntegerField(blank=True, null=True)
+    WHOI_TAG = models.CharField(max_length=25, blank=True, null=True)
+    PURCHACE_ORDER = models.CharField(max_length=25, blank=True, null=True)
     PLATFORM_MAKER = models.ForeignKey(platform_makers, to_field="VALUE", max_length=25, blank=True, null=True, on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     PLATFORM_TYPE = models.ForeignKey(platform_types, to_field="VALUE", max_length=25, blank=True, null=True, on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     INST_TYPE = models.CharField(max_length=25, blank=True, null=True)
@@ -27,6 +33,7 @@ class deployment(models.Model):
 
     TRANS_SYSTEM = models.ForeignKey(transmission_systems, to_field="VALUE", max_length=25, blank=True, null=True, on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     IRIDIUM_PROGRAM_NO = models.CharField(max_length=25, blank=True, null=True)
+    MODEM_TYPE = models.CharField(choices=ModemType.choices, max_length=25, blank=True, null=True)
 
     START_DATE = models.DateTimeField(blank=True, null=True)
     START_DATE_QC = models.CharField(max_length=25, choices=Status.choices, default=Status.ESTIMATED, blank=True, null=True)
