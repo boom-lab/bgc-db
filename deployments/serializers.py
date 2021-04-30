@@ -45,3 +45,12 @@ class CurrentDeploymentSerializer(serializers.ModelSerializer):
 
     def get_mission(self, obj):
         return MissionSerializer(instance=obj.missions.order_by('-ADD_DATE').first()).data
+
+class CalSerializer(serializers.ModelSerializer):
+    sensor = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = deployment
+        fields = ['sensor']
+    def get_sensor(self, obj):
+        return SensorCalSerializer(instance=obj.sensors).data

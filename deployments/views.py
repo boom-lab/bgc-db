@@ -5,13 +5,13 @@ from django.http import HttpResponse
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader
 
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import api_view#, permission_classes
 
 from .models import deployment
-from .serializers import DeploymentSerializer, CurrentDeploymentSerializer
+from .serializers import DeploymentSerializer, CurrentDeploymentSerializer, CalSerializer
 import json
 
 
@@ -118,25 +118,58 @@ class GetCrtMetadata(generics.ListAPIView): #Read only
     filter_backends = [DjangoFilterBackend]
     filter_fields = [field.name for field in deployment._meta.fields]
 
+class GetCalNew(generics.ListAPIView): #Read only
+    serializer_class = CalSerializer
+    queryset=deployment.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filter_fields = [field.name for field in deployment._meta.fields]
+
 
 #Get WMO# by serial number
 #No token needed
 @api_view(['GET'])
 def get_wmo(request):
-    serial_number = request.GET['FLOAT_SERIAL_NO']
+    filters={}
+    filters['FLOAT_SERIAL_NO'] = request.GET['FLOAT_SERIAL_NO']
+    filters['PLATFORM_TYPE'] = request.GET['PLATFORM_TYPE']
 
-    deployment_entry = deployment.objects.filter(FLOAT_SERIAL_NO__exact=serial_number).first()
-    print(deployment_entry)
+    queryset = deployment.objects.filter(**filters)
+    print(queryset)
+
+    if len(queryset)==0:
+        return JsonResponse({'status':'Error: no float found'}, status=status.HTTP_400_BAD_REQUEST)
+    if len(queryset)>1:
+        return JsonResponse({'status':'Error: multiple floats selected'}, status=status.HTTP_400_BAD_REQUEST)
+
+    deployment_entry = queryset.first()
+
     return JsonResponse({
+        'PLATFORM_TYPE':str(deployment_entry.PLATFORM_TYPE),
         'FLOAT_SERIAL_NO':deployment_entry.FLOAT_SERIAL_NO,
         'WMO':deployment_entry.PLATFORM_NUMBER,
     })
 
 @api_view(['GET'])
 def get_cal(request):
-    wmo = request.GET['PLATFORM_NUMBER']
+    filters = {}
+    
+    PLATFORM_NUMBER = request.GET.get('PLATFORM_NUMBER', None)
+    if PLATFORM_NUMBER:
+        filters['PLATFORM_NUMBER'] = PLATFORM_NUMBER
 
-    deployment_entry = deployment.objects.filter(PLATFORM_NUMBER__exact=wmo).first()
+    FLOAT_SERIAL_NO = request.GET.get('FLOAT_SERIAL_NO', None)
+    if FLOAT_SERIAL_NO:
+        filters['FLOAT_SERIAL_NO'] = FLOAT_SERIAL_NO
+
+    PLATFORM_TYPE = request.GET.get('PLATFORM_TYPE', None)
+    if PLATFORM_TYPE:
+        filters['PLATFORM_TYPE'] = PLATFORM_TYPE
+
+    queryset = deployment.objects.filter(**filters)
+    if len(queryset)>1:
+        return JsonResponse({'status':'Error: multiple floats selected'}, status=status.HTTP_400_BAD_REQUEST)
+
+    deployment_entry = queryset.first()
     sensors = deployment_entry.sensors.all()
 
     result = {}
