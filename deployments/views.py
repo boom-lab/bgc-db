@@ -117,12 +117,6 @@ class GetCrtMetadata(generics.ListAPIView): #Read only
     filter_backends = [DjangoFilterBackend]
     filter_fields = [field.name for field in deployment._meta.fields]
 
-class GetCalNew(generics.ListAPIView): #Read only
-    serializer_class = CalSerializer
-    queryset=deployment.objects.all()
-    filter_backends = [DjangoFilterBackend]
-    filter_fields = [field.name for field in deployment._meta.fields]
-
 
 #Get WMO# by serial number
 #No token needed

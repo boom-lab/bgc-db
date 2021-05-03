@@ -97,3 +97,68 @@ pres 1201
     "PTCB1": 2.109063e+001,
     "PTCB2": -3.305761e-001
 }
+
+
+{
+    "TRANSISTOR_PH": {
+        "PREDEPLOYMENT_CALIB_COEFFICIENT":{
+            "f0": -0.0029669,
+            "f1": 1.5782e-05,
+            "f2": -2.2087e-08,
+            "f3": 1.6756e-11,
+            "f4": -6.2811e-15,
+            "f5": 1.0324e-18,
+            "f6": -3.9749e-23,
+            "k0": -1.4069,
+            "k2": -0.0010336
+        },
+        "SENSOR_MAKER": "SBE",
+        "SENSOR_MODEL": "SBE63_V3.2.2",
+        "SENSOR_CALIB_DATE": "2020-11-21",
+    },
+
+{
+    "SENSOR": "OPTODE_DOXY",
+    "SENSOR_SERIAL_NO": "2521",
+    "SENSOR_CALIB_DATE": "2020-11-21",
+    "PREDEPLOYMENT_CALIB_COEFFICIENT": {
+        "E": 0.011,
+        "A0": 1.0513,
+        "A1": -0.0015,
+        "A2": 0.3898,
+        "B0": -0.23773,
+        "B1": 1.6136,
+        "C0": 0.10187,
+        "C1": 0.0043836,
+        "C2": 6.1362e-05,
+        "TA0": 0.0007270966,
+        "TA1": 0.0002437583,
+        "TA2": 1.397296e-06,
+        "TA3": 7.592994e-08
+    },
+    "SENSOR_MAKER": "SBE",
+    "SENSOR_MODEL": "SBE63_V3.2.2"  
+}
+
+"OPTODE_DOXY":
+{    
+    "SENSOR_SERIAL_NO": "2521",
+    "SENSOR_CALIB_DATE": "2020-11-21",
+    "PREDEPLOYMENT_CALIB_COEFFICIENT": {
+        "E": 0.011,
+        "A0": 1.0513,
+        "A1": -0.0015,
+        "A2": 0.3898,
+        "B0": -0.23773,
+        "B1": 1.6136,
+        "C0": 0.10187,
+        "C1": 0.0043836,
+        "C2": 6.1362e-05,
+        "TA0": 0.0007270966,
+        "TA1": 0.0002437583,
+        "TA2": 1.397296e-06,
+        "TA3": 7.592994e-08
+    },
+    "SENSOR_MAKER": "SBE",
+    "SENSOR_MODEL": "SBE63_V3.2.2"  
+}

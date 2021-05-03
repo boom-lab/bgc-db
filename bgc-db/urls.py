@@ -23,6 +23,7 @@ urlpatterns = [
     path('', include("missions.urls")),
     path('', include("sensors.urls")),
     path('', include("logs.urls")),
+    path('', include("env_data.urls")),
     #path('api-auth/', include('rest_framework.urls')) #web browseable api
 ]
 

@@ -198,6 +198,9 @@ class park(models.Model):
 
     #fields of the model
     DEPLOYMENT = models.ForeignKey(deployment, related_name='park', on_delete=models.PROTECT)
+    PROFILE_METADATA = models.ForeignKey(cycle_metadata, to_field='PROFILE_ID', on_delete=models.PROTECT)
+    MISSION = models.ForeignKey(mission_reported, to_field='PROFILE_ID', on_delete=models.PROTECT)
+
     DATE_ADD = models.DateTimeField()
     DATE_MEASURED = models.DateTimeField()
     PRES = models.FloatField(blank=True, null=True) #Blank=True is not required
