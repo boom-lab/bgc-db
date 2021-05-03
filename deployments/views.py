@@ -112,7 +112,6 @@ class MetadataView(generics.ListCreateAPIView): #Read and write only
 
 #Current metadata api, only most recent mission record (all sensors)
 class GetCrtMetadata(generics.ListAPIView): #Read only
-    permission_classes=[IsAuthenticated]
     serializer_class = CurrentDeploymentSerializer
     queryset=deployment.objects.all()
     filter_backends = [DjangoFilterBackend]
