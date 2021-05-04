@@ -20,7 +20,6 @@ class sensor(models.Model):
     #For aoml metadata template, converts SENSOR into their text format
     def aoml_sensor(self):
 
-        print(self.SENSOR)
         translation = {'PUMP_VOLTAGE':'pump voltage',
             'CPU_VOLTAGE':'cpu voltage',
             'FLUOROMETER_CHLA':'fluoro CHLA',

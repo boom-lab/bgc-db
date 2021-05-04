@@ -1,0 +1,3 @@
+{% for eq in s.PREDEPLOYMENT_CALIB_EQUATION.keys() -%}
+{{ "%-40s" | format('calib eq '+eq.strip('eq')+' for '+s.aoml_sensor(),) }}{{s.PREDEPLOYMENT_CALIB_EQUATION[eq]}}
+{% endfor -%}

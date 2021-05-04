@@ -34,6 +34,7 @@ class deployment(models.Model):
     TRANS_SYSTEM = models.ForeignKey(transmission_systems, to_field="VALUE", max_length=25, blank=True, null=True, on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     IRIDIUM_PROGRAM_NO = models.CharField(max_length=25, blank=True, null=True)
     MODEM_TYPE = models.CharField(choices=ModemType.choices, max_length=25, blank=True, null=True)
+    MODEM_SERIAL_NO = models.CharField(max_length=25, blank=True, null=True)
 
     START_DATE = models.DateTimeField(blank=True, null=True)
     START_DATE_QC = models.CharField(max_length=25, choices=Status.choices, default=Status.ESTIMATED, blank=True, null=True)
@@ -59,7 +60,6 @@ class deployment(models.Model):
     DEPLOYMENT_PLATFORM_ID = models.CharField(max_length=25, blank=True, null=True)
     
     FLOAT_CONTROLLER_SERIAL_NO = models.CharField(max_length=25, blank=True, null=True)
-    LBT_SERIAL_NO = models.CharField(max_length=25, blank=True, null=True)
     GPS_SERIAL_NO = models.CharField(max_length=25, blank=True, null=True)
     ROM_VERSION = models.CharField(max_length=25, blank=True, null=True)
 

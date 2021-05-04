@@ -24,9 +24,6 @@ clock drift [hours/hours]               0
 last cycle                              n/a
 ========================================
 {% for s in sensors -%}
-{% for eq in s.PREDEPLOYMENT_CALIB_EQUATION.keys() -%}
-{{ "%-40s" | format('calib eq '+eq.strip('eq')+' for '+s.aoml_sensor(),) }}{{s.PREDEPLOYMENT_CALIB_EQUATION[eq]}}
-{% endfor -%}
 {{ "%-40s" | format('calib coef for '+s.aoml_sensor(),) }}{{s.PREDEPLOYMENT_CALIB_COEFFICIENT}}
 {% endfor -%}
 ========================================
@@ -49,15 +46,14 @@ nominal drift pressure [dbar]           1000
 cycles for drift pressure               1
 nominal profile pressure [dbar]         2000
 cycles for profile pressure             1
-Profile Sampling Method                 Primary sampling: mixed [deep: discrete, shallow: averaged]
-pump type                               
+Profile Sampling Method                 Primary sampling: mixed [deep: discrete, shallow: averaged]                          
 {% for s in sensors -%}
 {{ "%-40s" | format(s.aoml_sensor()+' sensor type',) }}{{s.SENSOR_MODEL}}
 {{ "%-40s" | format(s.aoml_sensor()+' sensor manufacturer',) }}{{s.SENSOR_MAKER.VALUE}}
 {{ "%-40s" | format(s.aoml_sensor()+' sensor serial number',) }}{{s.SENSOR_SERIAL_NO}}
 {% endfor -%}
 transmission IMEI number                
-CPU serial number                       {{ d.FLOAT_SERIAL_NO }}
+CPU serial number                       {{ d.FLOAT_CONTROLLER_SERIAL_NO }}
 ROM version                             {{ d.ROM_VERSION }}
 battery type                            {{ d.BATTERY_TYPE }} 
 battery manufacturer and model          {{ d.BATTERY_MANUFACTURER}} {{ d. BATTERY_MODEL }}
