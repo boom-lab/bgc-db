@@ -24,8 +24,8 @@ urlpatterns = [
     path('', include("sensors.urls")),
     path('', include("logs.urls")),
     path('', include("env_data.urls")),
-    #path('api-auth/', include('rest_framework.urls')) #web browseable api
+    path('', include("pages.urls")),
 ]
 
-admin.site.site_header = 'BGC Database'
-admin.site.site_title = 'BGC Database'
+admin.site.site_header = 'BGC Argo Database'
+admin.site.site_title = 'BGC Argo Database'

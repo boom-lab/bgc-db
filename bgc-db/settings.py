@@ -57,12 +57,12 @@ INSTALLED_APPS = [
     'sensors.apps.SensorsConfig',
     'choices.apps.ChoicesConfig',
     'logs.apps.LogsConfig',
+    'pages.apps.PagesConfig',
     'rest_framework',
     'rest_framework.authtoken',
     'django_extensions',
     'corsheaders',
     'import_export',
-
 ]
 
 MIDDLEWARE = [
@@ -166,11 +166,12 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'
-STATIC_ROOT = 'static'
 
-#STATIC_ROOT= os.path.join(BASE_DIR, "static")
+#Remote
+#STATIC_ROOT = 'static'
 
-#STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
+#Local
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ORIGIN_WHITELIST = [

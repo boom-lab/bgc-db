@@ -1,0 +1,15 @@
+/* Show it is fixed to the top */
+body {
+  min-height: 75rem;
+  padding-top: 7rem;
+}
+
+.navbar {
+  background: #041e43;
+  padding: 20px 20%;
+}
+
+.table {
+  width: 80%;
+  margin: 0 10%;
+}
