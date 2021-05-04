@@ -123,19 +123,23 @@ class GetCrtMetadata(generics.ListAPIView): #Read only
 @api_view(['GET'])
 def get_wmo(request):
     filters={}
-    filters['FLOAT_SERIAL_NO'] = request.GET['FLOAT_SERIAL_NO']
-    filters['PLATFORM_TYPE'] = request.GET['PLATFORM_TYPE']
+    try:
+        filters['FLOAT_SERIAL_NO'] = request.GET['FLOAT_SERIAL_NO']
+    except:
+        return JsonResponse({'details':'Error: FLOAT_SERIAL_NO not provided'}, status=status.HTTP_400_BAD_REQUEST)
+    try:
+        filters['PLATFORM_TYPE'] = request.GET['PLATFORM_TYPE']
+    except:
+        return JsonResponse({'details':'Error: PLATFORM_TYPE not provided'}, status=status.HTTP_400_BAD_REQUEST)
 
     queryset = deployment.objects.filter(**filters)
-    print(queryset)
 
     if len(queryset)==0:
-        return JsonResponse({'status':'Error: no float found'}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({'details':'Error: no float found'}, status=status.HTTP_400_BAD_REQUEST)
     if len(queryset)>1:
-        return JsonResponse({'status':'Error: multiple floats selected'}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({'details':'Error: multiple floats selected'}, status=status.HTTP_400_BAD_REQUEST)
 
     deployment_entry = queryset.first()
-
     return JsonResponse({
         'PLATFORM_TYPE':str(deployment_entry.PLATFORM_TYPE),
         'FLOAT_SERIAL_NO':deployment_entry.FLOAT_SERIAL_NO,
@@ -146,6 +150,7 @@ def get_wmo(request):
 def get_cal(request):
     filters = {}
     
+    #Get parameters
     PLATFORM_NUMBER = request.GET.get('PLATFORM_NUMBER', None)
     if PLATFORM_NUMBER:
         filters['PLATFORM_NUMBER'] = PLATFORM_NUMBER
@@ -159,14 +164,31 @@ def get_cal(request):
         filters['PLATFORM_TYPE'] = PLATFORM_TYPE
 
     queryset = deployment.objects.filter(**filters)
+
+    #Error handling
+    if not PLATFORM_NUMBER and not FLOAT_SERIAL_NO and not PLATFORM_TYPE:
+        return JsonResponse({'details':'Error: WMO must be specified, or FLOAT_SERIAL_NO and PLATFORM_TYPE'}, 
+        status=status.HTTP_400_BAD_REQUEST) 
+    if not PLATFORM_NUMBER:
+        if not FLOAT_SERIAL_NO or not PLATFORM_TYPE:
+           return JsonResponse({'details':'Error: both FLOAT_SERIAL_NO and PLATFORM_TYPE must be specified, or WMO'}, status=status.HTTP_400_BAD_REQUEST) 
     if len(queryset)>1:
-        return JsonResponse({'status':'Error: multiple floats selected'}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({'details':'Error: multiple floats selected'}, status=status.HTTP_400_BAD_REQUEST)
 
     deployment_entry = queryset.first()
-    sensors = deployment_entry.sensors.all()
+    sensors = deployment_entry.sensors.all() #Get sensors of this query
 
     result = {}
     for sensor in sensors:
-        result[str(sensor.SENSOR)] = sensor.PREDEPLOYMENT_CALIB_COEFFICIENT
+        result[str(sensor.SENSOR)] = {
+            "SENSOR_MAKER":sensor.SENSOR_MAKER.VALUE,
+            "SENSOR_MODEL":sensor.SENSOR_MODEL.VALUE,
+            "SENSOR_SERIAL_NO":sensor.SENSOR_SERIAL_NO,
+            "SENSOR_CALIB_DATE":sensor.SENSOR_CALIB_DATE,
+            "COMMENTS":sensor.COMMENTS,
+            "PREDEPLOYMENT_CALIB_EQUATION":sensor.PREDEPLOYMENT_CALIB_EQUATION,
+            "PREDEPLOYMENT_CALIB_COEFFICIENT":sensor.PREDEPLOYMENT_CALIB_COEFFICIENT
+        }
 
+    print(result)
     return JsonResponse(result)
