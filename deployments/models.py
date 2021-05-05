@@ -93,7 +93,8 @@ class deployment(models.Model):
     def status(self):
         if not self.LAUNCH_DATE:
             return "Predeployment"
-        if self.LAUNCH_DATE and not self.cycle_metadata.first():
+        latest = self.cycle_metadata.first()
+        if latest.PROFILE_ID[-3:] == '000':
             return "Prelude"
         if datetime.now(timezone.utc)-self.last_report > timedelta(days = 10): 
             return "Overdue"
