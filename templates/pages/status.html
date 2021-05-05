@@ -1,29 +1,31 @@
 {% extends 'partials/base.html' %}
 {% block content %}
-<table class="table tabel-sm table-hover">
-    <thead>
-      <tr>
-        <th scope="col">Serial Number</th>
-        <th scope="col">WMO</th>
-        <th scope="col">Platform Type</th>
-        <th scope="col">Status</th>
-        <th scope="col">Launch Date</th>
-        <th scope="col">Last Report</th>
-        <th scope="col">Next Report (est)</th>
-      </tr>
-    </thead>
-    <tbody>
-        {% for deployment in deployments %}
+<section class="status-table-container">
+  <table id="statustable" class="table tabel-sm table-hover">
+      <thead>
         <tr>
-            <th scope="row">{{ deployment.FLOAT_SERIAL_NO }}</th>
-            <td>{{ deployment.PLATFORM_NUMBER }}</td>
-            <td>{{ deployment.PLATFORM_TYPE }}</td>
-            <td></td>
-            <td>{{ deployment.LAUNCH_DATE }}</td>
-            <td></td>
-            <td></td>
+          <th scope="col">Serial Number</th>
+          <th scope="col">WMO</th>
+          <th scope="col">Platform Type</th>
+          <th scope="col">Status</th>
+          <th scope="col">Launch Date (UTC)</th>
+          <th scope="col">Last Report (UTC)</th>
+          <th scope="col">Next Report (est)</th>
         </tr>
-        {% endfor %}
-    </tbody>
-</table>
+      </thead>
+      <tbody>
+          {% for deployment in deployments %}
+          <tr>
+              <th scope="row">{{ deployment.FLOAT_SERIAL_NO }}</th>
+              <td>{{ deployment.PLATFORM_NUMBER }}</td>
+              <td>{{ deployment.PLATFORM_TYPE }}</td>
+              <td>{{ deployment.status }}</td>
+              <td>{{ deployment.LAUNCH_DATE }}</td>
+              <td>{{ deployment.last_report }}</td>
+              <td></td>
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+</section>
 {% endblock %}

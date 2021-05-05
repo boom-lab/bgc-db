@@ -11,7 +11,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import api_view#, permission_classes
 
 from .models import deployment
-from .serializers import DeploymentSerializer, CurrentDeploymentSerializer, CalSerializer
+from .serializers import DeploymentSerializer, CurrentDeploymentSerializer
 import json
 
 
@@ -118,6 +118,7 @@ class GetCrtMetadata(generics.ListAPIView): #Read only
     filter_fields = [field.name for field in deployment._meta.fields]
 
 
+
 #Get WMO# by serial number
 #No token needed
 @api_view(['GET'])
@@ -171,7 +172,7 @@ def get_cal(request):
         status=status.HTTP_400_BAD_REQUEST) 
     if not PLATFORM_NUMBER:
         if not FLOAT_SERIAL_NO or not PLATFORM_TYPE:
-           return JsonResponse({'details':'Error: both FLOAT_SERIAL_NO and PLATFORM_TYPE must be specified, or WMO'}, status=status.HTTP_400_BAD_REQUEST) 
+            return JsonResponse({'details':'Error: both FLOAT_SERIAL_NO and PLATFORM_TYPE must be specified, or WMO'}, status=status.HTTP_400_BAD_REQUEST) 
     if len(queryset)>1:
         return JsonResponse({'details':'Error: multiple floats selected'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -192,3 +193,30 @@ def get_cal(request):
 
     print(result)
     return JsonResponse(result)
+
+@api_view(['GET'])
+def get_locations(request):
+    filters = {}
+    
+    #Get parameters
+    PLATFORM_NUMBER = request.GET.get('PLATFORM_NUMBER', None)
+    if PLATFORM_NUMBER:
+        filters['PLATFORM_NUMBER'] = PLATFORM_NUMBER
+    else:
+        return JsonResponse({'details':'Error: PLATFORM_NUMBER (WMO) must be specified'}, 
+        status=status.HTTP_400_BAD_REQUEST) 
+
+
+    queryset = deployment.objects.filter(**filters)
+
+    deployment_entry = queryset.first()
+    cycle_metadata = deployment_entry.cycle_metadata.all() #Get cycle data for this query
+
+    results = {
+        "GpsFixDate":list(cycle_metadata.values_list('GpsFixDate', flat=True)),
+        "GpsLat":list(cycle_metadata.values_list('GpsLat', flat=True)),
+        "GpsLong":list(cycle_metadata.values_list('GpsLong', flat=True))
+    }
+
+    print(results)
+    return JsonResponse(results)

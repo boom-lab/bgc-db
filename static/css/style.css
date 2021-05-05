@@ -9,7 +9,11 @@ body {
   padding: 20px 20%;
 }
 
-.table {
-  width: 80%;
+/* .table {
+  width: 100%;
+  margin: 0;
+} */
+
+.status-table-container{
   margin: 0 10%;
 }

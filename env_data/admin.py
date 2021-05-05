@@ -4,7 +4,6 @@ from .models import cycle_metadata, continuous_profile, discrete_profile, park, 
 # Register your models here.
 class CycleMetadataAdmin(admin.ModelAdmin):
     list_display = [field.name for field in cycle_metadata._meta.fields]
-    list_display_links = None
     list_per_page = 25
 
 

@@ -15,8 +15,9 @@ def index(request):
 
 def status(request):
     deployments = deployment.objects.all()
+
     context = {
-        'deployments': deployments
+        'deployments': deployments,
     }
 
     return render(request, 'pages/status.html', context)

@@ -26,8 +26,9 @@ class CycleMetaSerializer(serializers.ModelSerializer):
  
     class Meta:
         model = cycle_metadata
-        fields = [field.name for field in cycle_metadata._meta.fields].remove('DEPLOYMENT')
-        #exclude = ['DEPLOYMENT']
+        #fields = [field.name for field in cycle_metadata._meta.fields].remove('DEPLOYMENT')
+        exclude = ['DEPLOYMENT']
+
 
 class MissionReportedSerializer(serializers.ModelSerializer):
  

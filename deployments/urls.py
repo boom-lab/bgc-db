@@ -8,5 +8,5 @@ urlpatterns = [
     url('api/current_metadata', views.GetCrtMetadata.as_view()),
     url('api/wmo/', views.get_wmo, name='getwmo'),
     url('api/cal', views.get_cal, name='getcal'),
-    #url('api/calnew', views.GetCalNew.as_view(), name='getcalnew'),
+    url('api/locations', views.get_locations, name='getlocations'),
 ]

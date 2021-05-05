@@ -1,3 +1,4 @@
+from datetime import datetime, timezone, timedelta
 from django.db import models
 from choices.models import platform_makers, platform_types, transmission_systems, instrument_types, institutions, funders
 
@@ -25,13 +26,17 @@ class deployment(models.Model):
     FLOAT_SERIAL_NO = models.IntegerField(blank=True, null=True)
     WHOI_TAG = models.CharField(max_length=25, blank=True, null=True)
     PURCHACE_ORDER = models.CharField(max_length=25, blank=True, null=True)
-    PLATFORM_MAKER = models.ForeignKey(platform_makers, to_field="VALUE", max_length=25, blank=True, null=True, on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
-    PLATFORM_TYPE = models.ForeignKey(platform_types, to_field="VALUE", max_length=25, blank=True, null=True, on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
+    PLATFORM_MAKER = models.ForeignKey(platform_makers, to_field="VALUE", max_length=25, blank=True, null=True, 
+        on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
+    PLATFORM_TYPE = models.ForeignKey(platform_types, to_field="VALUE", max_length=25, blank=True, null=True, 
+        on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     INST_TYPE = models.CharField(max_length=25, blank=True, null=True)
-    WMO_INST_TYPE = models.ForeignKey(instrument_types, to_field="VALUE", max_length=25, blank=True, null=True, on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
+    WMO_INST_TYPE = models.ForeignKey(instrument_types, to_field="VALUE", max_length=25, blank=True, null=True, 
+        on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     WMO_RECORDER_TYPE = models.CharField(max_length=25, blank=True, null=True)
 
-    TRANS_SYSTEM = models.ForeignKey(transmission_systems, to_field="VALUE", max_length=25, blank=True, null=True, on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
+    TRANS_SYSTEM = models.ForeignKey(transmission_systems, to_field="VALUE", max_length=25, blank=True, null=True, 
+        on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     IRIDIUM_PROGRAM_NO = models.CharField(max_length=25, blank=True, null=True)
     MODEM_TYPE = models.CharField(choices=ModemType.choices, max_length=25, blank=True, null=True)
     MODEM_SERIAL_NO = models.CharField(max_length=25, blank=True, null=True)
@@ -45,8 +50,10 @@ class deployment(models.Model):
     LAUNCH_LONGITUDE = models.FloatField(blank=True, null=True) #WGS84 decimal degrees
     LAUNCH_POSITION_QC = models.CharField(max_length=25, choices=Status.choices, default=Status.ESTIMATED, blank=True, null=True)
 
-    INSTITUTION = models.ForeignKey(institutions, to_field="VALUE", max_length=25, blank=True, null=True, on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
-    FUNDER = models.ForeignKey(funders, to_field="VALUE", max_length=25, blank=True, null=True, on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
+    INSTITUTION = models.ForeignKey(institutions, to_field="VALUE", max_length=25, blank=True, null=True, 
+        on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
+    FUNDER = models.ForeignKey(funders, to_field="VALUE", max_length=25, blank=True, null=True, 
+        on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     PI_NAME  = models.CharField(max_length=100, blank=True, null=True)
     PI_ADDRESS = models.CharField(max_length=100, blank=True, null=True)
     ORIGIN_COUNTRY = models.CharField(max_length=25, blank=True, null=True)
@@ -74,6 +81,24 @@ class deployment(models.Model):
 
     CUSTOMIZATION = models.CharField(max_length=200, blank=True, null=True)
     COMMENTS = models.TextField(blank=True, null=True)
+
+    @property
+    def last_report(self):
+        crt_meta = self.cycle_metadata.order_by('-DATE_ADD').first()
+        if crt_meta: 
+            return crt_meta.TimeStartTelemetry
+        return None
+
+    @property
+    def status(self):
+        if not self.LAUNCH_DATE:
+            return "Predeployment"
+        if self.LAUNCH_DATE and not self.cycle_metadata.first():
+            return "Prelude"
+        if datetime.now(timezone.utc)-self.last_report > timedelta(days = 10): 
+            return "Overdue"
+        return "Active"
+
 
     #For admin detail view
     def get_fields(self):
