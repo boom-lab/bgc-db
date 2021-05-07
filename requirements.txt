@@ -9,3 +9,4 @@ Jinja2==2.11.3
 python-dotenv>=0.17.0,<0.18
 psycopg2-binary>=2.8.6,<2.9
 django-filter>=2.4.0,<2.5
+plotly>=4.14.3,<4.15
