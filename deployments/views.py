@@ -76,7 +76,7 @@ def export_metadata(request, entry_id):
     if not d.COMMENTS:
         d.COMMENTS = 'n/a'
         
-
+    nitrate_coefs = []
     for s in sensors:
         if s.SENSOR_CALIB_DATE:
             s.SENSOR_CALIB_DATE = s.SENSOR_CALIB_DATE.strftime('%d %m %Y')
@@ -98,7 +98,7 @@ def export_metadata(request, entry_id):
     output = template.render(d=d, sensors=sensors)
 
     response = HttpResponse(output, content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="{}_{}.meta"'.format(d.AOML_ID, str(d.FLOAT_SERIAL_NO).zfill(6))
+    response['Content-Disposition'] = 'attachment; filename="{}_{}.meta"'.format(d.AOML_ID, str(d.FLOAT_SERIAL_NO))
     return response
 
 #APIs

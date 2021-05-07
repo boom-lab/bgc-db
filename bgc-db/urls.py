@@ -17,8 +17,11 @@ from django.contrib import admin
 from django.urls import path
 from django.urls import include
 
+import dashboards.helloworld
+
 urlpatterns = [
     path('metadata-admin/', admin.site.urls),
+    path('django_plotly_dash/', include('django_plotly_dash.urls')),
     path('', include("deployments.urls")),
     path('', include("missions.urls")),
     path('', include("sensors.urls")),

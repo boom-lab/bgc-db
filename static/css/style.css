@@ -1,6 +1,5 @@
 /* Show it is fixed to the top */
 body {
-  min-height: 75rem;
   padding-top: 7rem;
 }
 
@@ -9,11 +8,18 @@ body {
   padding: 20px 20%;
 }
 
-/* .table {
-  width: 100%;
-  margin: 0;
-} */
-
 .status-table-container{
   margin: 0 10%;
+}
+
+.plot {
+  height: calc(100vh - 20px);
+}
+
+label {
+  margin: 5px 0 5px 5px;
+}
+
+.row{
+  margin-left: 5px;
 }

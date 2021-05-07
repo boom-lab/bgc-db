@@ -1,4 +1,10 @@
 {% extends 'partials/base.html' %}
+{% load static %}
+{% block footer %}
+    <!-- Datatabes -->
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.24/datatables.min.js"></script>
+    <script src="{% static 'js/table.js' %}"></script>
+{% endblock footer %}
 {% block content %}
 <section class="status-table-container">
   <table id="statustable" class="table tabel-sm table-hover">
@@ -22,7 +28,7 @@
               <td>{{ deployment.status }}</td>
               <td>{{ deployment.LAUNCH_DATE }}</td>
               <td>{{ deployment.last_report }}</td>
-              <td></td>
+              <td>{{ deployment.next_report }}</td>
           </tr>
           {% endfor %}
       </tbody>

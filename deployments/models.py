@@ -1,6 +1,7 @@
 from datetime import datetime, timezone, timedelta
 from django.db import models
 from choices.models import platform_makers, platform_types, transmission_systems, instrument_types, institutions, funders
+import numpy as np
 
 #Domains for choices and db contstraints
 class Status(models.TextChoices): #AOML, not Argo compliant
@@ -84,22 +85,37 @@ class deployment(models.Model):
 
     @property
     def last_report(self):
-        crt_meta = self.cycle_metadata.order_by('-DATE_ADD').first()
-        if crt_meta: 
-            return crt_meta.TimeStartTelemetry
+        latest = self.cycle_metadata.order_by('-DATE_ADD').first()
+        if latest: 
+            return latest.TimeStartTelemetry
         return None
 
     @property
     def status(self):
-        if not self.LAUNCH_DATE:
+        if not self.LAUNCH_DATE: #Before launch
             return "Predeployment"
-        latest = self.cycle_metadata.first()
-        if latest.PROFILE_ID[-3:] == '000':
+        latest = self.cycle_metadata.order_by('-DATE_ADD').first()
+        if latest.PROFILE_ID[-3:] == '000': #first .msg file reported
             return "Prelude"
-        if datetime.now(timezone.utc)-self.last_report > timedelta(days = 10): 
+        if datetime.now(timezone.utc)-self.last_report > timedelta(days = 10): #Most recent report is older than 10 days
             return "Overdue"
         return "Active"
 
+    @property
+    def next_report(self):
+        """Estimates the next report date by averaging the past five cycles (or less than 5 if there are less than 5 reports)"""
+        n_reports = self.cycle_metadata.count()
+        if n_reports < 5:
+            n_mean = n_reports
+        else:
+            n_mean = 5
+
+        query = self.cycle_metadata.order_by('-GpsFixDate').all()[0:n_mean]
+        recent_reports = np.array(query.values_list('GpsFixDate', flat=True))
+        time_diff = (np.diff(np.flip(recent_reports, axis=0)))
+        mean_time_diff = np.mean(time_diff)
+
+        return recent_reports[0] + mean_time_diff
 
     #For admin detail view
     def get_fields(self):
