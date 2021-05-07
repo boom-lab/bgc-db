@@ -51,7 +51,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'dashboards.apps.DashboardsConfig',
     'deployments.apps.DeploymentsConfig',
     'env_data.apps.EnvDataConfig',
     'missions.apps.MissionsConfig',
@@ -64,7 +63,6 @@ INSTALLED_APPS = [
     'django_extensions',
     'corsheaders',
     'import_export',
-    'django_plotly_dash.apps.DjangoPlotlyDashConfig',
 ]
 
 MIDDLEWARE = [
@@ -78,7 +76,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-X_FRAME_OPTIONS = 'SAMEORIGIN' #for django-plotly-dash
 
 ROOT_URLCONF = 'bgc-db.urls'
 
