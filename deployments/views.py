@@ -191,7 +191,6 @@ def get_cal(request):
             "PREDEPLOYMENT_CALIB_COEFFICIENT":sensor.PREDEPLOYMENT_CALIB_COEFFICIENT
         }
 
-    print(result)
     return JsonResponse(result)
 
 @api_view(['GET'])
@@ -218,5 +217,4 @@ def get_locations(request):
         "GpsLong":list(cycle_metadata.values_list('GpsLong', flat=True))
     }
 
-    print(results)
     return JsonResponse(results)

@@ -9,9 +9,7 @@
 {% endblock header %}
 {% block content %}
 <div class="container-fluid">
-    <select id="deployment_selector" class="selectpicker" data-live-search="true" multiple>
-        <option value="1902303" selected>SN:1201 WMO:1902303</option>
-        <option value="1902304">SN:1203 WMO:1902304</option>
+    <select id="deployment_selector" name="deployment_selector" class="selectpicker" data-live-search="true" multiple>
     </select>
     <div id="map"></div>
 </div>
@@ -21,7 +19,6 @@
 <script> //Can move this to seperate js files as gets bigger
     //Updates div containing plot with a call to API
     function update_map(deployments){
-        console.log(deployments)
             
         $.ajax({
             type: 'GET',
@@ -29,7 +26,6 @@
             data: {"deployments[]": deployments},
             success: function (response) {
                 //If sucessful, add plot
-                console.log(response)
                 $('#map').html(response["map_div"])
             },
             error: function (response) {
@@ -39,7 +35,29 @@
     }
 
     //Initial Load - maybe move to server side?
-    update_map("1902303")
+    update_map(["1902304","1902303"])
+
+    //Populate deployment list
+    $.ajax({
+        type: 'GET',
+        url: "ajax/get_deployments_list",
+        success: function (response) {
+            //If sucessful
+            console.log(response.deployments)
+            $.each(response.deployments, function(index, item) {
+                console.log(item.LABEL)
+                let opt = document.createElement("option");
+                opt.textContent = item.LABEL;
+                opt.value =item.PLATFORM_NUMBER;
+                $("#deployment_selector").append(opt);
+                $('select[name=deployment_selector]').val(["1902304","1902303"]);
+                $('.selectpicker').selectpicker('refresh')
+            })
+        },
+        error: function (response) {
+            console.log(response)
+        }
+    })
 
     //Change with deployment selection
     $("#deployment_selector").change(function (e) {

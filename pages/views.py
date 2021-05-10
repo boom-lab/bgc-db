@@ -5,10 +5,9 @@ import plotly.graph_objs as go
 import numpy as np
 from django.http import JsonResponse
 
-from env_data.models import continuous_profile, cycle_metadata
+from env_data.models import continuous_profile, cycle_metadata, discrete_profile
+from deployments.models import deployment
 from .plot_helpers import *
-import json
-import pandas as pd
 
 def index(request):
     return render(request, 'pages/index.html')
@@ -24,9 +23,12 @@ def profile_plot(request):
     return render(request, 'pages/profile_plot.html')
 
 
-def map(request):
+def display_map(request):
     return render(request, 'pages/map.html')
 
+
+cont_vars = ["None","PSAL","TEMP","DOXY","PH_IN_SITU_TOTAL","CHLA","BBP700","CDOM","POTENTIAL_DENSITY"]
+dist_vars = ["None","PSAL","TEMP","DOXY","PH_IN_SITU_TOTAL","CHLA","BBP700","CDOM","NITRATE","POTENTIAL_DENSITY"]
 
 def update_profile_plot(request):
     # request should be ajax and method should be GET.
@@ -35,21 +37,48 @@ def update_profile_plot(request):
         profiles = request.GET.getlist("profiles[]", None)
         bot_var = request.GET.get("bot_var", None)
         top_var = request.GET.get("top_var", None)
-        
+        cont = request.GET.get("cont", None) == 'true'
+        dis = request.GET.get("dis", None) == 'true'
+
         fig = go.Figure()
         
         for profile in profiles:
-            #Create queries and convert to list
-            PRES = continuous_profile.objects.filter(PROFILE_METADATA=profile).all().values_list('PRES', flat=True)
-            bot = continuous_profile.objects.filter(PROFILE_METADATA=profile).all().values_list(bot_var, flat=True)
+            #Continuous data
+            if cont and (bot_var != "NITRATE"):
+                #Continuous data queries and convert to list
+                PRES = continuous_profile.objects.filter(PROFILE_METADATA=profile).all().values_list('PRES', flat=True)
+                bot = continuous_profile.objects.filter(PROFILE_METADATA=profile).all().values_list(bot_var, flat=True)
 
+                #Convert lists to arrays
+                bot_data = np.array(bot)
+                y_data = np.array(PRES)*-1
 
-            #Convert lists to arrays
-            bot_data = np.array(bot)
-            y_data = np.array(PRES)*-1
+                add_bottom_trace(fig, bot_data, y_data)
 
-            add_bottom_trace(fig, bot_data, y_data)
+                #Top axis continuou(s plotting
+            if cont and top_var and (top_var != "NITRATE"):
+                top = continuous_profile.objects.filter(PROFILE_METADATA=profile).all().values_list(top_var, flat=True)
+                top_data = np.array(top)
+                add_top_trace(fig, top_data, y_data, top_var)
 
+            #discrete data
+            if dis:
+                #Discrete data queries and convert to list
+                PRES = discrete_profile.objects.filter(PROFILE_METADATA=profile).all().values_list('PRES', flat=True)
+                bot = discrete_profile.objects.filter(PROFILE_METADATA=profile).all().values_list(bot_var, flat=True)
+
+                #Convert lists to arrays
+                bot_data = np.array(bot)
+                y_data = np.array(PRES)*-1
+
+                add_bottom_trace(fig, bot_data, y_data, mode="markers")
+
+                #Top axis discrete plotting
+                if top_var:
+                    top = discrete_profile.objects.filter(PROFILE_METADATA=profile).all().values_list(top_var, flat=True)
+                    top_data = np.array(top)
+                    add_top_trace(fig, top_data, y_data, top_var, mode="markers")          
+            
             # Formatting
             fig.update_layout(
                 template = "ggplot2",
@@ -60,31 +89,8 @@ def update_profile_plot(request):
                 width=1200,
                 showlegend=False,
                 margin={'t': 0, 'l':0,'r':0,'b':0},
-                yaxis_range=[-1000,0],
+                #yaxis_range=[-2000,0],
             )
-
-            if top_var:
-                top = continuous_profile.objects.filter(PROFILE_METADATA=profile).all().values_list(top_var, flat=True)
-                top_data = np.array(top)
-                add_top_trace(fig, top_data, y_data)
-                
-                #Top axis formatting
-                fig.update_layout(
-                    xaxis2=dict(
-                        title=var_translation[top_var],
-                        titlefont=dict(
-                            color="#9467bd"
-                        ),
-                        tickfont=dict(
-                            color="#9467bd"
-                        ),
-                        anchor="free",
-                        overlaying="x",
-                        side="top",
-                        position=1
-                    ),
-                    showlegend=False
-                )
 
         plot_div = plot(fig,output_type='div', include_plotlyjs=False)
 
@@ -102,7 +108,6 @@ def update_map(request):
         for d in deployments:
             lat = cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).all().values_list('GpsLat', flat=True)
             lon = cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).all().values_list('GpsLong', flat=True)
-            print(lat)
             #Hover data
             #hov_data = np.stack((info_sub['ProfileId'], info_sub['TimeStartProfile_str'], info_sub['gps_lat'], info_sub['gps_lon'] ),axis = -1)
 
@@ -122,15 +127,36 @@ def update_map(request):
             autosize=True,
             hovermode='closest',
             mapbox = {
-            'center': {'lon': 10, 'lat': 10},
-            'style': "mapbox://styles/randerson5726/cklttcu382rbf17ljhunibjse",
-            'accesstoken':'pk.eyJ1IjoicmFuZGVyc29uNTcyNiIsImEiOiJjanl5b2E0NTUxMGR5M25vN2xha2E4aHI1In0.xXUPHJrf_Shr6JX6u5X5cg',
-            'center': {'lon': -36, 'lat': 39},
-            'zoom': 3.5}
+                'style': "mapbox://styles/randerson5726/cklttcu382rbf17ljhunibjse",
+                'accesstoken':'pk.eyJ1IjoicmFuZGVyc29uNTcyNiIsImEiOiJjanl5b2E0NTUxMGR5M25vN2xha2E4aHI1In0.xXUPHJrf_Shr6JX6u5X5cg',
+                'center': {'lon': -36, 'lat': 39},
+                'zoom': 3.5
+            }
         )
 
         map_div = plot(fig,output_type='div', include_plotlyjs=False)
 
         return JsonResponse({'map_div': map_div }, status = 200)
+
+    return JsonResponse({}, status = 400)
+
+def get_profiles_list(request):
+    if request.is_ajax and request.method == "GET":
+        profile_id = cycle_metadata.objects.all().values_list('PROFILE_ID', flat=True)
+
+        return JsonResponse({'profiles': list(profile_id) }, status = 200)
+
+    return JsonResponse({}, status = 400)
+
+def get_deployments_list(request):
+    if request.is_ajax and request.method == "GET":
+        platform_number = deployment.objects.all().values_list('PLATFORM_NUMBER', flat=True)
+        float_serial_no = deployment.objects.all().values_list('FLOAT_SERIAL_NO', flat=True)
+
+        res = []
+        for i, item in enumerate(platform_number):
+            res.append({'PLATFORM_NUMBER':item, "LABEL":"WMO: " + str(item) + " SN:" + str(float_serial_no[i])})
+
+        return JsonResponse({"deployments":res}, status = 200)
 
     return JsonResponse({}, status = 400)
