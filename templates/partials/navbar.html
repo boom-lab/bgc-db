@@ -1,33 +1,38 @@
 {% load static %}
-<nav class="navbar navbar-expand-md navbar-dark fixed-top">
-<div class="container-fluid">
-    <a href="#" class="d-block link-dark text-decoration-none" id="dropdownUser2" data-bs-toggle="dropdown" aria-expanded="false">
-        <img src="{% static 'img/logo.png' %}" alt="mdo" width="200">
+<nav class="navbar navbar-expand-md navbar-dark fixed-top">   
+    <a class="navbar-brand ml-0 ml-md-5 pl-md-5" href="index">
+        <picture>
+            <source media="(max-width: 799px)" srcset="{% static 'img/logo_sm_50.png' %}">
+            <source media="(min-width: 800px)" srcset="{% static 'img/logo.png' %}">
+            <img src="{% static 'img/logo.png' %}" alt="Logo">
+        </picture> 
     </a>
-    <a class="navbar-brand" href="index">BGC Argo Database</a>
-    <!-- <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-brand ml-5">
+        BGC Argo Database
+    </span>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
-    </button> -->
-    <ul class="navbar-nav ms-auto mb-2 mb-md-0">
-        <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="index">Home</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="status">Status</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">API</a>
-        </li>
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Data</a>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="profile_plot">Profile Plot</a>
-              <a class="dropdown-item" href="map">Map</a>
-            </div>
-        </li>
-    </ul>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto mr-md-5 pr-md-5">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="index">Home</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="status">Status</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">API</a>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Data</a>
+                <div class="dropdown-menu">
+                <a class="dropdown-item" href="profile_plot">Profile Plot</a>
+                <a class="dropdown-item" href="map">Map</a>
+                </div>
+            </li>
+        </ul>
     </div>
-</div>
 </nav>
 
 

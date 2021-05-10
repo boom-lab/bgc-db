@@ -1,9 +1,21 @@
 {% extends 'admin/base.html' %}
 {% load static %}
-
+{% block extrahead %}{{ block.super }}
+<style>
+:root {
+  --primary: #405f8a;
+  --secondary: #041e43;
+  --link-fg: #0a49a1;
+  --link-selected-fg: #0a49a1;
+  --accent: #ffffff;
+}
+</style>
+{% endblock %}
 {% block title %}{{ site_title }}{% endblock %}
 {% block branding %}
 <h1 id="head">
-    <img src="{% static 'img/logo.png' %}" alt=""  class="brand_img"> BGC Database
+    <img src="{% static 'img/logo.png' %}" alt=""  class="brand_img" style="padding-right:90px;">
+    </span>BGC Argo Database
 </h1>
 {% endblock %}
+
