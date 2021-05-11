@@ -107,11 +107,11 @@ REST_FRAMEWORK = {
 }
 
 
-CACHE = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-    }
-}
+# CACHE = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+#     }
+# }
 
 TEMPLATES = [
     {
