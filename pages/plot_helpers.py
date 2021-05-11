@@ -1,6 +1,6 @@
 import plotly.graph_objs as go
 
-def add_bottom_trace(fig, bot_data, y_data, mode='lines'):
+def add_bottom_trace(fig, bot_data, y_data, hov_data, wmo, mode='lines'):
     # Bottom x axis trace
     fig.add_trace(
         go.Scatter(
@@ -13,13 +13,14 @@ def add_bottom_trace(fig, bot_data, y_data, mode='lines'):
                 'symbol':'circle',
                 'line':{'width':0}
             },
-            #customdata = hov_data,
-            #hovertemplate ='Float ID: %{customdata[0]}<br>Profile: %{customdata[1]}<br>Profile Start: %{customdata[2]}<br>Lat: %{customdata[3]}<br>Long: %{customdata[4]}',
+            customdata = hov_data,
+            hovertemplate ='Profile: %{customdata[1]}',
             xaxis="x",
+            name="WMO:"+wmo
         ),
     )
 
-def add_top_trace(fig, top_data, y_data, top_var, mode='lines'):
+def add_top_trace(fig, top_data, y_data, top_var, hov_data, wmo, mode='lines',):
     fig.add_trace(
         go.Scatter(
             x=top_data,
@@ -31,9 +32,10 @@ def add_top_trace(fig, top_data, y_data, top_var, mode='lines'):
                 'symbol':'circle',
                 'line':{'width':0}
             },
-            #customdata = hov_data,
-            #hovertemplate ='Float ID: %{customdata[0]}<br>Profile: %{customdata[1]}<br>Profile Start: %{customdata[2]}<br>Lat: %{customdata[3]}<br>Long: %{customdata[4]}',
-            xaxis="x2"
+            customdata = hov_data,
+            hovertemplate ='Profile: %{customdata[1]}',
+            xaxis="x2",
+            name="WMO:"+wmo
         ),
     )
     

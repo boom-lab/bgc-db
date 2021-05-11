@@ -5,6 +5,7 @@ import plotly.graph_objs as go
 import numpy as np
 from django.http import JsonResponse
 import pandas as pd
+from django.template.loader import render_to_string
 
 from env_data.models import continuous_profile, cycle_metadata, discrete_profile
 from deployments.models import deployment
@@ -41,6 +42,17 @@ def update_profile_plot(request):
         fig = go.Figure()
         
         for profile in profiles:
+
+            #Hover data
+            hov = pd.DataFrame()
+            hov['float_profile'] = list(continuous_profile.objects.filter(PROFILE_METADATA=profile).all().values_list('MISSION', flat=True))
+            hov['profile'] = hov['float_profile'].str.split('.').str[1]
+            hov['float'] = hov['float_profile'].str.split('.').str[0]
+            hov_data = hov.values.tolist()
+            wmo = profile.split(".")[0]
+
+
+
             #Continuous data
             if cont and (bot_var != "NITRATE"):
                 #Continuous data queries and convert to list
@@ -51,13 +63,14 @@ def update_profile_plot(request):
                 bot_data = np.array(bot)
                 y_data = np.array(PRES)*-1
 
-                add_bottom_trace(fig, bot_data, y_data)
+                add_bottom_trace(fig, bot_data, y_data, hov_data, wmo)
 
-                #Top axis continuou(s plotting
+            #Top axis continuous plotting
             if cont and top_var and (top_var != "NITRATE"):
                 top = continuous_profile.objects.filter(PROFILE_METADATA=profile).all().values_list(top_var, flat=True)
                 top_data = np.array(top)
-                add_top_trace(fig, top_data, y_data, top_var)
+
+                add_top_trace(fig, top_data, y_data, top_var, hov_data, wmo)
 
             #discrete data
             if dis:
@@ -69,13 +82,13 @@ def update_profile_plot(request):
                 bot_data = np.array(bot)
                 y_data = np.array(PRES)*-1
 
-                add_bottom_trace(fig, bot_data, y_data, mode="markers")
+                add_bottom_trace(fig, bot_data, y_data, hov_data, wmo, mode="markers")
 
                 #Top axis discrete plotting
                 if top_var:
                     top = discrete_profile.objects.filter(PROFILE_METADATA=profile).all().values_list(top_var, flat=True)
                     top_data = np.array(top)
-                    add_top_trace(fig, top_data, y_data, top_var, mode="markers")          
+                    add_top_trace(fig, top_data, y_data, top_var, hov_data, wmo, mode="markers")          
             
             # Formatting
             fig.update_layout(
@@ -84,15 +97,21 @@ def update_profile_plot(request):
                 yaxis = {'title':var_translation["PRES"]},
                 font = {"size":15},
                 height=800,
-                width=1200,
+                width=1000,
                 showlegend=False,
                 margin={'t': 0, 'l':0,'r':0,'b':0},
                 #yaxis_range=[-2000,0],
             )
 
-        plot_div = plot(fig,output_type='div', include_plotlyjs=False)
+        #Metadata for table
+        table_context = cycle_metadata.objects.filter(PROFILE_ID__in=profiles).all()
+        print(table_context)
+        meta_table = render_to_string('partials/plot_table.html', context = {'metadatas':table_context}, request = request)
 
-        return JsonResponse({'plot_div': plot_div }, status = 200)
+        plot_div = plot(fig,output_type='div', include_plotlyjs=False)
+        print(plot_div)
+
+        return JsonResponse({'plot_div': plot_div, 'meta_table':meta_table}, status = 200)
 
     return JsonResponse({}, status = 400)
 
@@ -145,6 +164,7 @@ def update_map(request):
 
 
 def get_profiles_list(request):
+    # for populating selector dropdown
     if request.is_ajax and request.method == "GET":
         profile_id = cycle_metadata.objects.all().values_list('PROFILE_ID', flat=True)
 
@@ -154,6 +174,7 @@ def get_profiles_list(request):
 
 
 def get_deployments_list(request):
+    # for populationg selector dropdown
     if request.is_ajax and request.method == "GET":
         platform_number = deployment.objects.all().values_list('PLATFORM_NUMBER', flat=True)
         float_serial_no = deployment.objects.all().values_list('FLOAT_SERIAL_NO', flat=True)
