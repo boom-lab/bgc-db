@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+import requests
 load_dotenv()
 
 
@@ -35,16 +36,16 @@ if ALLOWED_HOSTS_ENV:
     ALLOWED_HOSTS.extend(ALLOWED_HOSTS_ENV.split(','))
 
 #For elastic bean stalk health checker
-# EC2_PRIVATE_IP = None
-# try:
-#     EC2_PRIVATE_IP = requests.get(
-#         'http://169.254.169.254/latest/meta-data/local-ipv4',
-#         timeout=0.01).text
-# except requests.exceptions.RequestException:
-#     pass
+EC2_PRIVATE_IP = None
+try:
+    EC2_PRIVATE_IP = requests.get(
+        'http://169.254.169.254/latest/meta-data/local-ipv4',
+        timeout=0.01).text
+except requests.exceptions.RequestException:
+    pass
 
-# if EC2_PRIVATE_IP:
-#     ALLOWED_HOSTS.append(EC2_PRIVATE_IP)
+if EC2_PRIVATE_IP:
+    ALLOWED_HOSTS.append(EC2_PRIVATE_IP)
 
 #SECURE_SSL_REDIRECT = True #Uncomment for production
 # SECURE_HSTS_SECONDS = 2592000
