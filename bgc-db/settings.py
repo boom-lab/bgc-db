@@ -30,22 +30,22 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'changeme')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = bool(int(os.environ.get("DEBUG", default=0)))
 
-ALLOWED_HOSTS = ['db.whoifloatgroup.org']
+ALLOWED_HOSTS = []
 ALLOWED_HOSTS_ENV = os.environ.get('ALLOWED_HOSTS')
 if ALLOWED_HOSTS_ENV:
     ALLOWED_HOSTS.extend(ALLOWED_HOSTS_ENV.split(','))
 
 #For elastic bean stalk health checker
-EC2_PRIVATE_IP = None
-try:
-    EC2_PRIVATE_IP = requests.get(
-        'http://169.254.169.254/latest/meta-data/local-ipv4',
-        timeout=0.01).text
-except requests.exceptions.RequestException:
-    pass
+# EC2_PRIVATE_IP = None
+# try:
+#     EC2_PRIVATE_IP = requests.get(
+#         'http://169.254.169.254/latest/meta-data/local-ipv4',
+#         timeout=0.01).text
+# except requests.exceptions.RequestException:
+#     pass
 
-if EC2_PRIVATE_IP:
-    ALLOWED_HOSTS.append(EC2_PRIVATE_IP)
+# if EC2_PRIVATE_IP:
+#     ALLOWED_HOSTS.append(EC2_PRIVATE_IP)
 
 #SECURE_SSL_REDIRECT = True #Uncomment for production
 # SECURE_HSTS_SECONDS = 2592000
