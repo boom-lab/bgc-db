@@ -105,11 +105,9 @@ def update_profile_plot(request):
 
         #Metadata for table
         table_context = cycle_metadata.objects.filter(PROFILE_ID__in=profiles).all()
-        print(table_context)
         meta_table = render_to_string('partials/plot_table.html', context = {'metadatas':table_context}, request = request)
 
         plot_div = plot(fig,output_type='div', include_plotlyjs=False)
-        print(plot_div)
 
         return JsonResponse({'plot_div': plot_div, 'meta_table':meta_table}, status = 200)
 
