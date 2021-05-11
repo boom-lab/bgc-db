@@ -1,6 +1,6 @@
 /* Show it is fixed to the top */
 body {
-  padding-top: 7rem;
+  padding-top: 76px;
 }
 
 .navbar {
@@ -22,4 +22,14 @@ label {
 
 .row{
   margin-left: 5px;
+}
+
+.mapwrapper{
+  position: relative;
+}
+
+.dep_select_div {
+  position: absolute;
+  top: 10px;
+  left: 10px;
 }

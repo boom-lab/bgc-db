@@ -8,12 +8,13 @@
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 {% endblock header %}
 {% block content %}
-<div class="container-fluid">
-    <select id="deployment_selector" name="deployment_selector" class="selectpicker" data-live-search="true" multiple>
-    </select>
+<div class="mapwrapper">
     <div id="map"></div>
+    <div class="dep_select_div">
+        <select id="deployment_selector" name="deployment_selector" class="selectpicker" data-live-search="true" multiple>
+        </select>
+    </div>
 </div>
-
 {% endblock %}
 {% block footer %}
 <script> //Can move this to seperate js files as gets bigger
@@ -34,7 +35,7 @@
         })
     }
 
-    //Initial Load - maybe move to server side?
+    //Initial Load
     update_map(["1902304","1902303"])
 
     //Populate deployment list
@@ -64,7 +65,6 @@
         e.preventDefault();
         //get selectors
         var profiles = $(this).val();
-        //update plot
         update_map(profiles)
     })
 </script>

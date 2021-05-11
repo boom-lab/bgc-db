@@ -4,6 +4,7 @@ from plotly.offline import plot
 import plotly.graph_objs as go
 import numpy as np
 from django.http import JsonResponse
+import pandas as pd
 
 from env_data.models import continuous_profile, cycle_metadata, discrete_profile
 from deployments.models import deployment
@@ -26,9 +27,6 @@ def profile_plot(request):
 def display_map(request):
     return render(request, 'pages/map.html')
 
-
-cont_vars = ["None","PSAL","TEMP","DOXY","PH_IN_SITU_TOTAL","CHLA","BBP700","CDOM","POTENTIAL_DENSITY"]
-dist_vars = ["None","PSAL","TEMP","DOXY","PH_IN_SITU_TOTAL","CHLA","BBP700","CDOM","NITRATE","POTENTIAL_DENSITY"]
 
 def update_profile_plot(request):
     # request should be ajax and method should be GET.
@@ -106,24 +104,29 @@ def update_map(request):
         fig = go.Figure(go.Scattergeo())
 
         for d in deployments:
-            lat = cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).all().values_list('GpsLat', flat=True)
-            lon = cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).all().values_list('GpsLong', flat=True)
+            lat = list(cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).order_by('-GpsFixDate').all().values_list('GpsLat', flat=True))
+            lon = list(cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).order_by('-GpsFixDate').all().values_list('GpsLong', flat=True))
+            profile_id = list(cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).order_by('-GpsFixDate').all().values_list('PROFILE_ID', flat=True))
+            time_start_p = pd.Series(cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).order_by('-GpsFixDate').all().values_list('TimeStartTelemetry', flat=True))
+            time_start_p_human = time_start_p.dt.strftime('%Y-%m-%d %H:%M')
+            time_start_p_human = time_start_p_human.replace(np.nan, '')
             #Hover data
-            #hov_data = np.stack((info_sub['ProfileId'], info_sub['TimeStartProfile_str'], info_sub['gps_lat'], info_sub['gps_lon'] ),axis = -1)
+            hov_data = np.stack((profile_id, time_start_p_human, lat, lon),axis = -1)
 
             fig.add_trace(go.Scattermapbox(
                 mode = "lines",
-                lon = list(lon),
-                lat = list(lat),
+                lon = lon,
+                lat = lat,
                 marker = {'size': 10},
                 name = d,
-                #customdata = hov_data,
-                #hovertemplate ='Profile: %{customdata[0]}<br>Profile Start: %{customdata[1]}<br>Lat: %{customdata[2]}<br>Long: %{customdata[3]}',
+                customdata = hov_data,
+                hovertemplate ='Profile: %{customdata[0]}<br>Profile Start: %{customdata[1]}<br>Lat: %{customdata[2]}<br>Long: %{customdata[3]}',
+                showlegend=False
             ))
 
         fig.update_layout(
             margin ={'l':0,'t':0,'b':0,'r':0},
-            height=800,
+            height=900,
             autosize=True,
             hovermode='closest',
             mapbox = {
@@ -131,7 +134,7 @@ def update_map(request):
                 'accesstoken':'pk.eyJ1IjoicmFuZGVyc29uNTcyNiIsImEiOiJjanl5b2E0NTUxMGR5M25vN2xha2E4aHI1In0.xXUPHJrf_Shr6JX6u5X5cg',
                 'center': {'lon': -36, 'lat': 39},
                 'zoom': 3.5
-            }
+            },
         )
 
         map_div = plot(fig,output_type='div', include_plotlyjs=False)
@@ -140,6 +143,7 @@ def update_map(request):
 
     return JsonResponse({}, status = 400)
 
+
 def get_profiles_list(request):
     if request.is_ajax and request.method == "GET":
         profile_id = cycle_metadata.objects.all().values_list('PROFILE_ID', flat=True)
@@ -147,6 +151,7 @@ def get_profiles_list(request):
         return JsonResponse({'profiles': list(profile_id) }, status = 200)
 
     return JsonResponse({}, status = 400)
+
 
 def get_deployments_list(request):
     if request.is_ajax and request.method == "GET":

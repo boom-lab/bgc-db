@@ -60,7 +60,8 @@ nominal drift pressure [dbar]           1000
 cycles for drift pressure               1
 nominal profile pressure [dbar]         2000
 cycles for profile pressure             1
-Profile Sampling Method                 Primary sampling: mixed [deep: discrete, shallow: averaged]
+profile sampling method                 Primary sampling: mixed [deep: discrete, shallow: averaged]
+profile sampling method(2)              Secondary sampling: discrete
 pump type                               260ml                         
 {% for s in sensors -%}
 {{ "%-40s" | format(s.aoml_sensor()+' sensor type',) }}{{s.SENSOR_MODEL}}

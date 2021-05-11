@@ -13,9 +13,17 @@
 {% endblock %}
 {% block title %}{{ site_title }}{% endblock %}
 {% block branding %}
-<h1 id="head">
-    <img src="{% static 'img/logo.png' %}" alt=""  class="brand_img" style="padding-right:90px;">
-    </span>BGC Argo Database
+<h1 id="site-name">
+  <picture>
+    <source media="(max-width: 799px)" srcset="{% static 'img/logo_sm_30.png' %}">
+    <source media="(min-width: 800px)" srcset="{% static 'img/logo.png' %}">
+    <img src="{% static 'img/logo.png' %}" alt="Logo">
+  </picture> 
+  <span style="padding-left:30px;">BGC Argo Database</span>
 </h1>
+<!-- <h1 id="head">
+    <img src="{% static 'img/logo.png' %}" alt=""  class="brand_img" style="padding-right:40px;">
+    </span>BGC Argo Database
+</h1> -->
 {% endblock %}
 
