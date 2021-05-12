@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-import requests
+
 load_dotenv()
 
 
@@ -35,7 +35,7 @@ ALLOWED_HOSTS_ENV = os.environ.get('ALLOWED_HOSTS')
 if ALLOWED_HOSTS_ENV:
     ALLOWED_HOSTS.extend(ALLOWED_HOSTS_ENV.split(','))
 
-#SECURE_SSL_REDIRECT = True #Uncomment for production
+# SECURE_SSL_REDIRECT = True
 # SECURE_HSTS_SECONDS = 2592000
 # SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 # SECURE_HSTS_PRELOAD = True

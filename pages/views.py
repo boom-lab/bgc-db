@@ -8,8 +8,7 @@ import pandas as pd
 from django.template.loader import render_to_string
 
 from env_data.models import continuous_profile, cycle_metadata, discrete_profile
-from deployments.models import deployment
-from .plot_helpers import *
+from .plot_helpers import add_bottom_trace, add_top_trace, var_translation
 
 def index(request):
     return render(request, 'pages/index.html')
@@ -38,7 +37,6 @@ def update_profile_plot(request):
         top_var = request.GET.get("top_var", None)
         cont = request.GET.get("cont", None) == 'true'
         dis = request.GET.get("dis", None) == 'true'
-
         fig = go.Figure()
         
         for profile in profiles:
@@ -114,6 +112,7 @@ def update_profile_plot(request):
     return JsonResponse({}, status = 400)
 
 def update_map(request):
+    
     if request.is_ajax and request.method == "GET":
         # get the selections
         deployments = request.GET.getlist("deployments[]", None)
