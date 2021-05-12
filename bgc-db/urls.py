@@ -19,6 +19,7 @@ from django.urls import include
 
 urlpatterns = [
     path('metadata-admin/', admin.site.urls),
+    path('accounts/', include('django.contrib.auth.urls')),
     path('', include("deployments.urls")),
     path('', include("missions.urls")),
     path('', include("sensors.urls")),
