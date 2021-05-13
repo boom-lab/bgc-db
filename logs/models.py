@@ -7,6 +7,7 @@ class Status(models.TextChoices):
     Success = 'Success','Success'
     Fail = 'Fail','Fail'
     Skip = 'Skip','Skip'
+    Reprocess = 'Reprocess','Reprocess'
 
 class file_processing(models.Model):
 

@@ -9,11 +9,11 @@ from django.db.models import Q
 
 @permission_classes([IsAuthenticated])
 @api_view(['GET'])
-def get_ignore_files(request):
+def get_file_status(request):
 
     sfiles = file_processing.objects.filter(Q(STATUS='Success') | Q(STATUS='Skip')).all()
-
-    result = {'ignore_files': [s.DIRECTORY for s in sfiles]}
+    rfiles = file_processing.objects.filter(Q(STATUS='Reprocess')).all()
+    result = {'ignore_files': [s.DIRECTORY for s in sfiles], 'reprocess':[r.DIRECTORY for r in rfiles]}
 
     return JsonResponse(result)
 

@@ -27,6 +27,25 @@ def profile_plot(request):
 def display_map(request):
     return render(request, 'pages/map.html')
 
+def float_bio(request):
+    FLOAT_SERIAL_NO = request.GET.get('FLOAT_SERIAL_NO', None)
+    PLATFORM_TYPE = request.GET.get('PLATFORM_TYPE', None)
+
+    filters={}
+    filters['DEPLOYMENT__FLOAT_SERIAL_NO'] = FLOAT_SERIAL_NO
+    filters['DEPLOYMENT__PLATFORM_TYPE'] = PLATFORM_TYPE
+    latest_cycle_meta = cycle_metadata.objects.filter(**filters).order_by("-GpsFixDate").first()
+
+    dfilters = {}
+    dfilters['FLOAT_SERIAL_NO'] = FLOAT_SERIAL_NO
+    dfilters['PLATFORM_TYPE'] = PLATFORM_TYPE
+    dep = deployment.objects.get(**dfilters)
+    
+    context = {
+        'cycle_metadata': latest_cycle_meta,
+        'deployment':dep
+    }
+    return render(request, 'pages/float_bio.html', context)
 
 def update_profile_plot(request):
     # request should be ajax and method should be GET.

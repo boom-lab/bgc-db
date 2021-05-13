@@ -42,7 +42,6 @@ for field in meta_date_fields:
     cycle_metadata.add_to_class(field, models.DateTimeField(blank=True, null=True))
 
 
-
 class mission_reported(models.Model):
     DEPLOYMENT = models.ForeignKey(deployment, related_name='mission_reported', on_delete=models.PROTECT)
     DATE_ADD = models.DateTimeField() #creation of record in db
@@ -89,6 +88,7 @@ class mission_reported(models.Model):
     #Default return
     def __str__(self): 
         return str(self.PROFILE_ID)
+
 
 # Continuous profile samples, binned data generally above 1000 dbar
 class continuous_profile(models.Model):
@@ -192,6 +192,7 @@ class discrete_profile(models.Model):
     #Default return
     def __str__(self): 
         return str(self.DEPLOYMENT)
+
 
 # Table in db
 class park(models.Model):
