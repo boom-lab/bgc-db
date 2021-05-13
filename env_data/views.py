@@ -1,10 +1,28 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view, permission_classes
 from .models import continuous_profile, discrete_profile, park, cycle_metadata, mission_reported
 from .serializers import ConProfileSerializer, DisProfileSerializer, ParkSerializer, CycleMetaSerializer, MissionReportedSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from django.http.response import JsonResponse
 from rest_framework import status
+
+@api_view(['DELETE','GET'])
+@permission_classes([IsAuthenticated])
+def con_profile(request):
+    if request.method == 'GET':
+        return JsonResponse({'details':'Not Implemented Yet'}, status=status.HTTP_200_OK)
+
+    if request.method == 'DELETE':
+        profile_id = request.GET.get('PROFILE_ID', None)
+        filters={"MISSION":profile_id}
+        query = continuous_profile.objects.filter(**filters)
+        res = query.delete()
+        print(res[0])
+        if res[0]==0: #If nothing was deleted
+            return JsonResponse({'status': 'nothing deleted'}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({'status': 'deleted '+str(res[0])+" entries"}, status=status.HTTP_200_OK)
+
 
 class ConProfile(generics.ListCreateAPIView): #Read, write
     permission_classes=[IsAuthenticated]

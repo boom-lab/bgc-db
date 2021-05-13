@@ -3,6 +3,8 @@ from django.urls import path
 from env_data import views
 
 urlpatterns = [ 
+    url('api/continuous_profile_test', views.con_profile),
+
     path('api/continuous_profile_delete/<str:PROFILE_ID>/', views.ConProfileDelete.as_view()),
     url('api/continuous_profile', views.ConProfile.as_view()),
     path('api/discrete_profile_delete/<str:PROFILE_ID>/', views.DisProfileDelete.as_view()),
