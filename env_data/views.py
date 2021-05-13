@@ -63,7 +63,7 @@ def cycle_metadata_view(request):
 
     if request.method == 'DELETE':
         profile_id = request.GET.get('PROFILE_ID', None)
-        filters={"MISSION":profile_id}
+        filters={"PROFILE_ID":profile_id}
         query = cycle_metadata.objects.filter(**filters)
         res = query.delete()
         print(res[0])
@@ -80,7 +80,7 @@ def mission_reported_view(request):
 
     if request.method == 'DELETE':
         profile_id = request.GET.get('PROFILE_ID', None)
-        filters={"MISSION":profile_id}
+        filters={"PROFILE_ID":profile_id}
         query = mission_reported.objects.filter(**filters)
         res = query.delete()
         print(res[0])
