@@ -19,14 +19,14 @@ class cycle_metadata(models.Model):
         return str(self.PROFILE_ID)
 
 
-meta_int_fields = ['ActiveBallastAdjustments', 'AirBladderPressure', 'AirPumpAmps', 'AirPumpVolts', 'BatteryCounts', 
-    'BuoyancyPumpOnTime', 'BuoyancyPumpAmps', 'BuoyancyPumpVolts', 'CurrentBuoyancyPosition', 'DeepProfileBuoyancyPosition', 'FlashErrorsCorrectable', 
-    'FlashErrorsUncorrectable', 'FloatId', 'GpsFixTime',  'IceMLSample', 'McomsAmps', 'McomsVolts', 'Ocr504Amps', 
-    'Ocr504Volts', 'ParkDescentPCnt', 'ParkBuoyancyPosition', 'ProfileId', 'ObsIndex', 'QuiescentAmps', 'QuiescentVolts', 'Sbe41cpAmps', 'Sbe41cpVolts', 
-    'Sbe63Amps', 'Sbe63Volts',  'SurfaceBuoyancyPosition', 'Vacuum', 'GpsNsat', 'IsusPowerCycleCounter','RtcSkew']
+meta_int_fields = ['ActiveBallastAdjustments',  'BatteryCounts', 
+    'BuoyancyPumpOnTime',  'CurrentBuoyancyPosition', 'DeepProfileBuoyancyPosition', 'FlashErrorsCorrectable', 
+    'FlashErrorsUncorrectable', 'FloatId', 'GpsFixTime',  'IceMLSample', 'ParkDescentPCnt', 'ParkBuoyancyPosition', 'ProfileId', 'ObsIndex', 
+    'SurfaceBuoyancyPosition', 'Vacuum', 'GpsNsat', 'IsusPowerCycleCounter','RtcSkew']
 meta_str_fields = ['NpfFwRev', 'IceEvasionRecord', 'IceMLMedianT','Sbe41cpStatus', 'status']
 meta_float_fields = ['GpsLong', 'GpsLat','Sbe41cpHumidity','Sbe41cpHumidityTemp','SurfacePressure', 'pHBaseAmps','pHBatteryInVolts','pHBatteryOutVolts',
-    'pHCounterVolts', 'pHCounterAmps']
+    'pHCounterVolts', 'pHCounterAmps', 'AirBladderPressure', 'AirPumpAmps', 'AirPumpVolts', 'BuoyancyPumpAmps', 'BuoyancyPumpVolts',
+    'QuiescentAmps', 'QuiescentVolts', 'Sbe41cpAmps', 'Sbe41cpVolts', 'Sbe63Amps', 'Sbe63Volts',  'McomsAmps', 'McomsVolts', 'Ocr504Amps','Ocr504Volts']
 meta_date_fields = ['GpsFixDate','TimeStartDescent', 'TimeStartPark', 'TimeStartProfileDescent', 'TimeStartProfile', 'TimeStopProfile', 'TimeStartTelemetry']
 
 for field in meta_int_fields:

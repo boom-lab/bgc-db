@@ -8,13 +8,16 @@ def set_skip(modeladmin, request, queryset):
 def set_fail(modeladmin, request, queryset):
     queryset.update(STATUS='Fail')
 
+def set_reprocess(modeladmin, request, queryset):
+    queryset.update(STATUS='Reprocess')
+
 class FileProcessingAdmin(ExportMixin, admin.ModelAdmin):
     list_display = ['DIRECTORY','STATUS','DETAILS','DATE']
     #list_display_links = ('Record_Date',)
     search_fields = ('STATUS','DIRECTORY')
     list_per_page = 25
     list_filter = ('STATUS',)
-    actions = [set_skip, set_fail]
+    actions = [set_skip, set_fail, set_reprocess]
 
 
 admin.site.register(file_processing, FileProcessingAdmin)

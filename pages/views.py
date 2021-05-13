@@ -27,7 +27,95 @@ def profile_plot(request):
 def display_map(request):
     return render(request, 'pages/map.html')
 
-def float_bio(request):
+def battery_plot(filters):
+    profile_id = cycle_metadata.objects.filter(**filters).order_by("ProfileId").values_list('ProfileId', flat=True)
+    quiescent_volts = cycle_metadata.objects.filter(**filters).order_by("ProfileId").values_list('QuiescentVolts', flat=True)
+    sbe41cp_volts = cycle_metadata.objects.filter(**filters).order_by("ProfileId").values_list('Sbe41cpVolts', flat=True)
+    date = cycle_metadata.objects.filter(**filters).order_by("ProfileId").values_list('GpsFixDate', flat=True)
+
+
+    hov = pd.DataFrame()
+    hov["GpsFixDate"] = list(date)
+    hov["GpsFixDate"] = hov.GpsFixDate.dt.strftime('%Y-%m-%d')
+    hov_data = hov.values.tolist()
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=np.array(profile_id),
+            y=np.array(quiescent_volts),
+            mode='lines',
+            marker = {
+                'size':8,
+                'color': "#1f77b4",
+                'symbol':'circle',
+                'line':{'width':0}
+            },
+            customdata = hov_data,
+            hovertemplate ='%{customdata[0]}',
+            name="Quiescent Volts"
+        ),
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            x=np.array(profile_id),
+            y=np.array(sbe41cp_volts),
+            mode='lines',
+            marker = {
+                'size':8,
+                'color': "#ff7f0e",
+                'symbol':'circle',
+                'line':{'width':0}
+            },
+            customdata = hov_data,
+            hovertemplate ='%{customdata[0]}',
+            yaxis="y2",
+            name="SBE41cp"
+        ),
+    )
+    
+    # Formatting
+    fig.update_layout(
+        template = "ggplot2",
+        title = "Battery",
+        xaxis = {'title':"Cycle"},
+        #yaxis = {'title':"Quiescent Voltage"},
+        font = {"size":15},
+        height=500,
+        showlegend=False,
+        margin={'t': 70, 'l':0,'r':0,'b':0},
+        #yaxis_range=[8,12]
+        yaxis=dict(
+            title="Quiescent Volts",
+            range=[8,12],
+            titlefont=dict(
+                color="#1f77b4"
+            ),
+            tickfont=dict(
+                color="#1f77b4"
+            )
+        ),
+        yaxis2=dict(
+            title="SBE41cp Volts",
+            range=[8,12],
+            titlefont=dict(
+                color="#ff7f0e"
+            ),
+            tickfont=dict(
+                color="#ff7f0e"
+            ),
+            anchor="free",
+            overlaying="y",
+            side="right",
+            position=1
+        ),
+    )
+
+    plot_div = plot(fig,output_type='div', include_plotlyjs=False)  
+    return plot_div
+
+def float_detail(request):
     FLOAT_SERIAL_NO = request.GET.get('FLOAT_SERIAL_NO', None)
     PLATFORM_TYPE = request.GET.get('PLATFORM_TYPE', None)
 
@@ -41,11 +129,15 @@ def float_bio(request):
     dfilters['PLATFORM_TYPE'] = PLATFORM_TYPE
     dep = deployment.objects.get(**dfilters)
     
+    bat_plot = battery_plot(filters)
+
     context = {
         'cycle_metadata': latest_cycle_meta,
-        'deployment':dep
+        'deployment':dep,
+        'battery_plot':bat_plot
     }
-    return render(request, 'pages/float_bio.html', context)
+    return render(request, 'pages/float_detail.html', context)
+
 
 def update_profile_plot(request):
     # request should be ajax and method should be GET.

@@ -23,7 +23,7 @@
                         <td>{{ deployment.status }}</td>
                     </tr>
                     <tr>
-                        <th scope="row">Cycle Number</th>
+                        <th scope="row">Cycles</th>
                         <td>{{ cycle_metadata.ProfileId }}</td>
                     </tr>
                     <tr>
@@ -44,15 +44,15 @@
                     </tr>
 
                     <tr>
-                        <th scope="row">Battery Voltage</th>
-                        <td>{{ cycle_metadata.QuiescentVolts_decoded }}</td>
+                        <th scope="row">Quiescent Volts</th>
+                        <td>{{ cycle_metadata.QuiescentVolts }}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
         <!-- Plots -->
         <div class="col">
-            <!-- <div id="graph" class="row"></div> -->
+            {{ battery_plot|safe }}
         </div>
     </div>
 </div>
