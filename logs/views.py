@@ -3,7 +3,6 @@ from rest_framework.permissions import IsAuthenticated
 from django.http.response import JsonResponse
 from .models import file_processing
 import json
-from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import status
 from django.db.models import Q
 
