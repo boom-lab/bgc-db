@@ -49,6 +49,7 @@ def float_detail(request):
     buoy_pump_time_plot = ep.single_var_plot(filters, "BuoyancyPumpOnTime", y_label="Time", 
         legend_label="Buoyancy Pump On Time")
     surface_pres_plot = ep.single_var_plot(filters, "SurfacePressure", y_label="Pressure (dbar)", legend_label="Surface Pressure")
+    duration_plot= ep.duration_plot(filters)
 
     context = {
         'cycle_metadata': latest_cycle_meta,
@@ -58,7 +59,8 @@ def float_detail(request):
         'buoyancy_plot':buoy_plot,
         'air_bladder_pres_plot': abpres_plot,
         'buoy_pump_time_plot': buoy_pump_time_plot,
-        'surface_pres_plot':surface_pres_plot
+        'surface_pres_plot':surface_pres_plot,
+        'duration_plot':duration_plot,
     }
     return render(request, 'pages/float_detail.html', context)
 

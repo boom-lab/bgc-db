@@ -1,13 +1,12 @@
 import plotly.graph_objs as go
 from plotly.offline import plot
-import time
 import numpy as np
 import pandas as pd
+from datetime import datetime, timedelta
 
 from env_data.models import cycle_metadata
 
 def volts_plot(filters):
-    start = time.time()
 
     query = cycle_metadata.objects.filter(**filters).order_by("ProfileId").values_list("ProfileId","QuiescentVolts",
         "Sbe41cpVolts","AirPumpVolts","BuoyancyPumpVolts","Sbe63Volts","McomsVolts","GpsFixDate")
@@ -132,8 +131,6 @@ def volts_plot(filters):
 
     plot_div = plot(fig,output_type='div', include_plotlyjs=False, config= {
         'displaylogo': False, 'modeBarButtonsToRemove':['lasso2d', 'select2d','resetScale2d']})  
-    end = time.time()
-    print("elapsed:", end-start)
     return plot_div
 
 def amps_plot(filters):
@@ -404,6 +401,168 @@ def single_var_plot(filters, var, y_label, legend_label, y_range=None):
         fig.update_layout(
             yaxis_range=y_range
         )
+
+    plot_div = plot(fig,output_type='div', include_plotlyjs=False, config= {
+        'displaylogo': False, 'modeBarButtonsToRemove':['lasso2d', 'select2d','resetScale2d']})  
+    return plot_div
+
+def duration_plot(filters):
+
+    query = cycle_metadata.objects.filter(**filters).order_by("ProfileId").values_list("ProfileId","GpsFixDate","TimeStartDescent",
+        "TimeStartPark","TimeStartProfileDescent","TimeStartProfile","TimeStopProfile","TimeStartTelemetry")
+    data = pd.DataFrame(query, columns=["ProfileId","GpsFixDate","TimeStartDescent",
+        "TimeStartPark","TimeStartProfileDescent","TimeStartProfile","TimeStopProfile","TimeStartTelemetry"])
+
+    data["TimeStartDescent_delta"] = (data["TimeStartDescent"] - data["TimeStartDescent"]) + pd.to_datetime('1970/01/01')
+    data["GpsFixDate_delta"] = (data["GpsFixDate"] - data["TimeStartDescent"]) + pd.to_datetime('1970/01/01')
+    data["TimeStartPark_delta"] = (data["TimeStartPark"] - data["TimeStartDescent"]) + pd.to_datetime('1970/01/01')
+    data["TimeStartProfileDescent_delta"] = (data["TimeStartProfileDescent"] - data["TimeStartDescent"]) + pd.to_datetime('1970/01/01')
+    data["TimeStartProfile_delta"] = (data["TimeStartProfile"] - data["TimeStartDescent"]) + pd.to_datetime('1970/01/01')
+    data["TimeStopProfile_delta"] = (data["TimeStopProfile"] - data["TimeStartDescent"]) + pd.to_datetime('1970/01/01')
+    data["TimeStartTelemetry_delta"] = (data["TimeStartTelemetry"] - data["TimeStartDescent"]) + pd.to_datetime('1970/01/01')
+
+    tickvals = []
+    startdate =datetime(1970, 1, 1, 00, 00)
+    enddate = datetime(1970, 1, 3, 00, 00)
+    delta = timedelta(hours=6)
+
+    while startdate < enddate:
+        tickvals.append(startdate)
+        startdate += delta
+
+    ticktext = [str(e.day-1)+" days "+e.strftime('%H:%M') for e in tickvals]
+
+    fig = go.Figure()
+
+    #Time Start Descent - Will be 0
+    fig.add_trace(
+        go.Scatter(
+            x=data["ProfileId"],
+            y=data["TimeStartDescent_delta"],
+            mode='markers',
+            marker = {
+                'size':10,
+                'symbol':'square',
+                'color': "#99B0BF",
+            },
+            hovertemplate ='%{y}',
+            name="Start Descent"
+        ),
+    )
+
+    #GPS Fix Date
+    fig.add_trace(
+        go.Scatter(
+            x=data["ProfileId"],
+            y=data["GpsFixDate_delta"],
+            mode='markers',
+            marker = {
+                'size':10,
+                'symbol':'square',
+                'color': "#003659",
+            },
+            hovertemplate ='%{y}',
+            name="GPS Fix"
+        ),
+    )
+
+
+
+    #Time start Park
+    fig.add_trace(
+        go.Scatter(
+            x=data["ProfileId"],
+            y=data["TimeStartPark_delta"],
+            mode='markers',
+            marker = {
+                'size':10,
+                'symbol':'square',
+                'color': "#4D86A3",
+            },
+            hovertemplate ='%{y}',
+            name="Time Start Park"
+        ),
+    )
+
+    #Time Start Profile Descent
+    # fig.add_trace(
+    #     go.Scatter(
+    #         x=data["ProfileId"],
+    #         y=data["TimeStartProfileDescent_delta"],
+    #         mode='markers',
+    #         marker = {
+    #             'size':10,
+    #             'symbol':'square',
+    #             'color': "#65C0F0",
+    #         },
+    #         hovertemplate ='%{y}',
+    #         name="Time Start Profile Descent"
+    #     ),
+    # )
+    
+    #Time Start Profile
+    fig.add_trace(
+        go.Scatter(
+            x=data["ProfileId"],
+            y=data["TimeStartProfile_delta"],
+            mode='markers',
+            marker = {                
+                'size':10,
+                'symbol':'square',
+                'color': "#F07D86",
+            },
+            hovertemplate ='%{y}',
+            name="Time Start Profile"
+        ),
+    )
+
+    #Time Stop Profile
+    fig.add_trace(
+        go.Scatter(
+            x=data["ProfileId"],
+            y=data["TimeStopProfile_delta"],
+            mode='markers',
+            marker = {
+                'size':10,
+                'symbol':'square',
+                'color': "#F0AB28",
+            },
+            hovertemplate ='%{y}',
+            name="Time Stop Profile"
+        ),
+    )
+
+    #Time Start Telemetry
+    fig.add_trace(
+        go.Scatter(
+            x=data["ProfileId"],
+            y=data["TimeStartTelemetry_delta"],
+            mode='markers',
+            marker = {
+                'size':10,
+                'symbol':'square',
+                'color': "#DC143C",
+            },
+            hovertemplate ='%{y}',
+            name="Time Start Telemetry"
+        ),
+    )
+
+    # Formatting
+    fig.update_layout(
+        template = "ggplot2",
+        #title = "Amps",
+        xaxis = {'title':"Cycle",},
+        yaxis = {
+            "tickvals":tickvals,
+            "ticktext":ticktext},
+        font = {"size":15},
+        height=500,
+        showlegend=True,
+        margin={'t': 30, 'l':0,'r':0,'b':0},
+        #yaxis_range=['1900-01-01','1900-01-02'],
+        hovermode='x'
+    )
 
     plot_div = plot(fig,output_type='div', include_plotlyjs=False, config= {
         'displaylogo': False, 'modeBarButtonsToRemove':['lasso2d', 'select2d','resetScale2d']})  
