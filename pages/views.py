@@ -1,14 +1,15 @@
 from django.shortcuts import render
-from deployments.models import deployment
-from plotly.offline import plot
-import plotly.graph_objs as go
-import numpy as np
+from django.template.loader import render_to_string
 from django.http import JsonResponse
 import pandas as pd
-from django.template.loader import render_to_string
+import numpy as np
+from plotly.offline import plot
+import plotly.graph_objs as go
 
+from deployments.models import deployment
 from env_data.models import continuous_profile, cycle_metadata, discrete_profile
 from .plot_helpers import add_bottom_trace, add_top_trace, var_translation
+import pages.engineering_plots as ep
 
 def index(request):
     return render(request, 'pages/index.html')
@@ -27,94 +28,6 @@ def profile_plot(request):
 def display_map(request):
     return render(request, 'pages/map.html')
 
-def battery_plot(filters):
-    profile_id = cycle_metadata.objects.filter(**filters).order_by("ProfileId").values_list('ProfileId', flat=True)
-    quiescent_volts = cycle_metadata.objects.filter(**filters).order_by("ProfileId").values_list('QuiescentVolts', flat=True)
-    sbe41cp_volts = cycle_metadata.objects.filter(**filters).order_by("ProfileId").values_list('Sbe41cpVolts', flat=True)
-    date = cycle_metadata.objects.filter(**filters).order_by("ProfileId").values_list('GpsFixDate', flat=True)
-
-
-    hov = pd.DataFrame()
-    hov["GpsFixDate"] = list(date)
-    hov["GpsFixDate"] = hov.GpsFixDate.dt.strftime('%Y-%m-%d')
-    hov_data = hov.values.tolist()
-
-    fig = go.Figure()
-    fig.add_trace(
-        go.Scatter(
-            x=np.array(profile_id),
-            y=np.array(quiescent_volts),
-            mode='lines',
-            marker = {
-                'size':8,
-                'color': "#1f77b4",
-                'symbol':'circle',
-                'line':{'width':0}
-            },
-            customdata = hov_data,
-            hovertemplate ='%{customdata[0]}',
-            name="Quiescent Volts"
-        ),
-    )
-
-    fig.add_trace(
-        go.Scatter(
-            x=np.array(profile_id),
-            y=np.array(sbe41cp_volts),
-            mode='lines',
-            marker = {
-                'size':8,
-                'color': "#ff7f0e",
-                'symbol':'circle',
-                'line':{'width':0}
-            },
-            customdata = hov_data,
-            hovertemplate ='%{customdata[0]}',
-            yaxis="y2",
-            name="SBE41cp"
-        ),
-    )
-    
-    # Formatting
-    fig.update_layout(
-        template = "ggplot2",
-        title = "Battery",
-        xaxis = {'title':"Cycle"},
-        #yaxis = {'title':"Quiescent Voltage"},
-        font = {"size":15},
-        height=500,
-        showlegend=False,
-        margin={'t': 70, 'l':0,'r':0,'b':0},
-        #yaxis_range=[8,12]
-        yaxis=dict(
-            title="Quiescent Volts",
-            range=[8,12],
-            titlefont=dict(
-                color="#1f77b4"
-            ),
-            tickfont=dict(
-                color="#1f77b4"
-            )
-        ),
-        yaxis2=dict(
-            title="SBE41cp Volts",
-            range=[8,12],
-            titlefont=dict(
-                color="#ff7f0e"
-            ),
-            tickfont=dict(
-                color="#ff7f0e"
-            ),
-            anchor="free",
-            overlaying="y",
-            side="right",
-            position=1
-        ),
-    )
-
-    plot_div = plot(fig,output_type='div', include_plotlyjs=False)  
-    return plot_div
-
 def float_detail(request):
     FLOAT_SERIAL_NO = request.GET.get('FLOAT_SERIAL_NO', None)
     PLATFORM_TYPE = request.GET.get('PLATFORM_TYPE', None)
@@ -129,12 +42,23 @@ def float_detail(request):
     dfilters['PLATFORM_TYPE'] = PLATFORM_TYPE
     dep = deployment.objects.get(**dfilters)
     
-    bat_plot = battery_plot(filters)
+    volt_plot = ep.volts_plot(filters)
+    amp_plot = ep.amps_plot(filters)
+    buoy_plot = ep.buoyancy_position_plot(filters)
+    abpres_plot = ep.single_var_plot(filters, "AirBladderPressure", y_label="Pressure", legend_label="Air Bladder Pressure")
+    buoy_pump_time_plot = ep.single_var_plot(filters, "BuoyancyPumpOnTime", y_label="Time", 
+        legend_label="Buoyancy Pump On Time")
+    surface_pres_plot = ep.single_var_plot(filters, "SurfacePressure", y_label="Pressure (dbar)", legend_label="Surface Pressure")
 
     context = {
         'cycle_metadata': latest_cycle_meta,
         'deployment':dep,
-        'battery_plot':bat_plot
+        'battery_plot':volt_plot,
+        'amps_plot':amp_plot,
+        'buoyancy_plot':buoy_plot,
+        'air_bladder_pres_plot': abpres_plot,
+        'buoy_pump_time_plot': buoy_pump_time_plot,
+        'surface_pres_plot':surface_pres_plot
     }
     return render(request, 'pages/float_detail.html', context)
 
@@ -216,7 +140,7 @@ def update_profile_plot(request):
         table_context = cycle_metadata.objects.filter(PROFILE_ID__in=profiles).all()
         meta_table = render_to_string('partials/plot_table.html', context = {'metadatas':table_context}, request = request)
 
-        plot_div = plot(fig,output_type='div', include_plotlyjs=False)
+        plot_div = plot(fig,output_type='div', include_plotlyjs=False, config= {'displaylogo': False, 'modeBarButtonsToRemove':['lasso2d', 'select2d','resetScale2d']})
 
         return JsonResponse({'plot_div': plot_div, 'meta_table':meta_table}, status = 200)
 
@@ -264,7 +188,7 @@ def update_map(request):
             },
         )
 
-        map_div = plot(fig,output_type='div', include_plotlyjs=False)
+        map_div = plot(fig,output_type='div', include_plotlyjs=False, config= {'displaylogo': False, 'modeBarButtonsToRemove':['lasso2d', 'select2d','resetScale2d']})
 
         return JsonResponse({'map_div': map_div }, status = 200)
 

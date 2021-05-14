@@ -1,10 +1,10 @@
 {% extends 'partials/base.html' %}
 {% load static %}
-{% block footer %}
+{% block header %}
     <!-- Datatabes -->
     <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.24/datatables.min.js"></script>
     <script src="{% static 'js/table.js' %}"></script>
-{% endblock footer %}
+{% endblock header %}
 {% block content %}
 <section class="status-table-container">
   <table id="statustable" class="table tabel-sm table-hover">
@@ -21,17 +21,24 @@
       </thead>
       <tbody>
           {% for deployment in deployments %}
-          <tr>
-              <th scope="row">{{ deployment.FLOAT_SERIAL_NO }}</th>
-              <td>{{ deployment.PLATFORM_NUMBER }}</td>
-              <td>{{ deployment.PLATFORM_TYPE }}</td>
-              <td>{{ deployment.status }}</td>
-              <td>{{ deployment.LAUNCH_DATE }}</td>
-              <td>{{ deployment.last_report }}</td>
-              <td>{{ deployment.next_report }}</td>
+          <tr class='clickable-row' href="/float_detail?FLOAT_SERIAL_NO={{ deployment.FLOAT_SERIAL_NO }}&PLATFORM_TYPE={{ deployment.PLATFORM_TYPE.VALUE }}">
+            <th class="cursor-pointer">{{ deployment.FLOAT_SERIAL_NO }}</th>
+            <td class="cursor-pointer">{{ deployment.PLATFORM_NUMBER }}</td>
+            <td class="cursor-pointer">{{ deployment.PLATFORM_TYPE.VALUE }}</td>
+            <td class="cursor-pointer">{{ deployment.status }}</td>
+            <td class="cursor-pointer">{{ deployment.LAUNCH_DATE }}</td>
+            <td class="cursor-pointer">{{ deployment.last_report }}</td>
+            <td class="cursor-pointer">{{ deployment.next_report }}</td>
           </tr>
           {% endfor %}
       </tbody>
   </table>
 </section>
 {% endblock %}
+{% block footer %}
+<script>
+  $(".clickable-row").click(function (element) {
+    window.location = element.currentTarget.getAttribute('href');
+  });
+</script>
+{% endblock footer %}

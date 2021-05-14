@@ -52,7 +52,15 @@
         </div>
         <!-- Plots -->
         <div class="col">
+            <h3>Electrical</h3>
             {{ battery_plot|safe }}
+            {{ amps_plot|safe }}
+            <h3>Buoyancy</h3>
+            {{ buoyancy_plot|safe }}
+            {{ air_bladder_pres_plot|safe }}
+            {{ buoy_pump_time_plot|safe }}
+            <h3>Other</h3>
+            {{ surface_pres_plot|safe }}
         </div>
     </div>
 </div>
