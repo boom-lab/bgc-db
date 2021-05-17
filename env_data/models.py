@@ -12,6 +12,8 @@ class cycle_metadata(models.Model):
     ParkDescentP = models.CharField(blank=True, null=True, max_length=200)
     CONNECTION_ATTEMPTS = models.IntegerField(null=True, blank=True)
     CONNECTIONS = models.IntegerField(null=True, blank=True)
+    UPLOAD_ATTEMPTS = models.IntegerField(null=True, blank=True)
+    UPLOADS = models.IntegerField(null=True, blank=True)
     MSG_BYTES = models.IntegerField(null=True, blank=True)
     LOG_BYTES = models.IntegerField(null=True, blank=True)
     ISUS_BYTES = models.IntegerField(null=True, blank=True)

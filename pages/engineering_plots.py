@@ -553,9 +553,160 @@ def duration_plot(filters):
         template = "ggplot2",
         #title = "Amps",
         xaxis = {'title':"Cycle",},
-        yaxis = {
+        yaxis = {'title':"Phase Duration",
             "tickvals":tickvals,
             "ticktext":ticktext},
+        font = {"size":15},
+        height=500,
+        showlegend=True,
+        margin={'t': 30, 'l':0,'r':0,'b':0},
+        #yaxis_range=['1900-01-01','1900-01-02'],
+        hovermode='x'
+    )
+
+    plot_div = plot(fig,output_type='div', include_plotlyjs=False, config= {
+        'displaylogo': False, 'modeBarButtonsToRemove':['lasso2d', 'select2d','resetScale2d']})  
+    return plot_div
+
+def surface_duration_plot(filters):
+
+    query = cycle_metadata.objects.filter(**filters).order_by("ProfileId").values_list("ProfileId","GPS_DURATION","TRANS_DURATION")
+    data = pd.DataFrame(query, columns=["ProfileId","GPS_DURATION","TRANS_DURATION"])
+    print(data["TRANS_DURATION"])
+
+    data["GPS_DURATION"] = data["GPS_DURATION"] + pd.to_datetime('1970/01/01')
+    data["TRANS_DURATION"] = data["TRANS_DURATION"] + pd.to_datetime('1970/01/01')
+
+    tickvals = []
+    startdate =datetime(1970, 1, 1, 00, 00)
+    enddate = datetime(1970, 1, 2, 00, 00)
+    delta = timedelta(minutes=20)
+
+    while startdate < enddate:
+        tickvals.append(startdate)
+        startdate += delta
+
+    ticktext = [e.strftime('%H:%M') for e in tickvals]
+
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Bar(
+            x=data["ProfileId"],
+            y=data["GPS_DURATION"],
+            marker_color="#A65132",
+            hovertemplate ='%{y}',
+            name="GPS"
+        ),
+    )
+
+    fig.add_trace(
+        go.Bar(
+            x=data["ProfileId"],
+            y=data["TRANS_DURATION"],
+            marker_color="#3C7373",
+            hovertemplate ='%{y}',
+            name="Transmission"
+        ),
+    )
+    # Formatting
+    fig.update_layout(
+        template = "ggplot2",
+        #title = "Amps",
+        xaxis = {'title':"Cycle",},
+        yaxis = {'title':"Surface Duration (HH:MM)",
+            "tickvals":tickvals,
+            "ticktext":ticktext},
+        font = {"size":15},
+        height=500,
+        showlegend=True,
+        margin={'t': 30, 'l':0,'r':0,'b':0},
+        #yaxis_range=['1900-01-01','1900-01-02'],
+        hovermode='x'
+    )
+
+    plot_div = plot(fig,output_type='div', include_plotlyjs=False, config= {
+        'displaylogo': False, 'modeBarButtonsToRemove':['lasso2d', 'select2d','resetScale2d']})  
+    return plot_div
+
+def con_attempt_plot(filters):
+    """Sattellite connection attempts"""
+    query = cycle_metadata.objects.filter(**filters).order_by("ProfileId").values_list("ProfileId","CONNECTION_ATTEMPTS","CONNECTIONS")
+    data = np.core.records.fromrecords(query, names=["ProfileId","CONNECTION_ATTEMPTS","CONNECTIONS"])
+
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Bar(
+            x=data["ProfileId"],
+            y=data["CONNECTION_ATTEMPTS"],
+            marker_color="#DC143C",
+            hovertemplate ='%{y}',
+            name="Attempted"
+        ),
+    )
+    fig.add_trace(
+        go.Bar(
+            x=data["ProfileId"],
+            y=data["CONNECTIONS"],
+            marker_color="#4D86A3",
+            hovertemplate ='%{y}',
+            name="Sucessful"
+        ),
+    )
+    
+    # Formatting
+    fig.update_layout(
+        barmode="overlay",
+        template = "ggplot2",
+        #title = "Amps",
+        xaxis = {'title':"Cycle",},
+        yaxis = {'title':"Connections"},
+        font = {"size":15},
+        height=500,
+        showlegend=True,
+        margin={'t': 30, 'l':0,'r':0,'b':0},
+        #yaxis_range=['1900-01-01','1900-01-02'],
+        hovermode='x'
+    )
+
+    plot_div = plot(fig,output_type='div', include_plotlyjs=False, config= {
+        'displaylogo': False, 'modeBarButtonsToRemove':['lasso2d', 'select2d','resetScale2d']})  
+    return plot_div
+
+def upload_attempt_plot(filters):
+    """Sattellite file upload attempts"""
+    query = cycle_metadata.objects.filter(**filters).order_by("ProfileId").values_list("ProfileId","UPLOAD_ATTEMPTS","UPLOADS")
+    data = np.core.records.fromrecords(query, names=["ProfileId","UPLOAD_ATTEMPTS","UPLOADS"])
+
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Bar(
+            x=data["ProfileId"],
+            y=data["UPLOAD_ATTEMPTS"],
+            marker_color="#DC143C",
+            hovertemplate ='%{y}',
+            name="Attempted"
+        ),
+    )
+    fig.add_trace(
+        go.Bar(
+            x=data["ProfileId"],
+            y=data["UPLOADS"],
+            marker_color="#4D86A3",
+            hovertemplate ='%{y}',
+            name="Successful"
+        ),
+    )
+    
+    # Formatting
+    fig.update_layout(
+        barmode="overlay",
+        template = "ggplot2",
+        #title = "Amps",
+        xaxis = {'title':"Cycle",},
+        yaxis = {'title':"File Uploads"},
         font = {"size":15},
         height=500,
         showlegend=True,

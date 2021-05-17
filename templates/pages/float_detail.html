@@ -47,6 +47,26 @@
                         <th scope="row">Quiescent Volts</th>
                         <td>{{ cycle_metadata.QuiescentVolts }}</td>
                     </tr>
+                    <tr>
+                        <th scope="row">Monthly Upload</th>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">File Size: Total</th>
+                        <td>{{ calc.TOTAL }} KB</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">File Size: .msg</th>
+                        <td>{{ calc.MSG_KB }} KB</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">File Size: .isus</th>
+                        <td>{{ calc.ISUS_KB }} KB</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">File Size: .log</th>
+                        <td>{{ calc.LOG_KB }} KB</td>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -59,8 +79,12 @@
             {{ buoyancy_plot|safe }}
             {{ air_bladder_pres_plot|safe }}
             {{ buoy_pump_time_plot|safe }}
-            <h3>Phase Duration</h3>
+            <h3>Duration</h3>
             {{ duration_plot|safe }}
+            {{ surface_duration_plot|safe}}
+            <h3>Satellite</h3>
+            {{ con_attempt_plot|safe }}
+            {{ upload_attempt_plot|safe }}
             <h3>Other</h3>
             {{ surface_pres_plot|safe }}
         </div>
