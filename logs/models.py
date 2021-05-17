@@ -15,7 +15,7 @@ class file_processing(models.Model):
     STATUS = models.CharField(max_length=200, choices=Status.choices)
     DETAILS = models.TextField(null=True, blank=True)
     DATE = models.DateTimeField() 
-    
+
     class Meta:
         verbose_name_plural = "File Processing"
 
