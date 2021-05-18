@@ -106,24 +106,29 @@ class deployment(models.Model):
     def next_report(self):
         """Estimates the next report date by averaging the past five cycles (or less than 5 if there are less than 5 reports)"""
         n_reports = self.cycle_metadata.count()
-        if n_reports < 5:
-            n_mean = n_reports
+        if n_reports <2:
+            return None
         else:
-            n_mean = 5
+            if n_reports < 5:
+                n_mean = n_reports
+            else:
+                n_mean = 5
 
-        query = self.cycle_metadata.order_by('-GpsFixDate').all()[0:n_mean]
-        recent_reports = np.array(query.values_list('GpsFixDate', flat=True))
-        time_diff = (np.diff(np.flip(recent_reports, axis=0)))
-        mean_time_diff = np.mean(time_diff)
+            query = self.cycle_metadata.order_by('-GpsFixDate').all()[0:n_mean]
+            recent_reports = np.array(query.values_list('GpsFixDate', flat=True))
+            time_diff = (np.diff(np.flip(recent_reports, axis=0)))
+            mean_time_diff = np.mean(time_diff)
 
-        return recent_reports[0] + mean_time_diff
+            return recent_reports[0] + mean_time_diff
 
     @property
     def age(self):
+        n_reports = self.cycle_metadata.count()
+        if n_reports == 0:
+            return 0
         if self.DEATH_DATE:
             return self.DEATH_DATE - self.LAUNCH_DATE
-        else:
-            return datetime.now(timezone.utc) - self.LAUNCH_DATE
+        return datetime.now(timezone.utc) - self.LAUNCH_DATE
 
     #For admin detail view
     def get_fields(self):

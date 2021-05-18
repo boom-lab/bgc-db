@@ -35,40 +35,52 @@ def float_detail(request):
     filters={}
     filters['DEPLOYMENT__FLOAT_SERIAL_NO'] = FLOAT_SERIAL_NO
     filters['DEPLOYMENT__PLATFORM_TYPE'] = PLATFORM_TYPE
-    latest_cycle_meta = cycle_metadata.objects.filter(**filters).order_by("-GpsFixDate").first()
 
     dfilters = {}
     dfilters['FLOAT_SERIAL_NO'] = FLOAT_SERIAL_NO
     dfilters['PLATFORM_TYPE'] = PLATFORM_TYPE
     dep = deployment.objects.get(**dfilters)
-    
-    abpres_plot = ep.single_var_plot(filters, "AirBladderPressure", y_label="Pressure", legend_label="Air Bladder Pressure")
-    buoy_pump_time_plot = ep.single_var_plot(filters, "BuoyancyPumpOnTime", y_label="Time", 
-        legend_label="Buoyancy Pump On Time")
-    surface_pres_plot = ep.single_var_plot(filters, "SurfacePressure", y_label="Pressure (dbar)", legend_label="Surface Pressure")
 
-    calc={}
-    calc['MSG_KB'] = round(latest_cycle_meta.MSG_BYTES/1000,1)
-    calc['ISUS_KB'] = round(latest_cycle_meta.ISUS_BYTES/1000,1)
-    calc['LOG_KB'] = round(latest_cycle_meta.LOG_BYTES/1000,1)
-    calc['TOTAL'] = calc['MSG_KB']+calc['ISUS_KB']+calc['LOG_KB']
+    n_reports = cycle_metadata.objects.filter(**filters).count()
 
-    context = {
-        'cycle_metadata': latest_cycle_meta,
-        'calc':calc,
-        'deployment':dep,
-        'battery_plot':ep.volts_plot(filters),
-        'amps_plot':ep.amps_plot(filters),
-        'buoyancy_plot':ep.buoyancy_position_plot(filters),
-        'air_bladder_pres_plot': abpres_plot,
-        'buoy_pump_time_plot': buoy_pump_time_plot,
-        'surface_pres_plot':surface_pres_plot,
-        'duration_plot':ep.duration_plot(filters),
-        'con_attempt_plot':ep.con_attempt_plot(filters),
-        'upload_attempt_plot':ep.upload_attempt_plot(filters),
-        'surface_duration_plot':ep.surface_duration_plot(filters)
-    }
-    return render(request, 'pages/float_detail.html', context)
+    #If deployed
+    if n_reports > 0:
+        latest_cycle_meta = cycle_metadata.objects.filter(**filters).order_by("-GpsFixDate").first()
+
+        abpres_plot = ep.single_var_plot(filters, "AirBladderPressure", y_label="Pressure", legend_label="Air Bladder Pressure")
+        buoy_pump_time_plot = ep.single_var_plot(filters, "BuoyancyPumpOnTime", y_label="Time", 
+            legend_label="Buoyancy Pump On Time")
+        surface_pres_plot = ep.single_var_plot(filters, "SurfacePressure", y_label="Pressure (dbar)", legend_label="Surface Pressure")
+
+        calc={}
+        calc['MSG_KB'] = round(latest_cycle_meta.MSG_BYTES/1000,1)
+        calc['ISUS_KB'] = round(latest_cycle_meta.ISUS_BYTES/1000,1)
+        calc['LOG_KB'] = round(latest_cycle_meta.LOG_BYTES/1000,1)
+        calc['TOTAL'] = calc['MSG_KB']+calc['ISUS_KB']+calc['LOG_KB']
+
+        context = {
+            'cycle_metadata': latest_cycle_meta,
+            'calc':calc,
+            'deployment':dep,
+            'battery_plot':ep.volts_plot(filters),
+            'amps_plot':ep.amps_plot(filters),
+            'buoyancy_plot':ep.buoyancy_position_plot(filters),
+            'air_bladder_pres_plot': abpres_plot,
+            'buoy_pump_time_plot': buoy_pump_time_plot,
+            'surface_pres_plot':surface_pres_plot,
+            'duration_plot':ep.duration_plot(filters),
+            'con_attempt_plot':ep.con_attempt_plot(filters),
+            'upload_attempt_plot':ep.upload_attempt_plot(filters),
+            'surface_duration_plot':ep.surface_duration_plot(filters)
+        }
+        return render(request, 'pages/float_detail.html', context)
+    else: #Pre deployment
+        context = {
+            'cycle_metadata': None,
+            'calc':None,
+            'deployment':dep,
+        }
+        return render(request, 'pages/float_detail.html', context)
 
 
 def update_profile_plot(request):

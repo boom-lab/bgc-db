@@ -72,6 +72,7 @@
         </div>
         <!-- Plots -->
         <div class="col">
+            {% if cycle_metadata %}
             <h3>Electrical</h3>
             {{ battery_plot|safe }}
             {{ amps_plot|safe }}
@@ -87,6 +88,7 @@
             {{ upload_attempt_plot|safe }}
             <h3>Other</h3>
             {{ surface_pres_plot|safe }}
+            {% endif %}
         </div>
     </div>
 </div>
