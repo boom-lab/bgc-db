@@ -5,6 +5,11 @@ from missions.models import mission
 from sensors.serializers import SensorSerializer
 from sensors.models import sensor
 
+class SerializerTest(serializers.ModelSerializer):
+    class Meta:
+        model = deployment
+        fields = [field.name for field in deployment._meta.fields]
+
 #API
 class DeploymentSerializer(serializers.ModelSerializer):
     #Returns deployment with all mission records (and all sensor records)

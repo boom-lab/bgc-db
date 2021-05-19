@@ -125,7 +125,7 @@ class deployment(models.Model):
     def age(self):
         n_reports = self.cycle_metadata.count()
         if n_reports == 0:
-            return 0
+            return None
         if self.DEATH_DATE:
             return self.DEATH_DATE - self.LAUNCH_DATE
         return datetime.now(timezone.utc) - self.LAUNCH_DATE

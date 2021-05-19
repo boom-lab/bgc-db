@@ -2,16 +2,16 @@ from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.http.response import JsonResponse
 from django.http import HttpResponse
-from datetime import datetime
 from jinja2 import Environment, FileSystemLoader
 
-from rest_framework import generics, status
+from rest_framework import generics, status, mixins, viewsets
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.decorators import api_view#, permission_classes
-
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.views import APIView
 from .models import deployment
-from .serializers import DeploymentSerializer, CurrentDeploymentSerializer
+from .serializers import DeploymentSerializer, CurrentDeploymentSerializer, SerializerTest
+from rest_framework.response import Response
 import json
 
 
@@ -102,8 +102,8 @@ def export_metadata(request, entry_id):
     return response
 
 #APIs
-#Add metadata, get metadata
-class MetadataView(generics.ListCreateAPIView): #Read and write only
+#get metadata
+class MetadataView(generics.ListAPIView): #Read only
     permission_classes=[IsAuthenticated]
     serializer_class=DeploymentSerializer
     queryset=deployment.objects.all()
@@ -117,6 +117,36 @@ class GetCrtMetadata(generics.ListAPIView): #Read only
     filter_backends = [DjangoFilterBackend]
     filter_fields = [field.name for field in deployment._meta.fields]
 
+
+class UpdateMetadata(APIView):
+    def get(self, request):
+        filters={}
+        filters['FLOAT_SERIAL_NO'] = request.GET.get("FLOAT_SERIAL_NO", None)
+        filters['PLATFORM_TYPE'] = request.GET.get("PLATFORM_TYPE", None)
+        if not filters['PLATFORM_TYPE'] or not filters['FLOAT_SERIAL_NO']:
+            return JsonResponse({'details':'Error: FLOAT_SERIAL_NO or PLATFORM_TYPE not provided'}, status=status.HTTP_400_BAD_REQUEST)
+        print(filters)
+        dep = deployment.objects.filter(**filters)
+        serializer = DeploymentSerializer(dep, many=True)
+        return Response(serializer.data)
+
+    def get_object(self, filters):
+        return deployment.objects.get(**filters)
+
+    def patch(self, request):
+        filters={}
+        filters['FLOAT_SERIAL_NO'] = request.GET.get("FLOAT_SERIAL_NO", None)
+        filters['PLATFORM_TYPE'] = request.GET.get("PLATFORM_TYPE", None)
+        if not filters['PLATFORM_TYPE'] or not filters['FLOAT_SERIAL_NO']:
+            return JsonResponse({'details':'Error: FLOAT_SERIAL_NO or PLATFORM_TYPE not provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+        dep_obj = self.get_object(filters)
+
+        serializer = SerializerTest(dep_obj, data=request.data, partial=True) # set partial=True to update a data partially
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(data=serializer.data)
+        return JsonResponse(status=status.HTTP_400_BAD_REQUEST, data="wrong parameters")
 
 
 #Get WMO# by serial number
