@@ -1,25 +1,42 @@
-from rest_framework import generics, permissions
+from deployments.models import deployment
+from rest_framework import generics, permissions, serializers
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from .serializers import SensorSerializer
 from .models import sensor
-from django.shortcuts import get_object_or_404
-from rest_framework import status
-import json
+from rest_framework.views import APIView
+from rest_framework import status, generics, mixins
 from django.http import JsonResponse
 
-class GetSensors(generics.ListAPIView):
-    permission_classes=[permissions.IsAuthenticated]
+class Sensors(mixins.CreateModelMixin, generics.GenericAPIView):
+    permission_classes=[IsAuthenticated]
     serializer_class = SensorSerializer
-    queryset=sensor.objects.all()
-    filter_backends = [DjangoFilterBackend]
-    filter_fields = ['ADD_DATE','SENSOR','SENSOR_MAKER','SENSOR_MODEL','SENSOR_SERIAL_NO','SENSOR_CALIB_DATE']
 
-class UpdateSensors(generics.UpdateAPIView):
-    permission_classes=[permissions.IsAuthenticated]
-    serializer_class = SensorSerializer
-    lookup_field='SENSOR_SERIAL_NO'
-    queryset=sensor.objects.all()
-    filter_backends = [DjangoFilterBackend]
-    filter_fields = ['ADD_DATE','SENSOR','SENSOR_MAKER','SENSOR_MODEL','SENSOR_SERIAL_NO','SENSOR_CALIB_DATE']
+    def post(self, request, *args, **kwargs):
+        filters={}
+        filters['FLOAT_SERIAL_NO'] = request.GET.get("FLOAT_SERIAL_NO", None)
+        filters['PLATFORM_TYPE'] = request.GET.get("PLATFORM_TYPE", None)
+        dep_id = deployment.objects.get(**filters).pk
+        request.data["DEPLOYMENT"]=dep_id
+        return self.create(request, *args, **kwargs)
+
+    def get_object(self, filters):
+        return sensor.objects.get(**filters)
+
+    def patch(self, request):
+        filters={}
+        filters['DEPLOYMENT__FLOAT_SERIAL_NO'] = request.GET.get("FLOAT_SERIAL_NO", None)
+        filters['DEPLOYMENT__PLATFORM_TYPE'] = request.GET.get("PLATFORM_TYPE", None)
+        filters['SENSOR'] = request.GET.get("SENSOR", None)
+        if not filters['DEPLOYMENT__PLATFORM_TYPE'] or not filters['DEPLOYMENT__FLOAT_SERIAL_NO'] or not filters['SENSOR']:
+            return JsonResponse({'details':'Error: FLOAT_SERIAL_NO, PLATFORM_TYPE, or SENSOR not provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            sensor = self.get_object(filters)
+            serializer = SensorSerializer(sensor, data=request.data, partial=True) # set partial=True to update a data partially
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse(data=serializer.data)
+            return JsonResponse(status=status.HTTP_400_BAD_REQUEST, data="wrong parameters")
+        except Exception as e:
+            return JsonResponse({'details':str(e)}, status=status.HTTP_400_BAD_REQUEST)

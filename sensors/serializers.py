@@ -6,5 +6,4 @@ class SensorSerializer(serializers.ModelSerializer):
  
     class Meta:
         model = sensor
-        #fields = [field.name for field in sensor._meta.fields].remove('DEPLOYMENT')
-        exclude = ['DEPLOYMENT']
+        fields = [field.name for field in sensor._meta.fields]

@@ -1,18 +1,20 @@
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404
+from django.shortcuts import render, get_object_or_404
 from django.http.response import JsonResponse
 from django.http import HttpResponse
 from jinja2 import Environment, FileSystemLoader
-
-from rest_framework import generics, status, mixins, viewsets
-from rest_framework.permissions import IsAuthenticated
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.views import APIView
-from .models import deployment
-from .serializers import DeploymentSerializer, CurrentDeploymentSerializer, SerializerTest
-from rest_framework.response import Response
 import json
+
+from rest_framework import generics, status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import api_view
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
+
+from .models import deployment
+from .serializers import DeploymentSerializer, CurrentDeploymentSerializer
+
+
 
 
 #Admin area
@@ -102,15 +104,7 @@ def export_metadata(request, entry_id):
     return response
 
 #APIs
-#get metadata
-class MetadataView(generics.ListAPIView): #Read only
-    permission_classes=[IsAuthenticated]
-    serializer_class=DeploymentSerializer
-    queryset=deployment.objects.all()
-    filter_backends = [DjangoFilterBackend]
-    filter_fields = [field.name for field in deployment._meta.fields]
-
-#Current metadata api, only most recent mission record (all sensors)
+#Current metadata api, only most recent mission record (all sensors), public
 class GetCrtMetadata(generics.ListAPIView): #Read only
     serializer_class = CurrentDeploymentSerializer
     queryset=deployment.objects.all()
@@ -118,7 +112,9 @@ class GetCrtMetadata(generics.ListAPIView): #Read only
     filter_fields = [field.name for field in deployment._meta.fields]
 
 
-class UpdateMetadata(APIView):
+class Metadata(APIView):
+    permission_classes=[IsAuthenticated]
+
     def get(self, request):
         filters={}
         filters['FLOAT_SERIAL_NO'] = request.GET.get("FLOAT_SERIAL_NO", None)
@@ -133,7 +129,7 @@ class UpdateMetadata(APIView):
     def get_object(self, filters):
         return deployment.objects.get(**filters)
 
-    def patch(self, request):
+    def patch(self, request): #Only updated deployment table, not mission or sensors
         filters={}
         filters['FLOAT_SERIAL_NO'] = request.GET.get("FLOAT_SERIAL_NO", None)
         filters['PLATFORM_TYPE'] = request.GET.get("PLATFORM_TYPE", None)
@@ -142,7 +138,7 @@ class UpdateMetadata(APIView):
 
         dep_obj = self.get_object(filters)
 
-        serializer = SerializerTest(dep_obj, data=request.data, partial=True) # set partial=True to update a data partially
+        serializer = DeploymentSerializer(dep_obj, data=request.data, partial=True) # set partial=True to update a data partially
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(data=serializer.data)

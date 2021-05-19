@@ -1,8 +1,7 @@
 from django.conf.urls import url 
 from django.urls import path
-from .views import GetSensors, UpdateSensors
+from .views import Sensors
  
 urlpatterns = [ 
-    url(r'^api/sensors$', GetSensors.as_view()),
-    path('api/sensors/update/<int:SENSOR_SERIAL_NO>', UpdateSensors.as_view()),
+    url(r'^api/sensors$', Sensors.as_view()),
 ]
