@@ -9,7 +9,7 @@ class cycle_metadata(models.Model):
     DATE_ADD = models.DateTimeField() #creation of record in db
     PROFILE_ID = models.CharField(default=0, blank=True, null=True, max_length=20, unique=True)
     ParkObs = models.CharField(blank=True, null=True, max_length=200)
-    ParkDescentP = models.CharField(blank=True, null=True, max_length=200)
+    ParkDescentP = models.CharField(blank=True, null=True, max_length=2000)
     CONNECTION_ATTEMPTS = models.IntegerField(null=True, blank=True)
     CONNECTIONS = models.IntegerField(null=True, blank=True)
     UPLOAD_ATTEMPTS = models.IntegerField(null=True, blank=True)
