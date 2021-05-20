@@ -87,11 +87,72 @@
             {{ con_attempt_plot|safe }}
             {{ upload_attempt_plot|safe }}
             <h3>Other</h3>
-            {{ surface_pres_plot|safe }}
+            <label>Select variable to plot</label>
+            <div class="row">
+                <select id="var_selector" class="selectpicker" aria-label="Default select example">
+                    <option value="MSG_BYTES" selected>MSG BYTES</option>
+                    <option value="LOG_BYTES">LOG BYTES</option>
+                    <option value="ISUS_BYTES">ISUS BYTES</option>
+                    <option value="MSG_BYTES">MSG BYTES</option>
+                    <option value="ActiveBallastAdjustments">ActiveBallastAdjustments</option>
+                    <option value="BatteryCounts">BatteryCounts</option>
+                    <option value="FlashErrorsCorrectable">FlashErrorsCorrectable</option>
+                    <option value="FlashErrorsUncorrectable">FlashErrorsUncorrectable</option>
+                    <option value="IceMLSample">IceMLSample</option>
+                    <option value="ParkDescentPCnt">ParkDescentPCnt</option>
+                    <option value="ObsIndex">ObsIndex</option>
+                    <option value="Vacuum">Vacuum</option>
+                    <option value="GpsNsat">GpsNsat</option>
+                    <option value="IsusPowerCycleCounter">IsusPowerCycleCounter</option>
+                    <option value="Sbe41cpHumidity">Sbe41cpHumidity</option>
+                    <option value="Sbe41cpHumidityTemp">Sbe41cpHumidityTemp</option>
+                    <option value="pHBaseAmps">PHBaseAmps</option>
+                    <option value="pHBatteryInVolts">PHBatteryInVolts</option>
+                    <option value="pHBatteryOutVolts">PHBatteryOutVolts</option>
+                    <option value="pHCounterVolts">PHCounterVolts</option>
+                    <option value="pHCounterAmps">PHCounterAmps</option>
+                    <option value="SurfacePressure">SurfacePressure</option>
+                </select>
+            </div>
+            <div id="graph"></div>
             {% endif %}
         </div>
     </div>
 </div>
 {% endblock %}
 {% block footer %}
+<script>
+    //Javascript for selectable variable plot
+
+    function update(deployment, var_selected){
+
+        $.ajax({
+            type: 'GET',
+            url: "ajax/update_float_detail_plot",
+            data: {"deployment": deployment, "var_selected":var_selected},
+            success: function (response) {
+                //If sucessful, add plot
+                $('#graph').html(response["plot_div"])
+            },
+            error: function (response) {
+                console.log(response)
+            }
+        })
+    }
+
+    //Initial load
+    let var_selected = $("#var_selector").val();
+    let deployment = "{{ deployment.pk }}";
+    update(deployment, var_selected)
+
+    //Change with deployment selection
+    $("#var_selector").change(function (e) {
+        e.preventDefault();
+        //get selectors
+        let var_selected = $("#var_selector").val();
+        //update plot
+        update(deployment, var_selected)
+    })
+
+</script>
 {% endblock footer %}

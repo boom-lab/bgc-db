@@ -1,6 +1,6 @@
 digraph model_graph {
   // Dotfile by Django-Extensions graph_models
-  // Created: 2021-05-20 08:51
+  // Created: 2021-05-20 11:39
   // Cli Options: -a env_data -X TokenProxy,LogEntry,Token,User,AbstractUser,Group,Permission,ContentType,Session,AbstractBaseSession
 
   fontname = "Roboto"
@@ -731,9 +731,9 @@ digraph model_graph {
   
   
     <TR><TD ALIGN="LEFT" BORDER="0">
-    <FONT COLOR="#7B7B7B" FACE="Roboto">PROFILE_ID</FONT>
+    <FONT FACE="Roboto">PROFILE_ID</FONT>
     </TD><TD ALIGN="LEFT">
-    <FONT COLOR="#7B7B7B" FACE="Roboto">CharField</FONT>
+    <FONT FACE="Roboto">CharField</FONT>
     </TD></TR>
   
   
@@ -1237,9 +1237,9 @@ digraph model_graph {
   
   
     <TR><TD ALIGN="LEFT" BORDER="0">
-    <FONT COLOR="#7B7B7B" FACE="Roboto">PROFILE_ID</FONT>
+    <FONT FACE="Roboto">PROFILE_ID</FONT>
     </TD><TD ALIGN="LEFT">
-    <FONT COLOR="#7B7B7B" FACE="Roboto">CharField</FONT>
+    <FONT FACE="Roboto">CharField</FONT>
     </TD></TR>
   
   
@@ -1338,22 +1338,6 @@ digraph model_graph {
     <FONT FACE="Roboto"><B>DEPLOYMENT</B></FONT>
     </TD><TD ALIGN="LEFT">
     <FONT FACE="Roboto"><B>ForeignKey (id)</B></FONT>
-    </TD></TR>
-  
-  
-  
-    <TR><TD ALIGN="LEFT" BORDER="0">
-    <FONT FACE="Roboto"><B>MISSION</B></FONT>
-    </TD><TD ALIGN="LEFT">
-    <FONT FACE="Roboto"><B>ForeignKey (PROFILE_ID)</B></FONT>
-    </TD></TR>
-  
-  
-  
-    <TR><TD ALIGN="LEFT" BORDER="0">
-    <FONT FACE="Roboto"><B>PROFILE_METADATA</B></FONT>
-    </TD><TD ALIGN="LEFT">
-    <FONT FACE="Roboto"><B>ForeignKey (PROFILE_ID)</B></FONT>
     </TD></TR>
   
   
@@ -1543,6 +1527,14 @@ digraph model_graph {
   
   
     <TR><TD ALIGN="LEFT" BORDER="0">
+    <FONT FACE="Roboto">PROFILE_ID</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Roboto">CharField</FONT>
+    </TD></TR>
+  
+  
+  
+    <TR><TD ALIGN="LEFT" BORDER="0">
     <FONT COLOR="#7B7B7B" FACE="Roboto">PSAL</FONT>
     </TD><TD ALIGN="LEFT">
     <FONT COLOR="#7B7B7B" FACE="Roboto">FloatField</FONT>
@@ -1652,22 +1644,6 @@ digraph model_graph {
     <FONT FACE="Roboto"><B>DEPLOYMENT</B></FONT>
     </TD><TD ALIGN="LEFT">
     <FONT FACE="Roboto"><B>ForeignKey (id)</B></FONT>
-    </TD></TR>
-  
-  
-  
-    <TR><TD ALIGN="LEFT" BORDER="0">
-    <FONT FACE="Roboto"><B>MISSION</B></FONT>
-    </TD><TD ALIGN="LEFT">
-    <FONT FACE="Roboto"><B>ForeignKey (PROFILE_ID)</B></FONT>
-    </TD></TR>
-  
-  
-  
-    <TR><TD ALIGN="LEFT" BORDER="0">
-    <FONT FACE="Roboto"><B>PROFILE_METADATA</B></FONT>
-    </TD><TD ALIGN="LEFT">
-    <FONT FACE="Roboto"><B>ForeignKey (PROFILE_ID)</B></FONT>
     </TD></TR>
   
   
@@ -1825,6 +1801,14 @@ digraph model_graph {
   
   
     <TR><TD ALIGN="LEFT" BORDER="0">
+    <FONT FACE="Roboto">PROFILE_ID</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Roboto">CharField</FONT>
+    </TD></TR>
+  
+  
+  
+    <TR><TD ALIGN="LEFT" BORDER="0">
     <FONT COLOR="#7B7B7B" FACE="Roboto">PSAL</FONT>
     </TD><TD ALIGN="LEFT">
     <FONT COLOR="#7B7B7B" FACE="Roboto">FloatField</FONT>
@@ -1955,22 +1939,6 @@ digraph model_graph {
   
   
     <TR><TD ALIGN="LEFT" BORDER="0">
-    <FONT FACE="Roboto"><B>MISSION</B></FONT>
-    </TD><TD ALIGN="LEFT">
-    <FONT FACE="Roboto"><B>ForeignKey (PROFILE_ID)</B></FONT>
-    </TD></TR>
-  
-  
-  
-    <TR><TD ALIGN="LEFT" BORDER="0">
-    <FONT FACE="Roboto"><B>PROFILE_METADATA</B></FONT>
-    </TD><TD ALIGN="LEFT">
-    <FONT FACE="Roboto"><B>ForeignKey (PROFILE_ID)</B></FONT>
-    </TD></TR>
-  
-  
-  
-    <TR><TD ALIGN="LEFT" BORDER="0">
     <FONT FACE="Roboto">DATE_ADD</FONT>
     </TD><TD ALIGN="LEFT">
     <FONT FACE="Roboto">DateTimeField</FONT>
@@ -2014,6 +1982,14 @@ digraph model_graph {
     <FONT COLOR="#7B7B7B" FACE="Roboto">PRES</FONT>
     </TD><TD ALIGN="LEFT">
     <FONT COLOR="#7B7B7B" FACE="Roboto">FloatField</FONT>
+    </TD></TR>
+  
+  
+  
+    <TR><TD ALIGN="LEFT" BORDER="0">
+    <FONT FACE="Roboto">PROFILE_ID</FONT>
+    </TD><TD ALIGN="LEFT">
+    <FONT FACE="Roboto">CharField</FONT>
     </TD></TR>
   
   
@@ -3237,29 +3213,11 @@ digraph model_graph {
   env_data_models_continuous_profile -> deployments_models_deployment
   [label=" DEPLOYMENT (continuous_profile)"] [arrowhead=none, arrowtail=dot, dir=both];
 
-  env_data_models_continuous_profile -> env_data_models_cycle_metadata
-  [label=" PROFILE_METADATA (continuous_profile)"] [arrowhead=none, arrowtail=dot, dir=both];
-
-  env_data_models_continuous_profile -> env_data_models_mission_reported
-  [label=" MISSION (continuous_profile)"] [arrowhead=none, arrowtail=dot, dir=both];
-
   env_data_models_discrete_profile -> deployments_models_deployment
   [label=" DEPLOYMENT (discrete_profile)"] [arrowhead=none, arrowtail=dot, dir=both];
 
-  env_data_models_discrete_profile -> env_data_models_cycle_metadata
-  [label=" PROFILE_METADATA (discrete_profile)"] [arrowhead=none, arrowtail=dot, dir=both];
-
-  env_data_models_discrete_profile -> env_data_models_mission_reported
-  [label=" MISSION (discrete_profile)"] [arrowhead=none, arrowtail=dot, dir=both];
-
   env_data_models_park -> deployments_models_deployment
   [label=" DEPLOYMENT (park)"] [arrowhead=none, arrowtail=dot, dir=both];
-
-  env_data_models_park -> env_data_models_cycle_metadata
-  [label=" PROFILE_METADATA (park)"] [arrowhead=none, arrowtail=dot, dir=both];
-
-  env_data_models_park -> env_data_models_mission_reported
-  [label=" MISSION (park)"] [arrowhead=none, arrowtail=dot, dir=both];
 
 
   missions_models_mission -> deployments_models_deployment

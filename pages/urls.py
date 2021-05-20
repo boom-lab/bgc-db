@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from . import views, engineering_plots
 
 urlpatterns = [
     path('',views.index, name='index'),
@@ -12,5 +12,6 @@ urlpatterns = [
     path('ajax/update_profile_plot', views.update_profile_plot, name = "update_profile_plot"),
     path('ajax/update_map', views.update_map, name = "update_map"),
     path('ajax/get_profiles_list', views.get_profiles_list, name = "get_profiles_list"),
-    path('ajax/get_deployments_list', views.get_deployments_list, name = "get_deployments_list")
+    path('ajax/get_deployments_list', views.get_deployments_list, name = "get_deployments_list"),
+    path('ajax/update_float_detail_plot', engineering_plots.update_select_plot, name = "update_select_plot"),
 ]

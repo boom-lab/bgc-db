@@ -3,6 +3,7 @@ from plotly.offline import plot
 import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
+from django.http import JsonResponse
 
 from env_data.models import cycle_metadata
 
@@ -413,13 +414,30 @@ def duration_plot(filters):
     data = pd.DataFrame(query, columns=["ProfileId","GpsFixDate","TimeStartDescent",
         "TimeStartPark","TimeStartProfileDescent","TimeStartProfile","TimeStopProfile","TimeStartTelemetry"])
 
-    data["TimeStartDescent_delta"] = (data["TimeStartDescent"] - data["TimeStartDescent"]) + pd.to_datetime('1970/01/01')
-    data["GpsFixDate_delta"] = (data["GpsFixDate"] - data["TimeStartDescent"]) + pd.to_datetime('1970/01/01')
-    data["TimeStartPark_delta"] = (data["TimeStartPark"] - data["TimeStartDescent"]) + pd.to_datetime('1970/01/01')
-    data["TimeStartProfileDescent_delta"] = (data["TimeStartProfileDescent"] - data["TimeStartDescent"]) + pd.to_datetime('1970/01/01')
-    data["TimeStartProfile_delta"] = (data["TimeStartProfile"] - data["TimeStartDescent"]) + pd.to_datetime('1970/01/01')
-    data["TimeStopProfile_delta"] = (data["TimeStopProfile"] - data["TimeStartDescent"]) + pd.to_datetime('1970/01/01')
-    data["TimeStartTelemetry_delta"] = (data["TimeStartTelemetry"] - data["TimeStartDescent"]) + pd.to_datetime('1970/01/01')
+    data["TimeStartDescent_py_delta"] = (data["TimeStartDescent"] - data["TimeStartDescent"])
+    data["GpsFixDate_py_delta"] = (data["GpsFixDate"] - data["TimeStartDescent"])
+    data["TimeStartPark_py_delta"] = (data["TimeStartPark"] - data["TimeStartDescent"])
+    data["TimeStartProfileDescent_py_delta"] = (data["TimeStartProfileDescent"] - data["TimeStartDescent"])
+    data["TimeStartProfile_py_delta"] = (data["TimeStartProfile"] - data["TimeStartDescent"])
+    data["TimeStopProfile_py_delta"] = (data["TimeStopProfile"] - data["TimeStartDescent"]) 
+    data["TimeStartTelemetry_py_delta"] = (data["TimeStartTelemetry"] - data["TimeStartDescent"])
+
+    data["TimeStartDescent_delta"] = (data["TimeStartDescent_py_delta"]) + pd.to_datetime('1970/01/01')
+    data["GpsFixDate_delta"] = (data["GpsFixDate_py_delta"]) + pd.to_datetime('1970/01/01')
+    data["TimeStartPark_delta"] = (data["TimeStartPark_py_delta"]) +pd .to_datetime('1970/01/01')
+    data["TimeStartProfileDescent_delta"] = (data["TimeStartProfileDescent_py_delta"]) + pd.to_datetime('1970/01/01')
+    data["TimeStartProfile_delta"] = (data["TimeStartProfile_py_delta"]) + pd.to_datetime('1970/01/01')
+    data["TimeStopProfile_delta"] = (data["TimeStopProfile_py_delta"]) + pd.to_datetime('1970/01/01')
+    data["TimeStartTelemetry_delta"] = (data["TimeStartTelemetry_py_delta"]) + pd.to_datetime('1970/01/01')
+
+
+    hov_data = data.loc[:,["TimeStartDescent_py_delta",
+        "GpsFixDate_py_delta",
+        "TimeStartPark_py_delta",
+        "TimeStartProfileDescent_py_delta",
+        "TimeStartProfile_py_delta",
+        "TimeStopProfile_py_delta",
+        "TimeStartTelemetry_py_delta"]].astype(str).values.tolist()
 
     tickvals = []
     startdate =datetime(1970, 1, 1, 00, 00)
@@ -445,7 +463,9 @@ def duration_plot(filters):
                 'symbol':'square',
                 'color': "#99B0BF",
             },
-            hovertemplate ='%{y}',
+            customdata = hov_data,
+            hovertemplate ='%{customdata[0]}',
+            #hovertemplate ='%{y|%H:%M}',
             name="Start Descent"
         ),
     )
@@ -461,7 +481,8 @@ def duration_plot(filters):
                 'symbol':'square',
                 'color': "#003659",
             },
-            hovertemplate ='%{y}',
+            customdata = hov_data,
+            hovertemplate ='%{customdata[1]}',
             name="GPS Fix"
         ),
     )
@@ -479,7 +500,8 @@ def duration_plot(filters):
                 'symbol':'square',
                 'color': "#4D86A3",
             },
-            hovertemplate ='%{y}',
+            customdata = hov_data,
+            hovertemplate ='%{customdata[2]}',
             name="Time Start Park"
         ),
     )
@@ -511,7 +533,8 @@ def duration_plot(filters):
                 'symbol':'square',
                 'color': "#F07D86",
             },
-            hovertemplate ='%{y}',
+            customdata = hov_data,
+            hovertemplate ='%{customdata[4]}',
             name="Time Start Profile"
         ),
     )
@@ -527,7 +550,8 @@ def duration_plot(filters):
                 'symbol':'square',
                 'color': "#F0AB28",
             },
-            hovertemplate ='%{y}',
+            customdata = hov_data,
+            hovertemplate ='%{customdata[5]}',
             name="Time Stop Profile"
         ),
     )
@@ -543,7 +567,8 @@ def duration_plot(filters):
                 'symbol':'square',
                 'color': "#DC143C",
             },
-            hovertemplate ='%{y}',
+            customdata = hov_data,
+            hovertemplate ='%{customdata[6]}',
             name="Time Start Telemetry"
         ),
     )
@@ -573,8 +598,11 @@ def surface_duration_plot(filters):
     query = cycle_metadata.objects.filter(**filters).order_by("ProfileId").values_list("ProfileId","GPS_DURATION","TRANS_DURATION")
     data = pd.DataFrame(query, columns=["ProfileId","GPS_DURATION","TRANS_DURATION"])
 
-    data["GPS_DURATION"] = data["GPS_DURATION"] + pd.to_datetime('1970/01/01')
-    data["TRANS_DURATION"] = data["TRANS_DURATION"] + pd.to_datetime('1970/01/01')
+    data["GPS_DURATION_plotly"] = data["GPS_DURATION"] + pd.to_datetime('1970/01/01')
+    data["TRANS_DURATION_plotly"] = data["TRANS_DURATION"] + pd.to_datetime('1970/01/01')
+
+    hov_data = data.loc[:,["GPS_DURATION",
+        "TRANS_DURATION"]].astype(str).values.tolist()
 
     tickvals = []
     startdate =datetime(1970, 1, 1, 00, 00)
@@ -592,9 +620,10 @@ def surface_duration_plot(filters):
     fig.add_trace(
         go.Bar(
             x=data["ProfileId"],
-            y=data["GPS_DURATION"],
+            y=data["GPS_DURATION_plotly"],
             marker_color="#A65132",
-            hovertemplate ='%{y}',
+            customdata = hov_data,
+            hovertemplate ='%{customdata[0]}',
             name="GPS"
         ),
     )
@@ -602,9 +631,10 @@ def surface_duration_plot(filters):
     fig.add_trace(
         go.Bar(
             x=data["ProfileId"],
-            y=data["TRANS_DURATION"],
+            y=data["TRANS_DURATION_plotly"],
             marker_color="#3C7373",
-            hovertemplate ='%{y}',
+            customdata = hov_data,
+            hovertemplate ='%{customdata[1]}',
             name="Transmission"
         ),
     )
@@ -717,3 +747,48 @@ def upload_attempt_plot(filters):
     plot_div = plot(fig,output_type='div', include_plotlyjs=False, config= {
         'displaylogo': False, 'modeBarButtonsToRemove':['lasso2d', 'select2d','resetScale2d']})  
     return plot_div
+
+
+def update_select_plot(request):
+    """Float Detail Page - Plot where you can select the variable to look at"""
+    if request.is_ajax and request.method == "GET":
+
+        deployment = request.GET.get("deployment", None)
+        var_selected = request.GET.get("var_selected", None)
+        query = cycle_metadata.objects.filter(DEPLOYMENT=deployment).order_by("ProfileId").values_list("ProfileId",var_selected)
+        data = np.core.records.fromrecords(query, names=["ProfileId",var_selected])
+
+        fig = go.Figure()
+
+        fig.add_trace(
+            go.Scatter(
+                x=data["ProfileId"],
+                y=data[var_selected],
+                mode='lines',
+                marker = {
+                    'color': "#1f77b4",
+                },
+                #customdata = hov_data,
+                hovertemplate ='%{y:.2f}',
+                #yaxis="y2",
+                name=var_selected
+            ),
+        )
+
+        # Formatting
+        fig.update_layout(
+            template = "ggplot2",
+            xaxis = {'title':"Cycle"},
+            yaxis = {'title':var_selected},
+            font = {"size":15},
+            height=500,
+            showlegend=True,
+            margin={'t': 30, 'l':0,'r':0,'b':0},
+        )
+
+        plot_div = plot(fig,output_type='div', include_plotlyjs=False, config= {
+            'displaylogo': False, 'modeBarButtonsToRemove':['lasso2d', 'select2d','resetScale2d']})  
+
+        return JsonResponse({'plot_div': plot_div}, status = 200)
+
+    return JsonResponse({}, status = 400)

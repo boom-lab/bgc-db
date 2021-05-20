@@ -50,7 +50,6 @@ def float_detail(request):
         abpres_plot = ep.single_var_plot(filters, "AirBladderPressure", y_label="Pressure", legend_label="Air Bladder Pressure")
         buoy_pump_time_plot = ep.single_var_plot(filters, "BuoyancyPumpOnTime", y_label="Time", 
             legend_label="Buoyancy Pump On Time")
-        surface_pres_plot = ep.single_var_plot(filters, "SurfacePressure", y_label="Pressure (dbar)", legend_label="Surface Pressure")
 
         calc={}
         calc['MSG_KB'] = round(latest_cycle_meta.MSG_BYTES/1000,1)
@@ -67,11 +66,10 @@ def float_detail(request):
             'buoyancy_plot':ep.buoyancy_position_plot(filters),
             'air_bladder_pres_plot': abpres_plot,
             'buoy_pump_time_plot': buoy_pump_time_plot,
-            'surface_pres_plot':surface_pres_plot,
             'duration_plot':ep.duration_plot(filters),
             'con_attempt_plot':ep.con_attempt_plot(filters),
             'upload_attempt_plot':ep.upload_attempt_plot(filters),
-            'surface_duration_plot':ep.surface_duration_plot(filters)
+            'surface_duration_plot':ep.surface_duration_plot(filters),
         }
         return render(request, 'pages/float_detail.html', context)
     else: #Pre deployment
