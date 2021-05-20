@@ -5,9 +5,9 @@ class cycle_metadata(models.Model):
 
     #fields of the model
     DEPLOYMENT = models.ForeignKey(deployment, related_name='cycle_metadata', on_delete=models.PROTECT)
-    
     DATE_ADD = models.DateTimeField() #creation of record in db
-    PROFILE_ID = models.CharField(default=0, blank=True, null=True, max_length=20, unique=True)
+    PROFILE_ID = models.CharField(default=0, max_length=20, unique=True)
+
     ParkObs = models.CharField(blank=True, null=True, max_length=200)
     ParkDescentP = models.CharField(blank=True, null=True, max_length=2000)
     CONNECTION_ATTEMPTS = models.IntegerField(null=True, blank=True)
@@ -54,7 +54,7 @@ for field in meta_date_fields:
 class mission_reported(models.Model):
     DEPLOYMENT = models.ForeignKey(deployment, related_name='mission_reported', on_delete=models.PROTECT)
     DATE_ADD = models.DateTimeField() #creation of record in db
-    PROFILE_ID = models.CharField(default=0, blank=True, null=True, max_length=20, unique=True)
+    PROFILE_ID = models.CharField(default=0, max_length=20, unique=True)
     
     AscentTimeOut = models.IntegerField(blank=True, null=True)
     BuoyancyNudge = models.IntegerField(blank=True, null=True)
@@ -104,9 +104,8 @@ class continuous_profile(models.Model):
 
     #fields of the model
     DEPLOYMENT = models.ForeignKey(deployment, on_delete=models.PROTECT)
-    PROFILE_METADATA = models.ForeignKey(cycle_metadata, to_field='PROFILE_ID', on_delete=models.PROTECT)
-    MISSION = models.ForeignKey(mission_reported, to_field='PROFILE_ID', on_delete=models.PROTECT)
     DATE_ADD = models.DateTimeField() #creation of record in db
+    PROFILE_ID = models.CharField(default=0, max_length=20)
     
     #Raw variables
     PRES = models.FloatField("Pressure dbar", blank=True, null=True)
@@ -156,9 +155,8 @@ class continuous_profile(models.Model):
 class discrete_profile(models.Model):
     #fields of the model
     DEPLOYMENT = models.ForeignKey(deployment, on_delete=models.PROTECT)
-    PROFILE_METADATA = models.ForeignKey(cycle_metadata, to_field='PROFILE_ID', on_delete=models.PROTECT)
-    MISSION = models.ForeignKey(mission_reported, to_field='PROFILE_ID', on_delete=models.PROTECT)
     DATE_ADD = models.DateTimeField() #creation of record in db
+    PROFILE_ID = models.CharField(default=0, max_length=20)
 
     #Raw variables
     PRES = models.FloatField("Pressure dbar", blank=True, null=True)
@@ -208,10 +206,9 @@ class park(models.Model):
 
     #fields of the model
     DEPLOYMENT = models.ForeignKey(deployment, related_name='park', on_delete=models.PROTECT)
-    PROFILE_METADATA = models.ForeignKey(cycle_metadata, to_field='PROFILE_ID', on_delete=models.PROTECT)
-    MISSION = models.ForeignKey(mission_reported, to_field='PROFILE_ID', on_delete=models.PROTECT)
-
     DATE_ADD = models.DateTimeField()
+    PROFILE_ID = models.CharField(default=0, max_length=20)
+
     DATE_MEASURED = models.DateTimeField()
     PRES = models.FloatField(blank=True, null=True) #Blank=True is not required
     TEMP = models.FloatField(blank=True, null=True)

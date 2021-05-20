@@ -12,7 +12,7 @@ def con_profile_view(request):
 
     if request.method == 'DELETE':
         profile_id = request.GET.get('PROFILE_ID', None)
-        filters={"MISSION":profile_id}
+        filters={"PROFILE_ID":profile_id}
         query = continuous_profile.objects.filter(**filters)
         res = query.delete()
         print(res[0])
@@ -29,7 +29,7 @@ def dis_profile_view(request):
 
     if request.method == 'DELETE':
         profile_id = request.GET.get('PROFILE_ID', None)
-        filters={"MISSION":profile_id}
+        filters={"PROFILE_ID":profile_id}
         query = discrete_profile.objects.filter(**filters)
         res = query.delete()
         print(res[0])
@@ -46,7 +46,7 @@ def park_view(request):
 
     if request.method == 'DELETE':
         profile_id = request.GET.get('PROFILE_ID', None)
-        filters={"MISSION":profile_id}
+        filters={"PROFILE_ID":profile_id}
         query = park.objects.filter(**filters)
         res = query.delete()
         print(res[0])
