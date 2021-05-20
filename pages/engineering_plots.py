@@ -572,7 +572,6 @@ def surface_duration_plot(filters):
 
     query = cycle_metadata.objects.filter(**filters).order_by("ProfileId").values_list("ProfileId","GPS_DURATION","TRANS_DURATION")
     data = pd.DataFrame(query, columns=["ProfileId","GPS_DURATION","TRANS_DURATION"])
-    print(data["TRANS_DURATION"])
 
     data["GPS_DURATION"] = data["GPS_DURATION"] + pd.to_datetime('1970/01/01')
     data["TRANS_DURATION"] = data["TRANS_DURATION"] + pd.to_datetime('1970/01/01')

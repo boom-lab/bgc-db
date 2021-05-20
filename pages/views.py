@@ -98,7 +98,7 @@ def update_profile_plot(request):
 
             #Hover data
             hov = pd.DataFrame()
-            hov['float_profile'] = list(continuous_profile.objects.filter(PROFILE_METADATA=profile).all().values_list('MISSION', flat=True))
+            hov['float_profile'] = list(continuous_profile.objects.filter(PROFILE_ID=profile).all().values_list('PROFILE_ID', flat=True))
             hov['profile'] = hov['float_profile'].str.split('.').str[1]
             hov['float'] = hov['float_profile'].str.split('.').str[0]
             hov_data = hov.values.tolist()
@@ -109,8 +109,8 @@ def update_profile_plot(request):
             #Continuous data
             if cont and (bot_var != "NITRATE"):
                 #Continuous data queries and convert to list
-                PRES = continuous_profile.objects.filter(PROFILE_METADATA=profile).all().values_list('PRES', flat=True)
-                bot = continuous_profile.objects.filter(PROFILE_METADATA=profile).all().values_list(bot_var, flat=True)
+                PRES = continuous_profile.objects.filter(PROFILE_ID=profile).all().values_list('PRES', flat=True)
+                bot = continuous_profile.objects.filter(PROFILE_ID=profile).all().values_list(bot_var, flat=True)
 
                 #Convert lists to arrays
                 bot_data = np.array(bot)
@@ -120,7 +120,7 @@ def update_profile_plot(request):
 
             #Top axis continuous plotting
             if cont and top_var and (top_var != "NITRATE"):
-                top = continuous_profile.objects.filter(PROFILE_METADATA=profile).all().values_list(top_var, flat=True)
+                top = continuous_profile.objects.filter(PROFILE_ID=profile).all().values_list(top_var, flat=True)
                 top_data = np.array(top)
 
                 add_top_trace(fig, top_data, y_data, top_var, hov_data, wmo)
@@ -128,8 +128,8 @@ def update_profile_plot(request):
             #discrete data
             if dis:
                 #Discrete data queries and convert to list
-                PRES = discrete_profile.objects.filter(PROFILE_METADATA=profile).all().values_list('PRES', flat=True)
-                bot = discrete_profile.objects.filter(PROFILE_METADATA=profile).all().values_list(bot_var, flat=True)
+                PRES = discrete_profile.objects.filter(PROFILE_ID=profile).all().values_list('PRES', flat=True)
+                bot = discrete_profile.objects.filter(PROFILE_ID=profile).all().values_list(bot_var, flat=True)
 
                 #Convert lists to arrays
                 bot_data = np.array(bot)
@@ -139,7 +139,7 @@ def update_profile_plot(request):
 
                 #Top axis discrete plotting
                 if top_var:
-                    top = discrete_profile.objects.filter(PROFILE_METADATA=profile).all().values_list(top_var, flat=True)
+                    top = discrete_profile.objects.filter(PROFILE_ID=profile).all().values_list(top_var, flat=True)
                     top_data = np.array(top)
                     add_top_trace(fig, top_data, y_data, top_var, hov_data, wmo, mode="markers")          
             
