@@ -52,10 +52,14 @@ def float_detail(request):
             legend_label="Buoyancy Pump On Time")
 
         calc={}
-        calc['MSG_KB'] = round(latest_cycle_meta.MSG_BYTES/1000,1)
-        calc['ISUS_KB'] = round(latest_cycle_meta.ISUS_BYTES/1000,1)
-        calc['LOG_KB'] = round(latest_cycle_meta.LOG_BYTES/1000,1)
-        calc['TOTAL'] = calc['MSG_KB']+calc['ISUS_KB']+calc['LOG_KB']
+        if latest_cycle_meta.MSG_BYTES:
+            calc['MSG_KB'] = round(latest_cycle_meta.MSG_BYTES/1000,1)
+        if latest_cycle_meta.ISUS_BYTES:
+            calc['ISUS_KB'] = round(latest_cycle_meta.ISUS_BYTES/1000,1)
+        if latest_cycle_meta.LOG_BYTES:
+            calc['LOG_KB'] = round(latest_cycle_meta.LOG_BYTES/1000,1)
+        if latest_cycle_meta.MSG_BYTES and latest_cycle_meta.ISUS_BYTES and latest_cycle_meta.LOG_BYTES:
+            calc['TOTAL'] = calc['MSG_KB']+calc['ISUS_KB']+calc['LOG_KB']
 
         context = {
             'cycle_metadata': latest_cycle_meta,
