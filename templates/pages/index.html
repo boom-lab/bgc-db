@@ -1,10 +1,44 @@
 {% extends 'partials/base.html' %}
+{% load static %}
+{% block header %}
+    <!-- Datatabes -->
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.24/datatables.min.js"></script>
+    <script src="{% static 'js/table.js' %}"></script>
+{% endblock header %}
 {% block content %}
-<main class="container">
-    <div class="bg-light p-5 rounded">
-        <h1>BGC Argo Database</h1>
-        <p class="lead">Site Under Construction</p>
-        <!-- <a class="btn btn-lg btn-primary" href="../components/navbar/" role="button">View navbar docs &raquo;</a> -->
-    </div>
-</main>
+<section class="status-table-container">
+  <table id="statustable" class="table tabel-sm table-hover">
+      <thead>
+        <tr>
+          <th scope="col">Serial Number</th>
+          <th scope="col">WMO</th>
+          <th scope="col">Platform Type</th>
+          <th scope="col">Status</th>
+          <th scope="col">Launch Date (UTC)</th>
+          <th scope="col">Last Report (UTC)</th>
+          <th scope="col">Next Report (est)</th>
+        </tr>
+      </thead>
+      <tbody>
+          {% for deployment in deployments %}
+          <tr class='clickable-row' href="/float_detail?FLOAT_SERIAL_NO={{ deployment.FLOAT_SERIAL_NO }}&PLATFORM_TYPE={{ deployment.PLATFORM_TYPE.VALUE }}">
+            <th class="cursor-pointer">{{ deployment.FLOAT_SERIAL_NO }}</th>
+            <td class="cursor-pointer">{{ deployment.PLATFORM_NUMBER }}</td>
+            <td class="cursor-pointer">{{ deployment.PLATFORM_TYPE.VALUE }}</td>
+            <td class="cursor-pointer">{{ deployment.status }}</td>
+            <td class="cursor-pointer">{{ deployment.LAUNCH_DATE }}</td>
+            <td class="cursor-pointer">{{ deployment.last_report }}</td>
+            <td class="cursor-pointer">{{ deployment.next_report }}</td>
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+</section>
 {% endblock %}
+{% block footer %}
+<script>
+  $(".clickable-row").click(function (element) {
+    window.location = element.currentTarget.getAttribute('href');
+  });
+</script>
+{% endblock footer %}

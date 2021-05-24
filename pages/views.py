@@ -12,18 +12,17 @@ from .plot_helpers import add_bottom_trace, add_top_trace, var_translation
 import pages.engineering_plots as ep
 
 def index(request):
-    return render(request, 'pages/index.html')
-
-def status(request):
     deployments = deployment.objects.all()
     context = {
         'deployments': deployments,
     }
-    return render(request, 'pages/status.html', context)
+    return render(request, 'pages/index.html', context)
 
 def profile_plot(request):
     return render(request, 'pages/profile_plot.html')
 
+def cohort(request):
+    return render(request, 'pages/cohort.html')
 
 def display_map(request):
     return render(request, 'pages/map.html')
