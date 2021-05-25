@@ -124,11 +124,19 @@ class origin_countries(models.Model):
     def __str__(self): 
         return str(self.DISPLAY)
 
+
+class DeploymentType(models.TextChoices): #AOML, not Argo compliant
+    RV = 'R/V','R/V'
+    VOS = 'VOS','VOS'
+    MV = 'M/V','M/V'
+    AIR = 'AIR','AIR'
+
 class deployment_platforms(models.Model):
 
     VALUE = models.CharField(max_length=100, unique=True)
     DISPLAY = models.CharField(max_length=200)
     ACTIVE = models.BooleanField()
+    TYPE = models.CharField(max_length=25, choices=DeploymentType.choices)
     DESCRIPTION = models.CharField(max_length=2000, blank=True, null=True)
     
     class Meta:

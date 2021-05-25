@@ -85,6 +85,6 @@ class OriginCountriesAdmin(ExportMixin, admin.ModelAdmin):
 admin.site.register(cm.origin_countries, OriginCountriesAdmin)
 
 class DeploymentPlatformAdmin(ExportMixin, admin.ModelAdmin):
-    list_display = ['VALUE','DISPLAY','ACTIVE','DESCRIPTION']
+    list_display = ['VALUE','DISPLAY','ACTIVE','TYPE','DESCRIPTION']
     list_per_page = 100
 admin.site.register(cm.deployment_platforms, DeploymentPlatformAdmin)

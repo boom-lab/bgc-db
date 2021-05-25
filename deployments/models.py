@@ -10,12 +10,6 @@ class Status(models.TextChoices): #AOML, not Argo compliant
     AS_RECORDED = 'as recorded','as recorded'
     UNKNOWN = 'unknown','unknown'
 
-class DeploymentType(models.TextChoices): #AOML, not Argo compliant
-    RV = 'R/V','R/V'
-    VOS = 'VOS','VOS'
-    MV = 'M/V','M/V'
-    AIR = 'AIR','AIR'
-
 class ModemType(models.TextChoices): #internal, not argo compliant
     Civilian = 'Civilian','Civilian'
     DOD = 'DOD','Department of Defence'
@@ -66,7 +60,6 @@ class deployment(models.Model):
 
     DEPLOYER = models.CharField(max_length=25, blank=True, null=True)
     DEPLOYER_ADDRESS = models.CharField(max_length=100, blank=True, null=True)
-    DEPLOYMENT_TYPE = models.CharField(choices=DeploymentType.choices, max_length=25, blank=True, null=True)
     DEPLOYMENT_PLATFORM = models.ForeignKey(cm.deployment_platforms, to_field="VALUE", max_length=25, blank=True, null=True, 
         on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     DEPLOYMENT_CRUISE_ID = models.CharField(max_length=25, blank=True, null=True)
