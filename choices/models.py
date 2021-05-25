@@ -130,6 +130,20 @@ class origin_countries(models.Model):
     def __str__(self): 
         return str(self.DISPLAY)
 
+class deployment_platforms(models.Model):
+
+    VALUE = models.CharField(max_length=100, unique=True)
+    DISPLAY = models.CharField(max_length=200)
+    ACTIVE = models.BooleanField()
+    SOURCE = models.CharField(max_length=50)
+    DESCRIPTION = models.CharField(max_length=2000)
+    
+    class Meta:
+        verbose_name_plural = "Deployment Platforms"
+
+    def __str__(self): 
+        return str(self.DISPLAY)
+
 class platform_makers(models.Model):
 
     VALUE = models.CharField(max_length=100, unique=True)
