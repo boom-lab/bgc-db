@@ -59,6 +59,77 @@ class instrument_types(models.Model):
     def __str__(self): 
         return str(self.DISPLAY)
 
+class instrument_types_AOML(models.Model):
+
+    VALUE = models.CharField(max_length=100, unique=True)
+    DISPLAY = models.CharField(max_length=200)
+    ACTIVE = models.BooleanField()
+    SOURCE = models.CharField(max_length=50)
+    DESCRIPTION = models.CharField(max_length=2000)
+    
+    class Meta:
+        verbose_name_plural = "Intrument Types (AOML)"
+
+    def __str__(self): 
+        return str(self.DISPLAY)
+
+
+class wmo_recorder_types(models.Model):
+
+    VALUE = models.CharField(max_length=100, unique=True)
+    DISPLAY = models.CharField(max_length=200)
+    ACTIVE = models.BooleanField()
+    SOURCE = models.CharField(max_length=50)
+    DESCRIPTION = models.CharField(max_length=2000)
+    
+    class Meta:
+        verbose_name_plural = "WMO Recorder Types"
+
+    def __str__(self): 
+        return str(self.DISPLAY)
+
+class battery_types(models.Model):
+
+    VALUE = models.CharField(max_length=100, unique=True)
+    DISPLAY = models.CharField(max_length=200)
+    ACTIVE = models.BooleanField()
+    SOURCE = models.CharField(max_length=50)
+    DESCRIPTION = models.CharField(max_length=2000)
+    
+    class Meta:
+        verbose_name_plural = "Battery Types"
+
+    def __str__(self): 
+        return str(self.DISPLAY)
+
+class battery_manufacturers(models.Model):
+
+    VALUE = models.CharField(max_length=100, unique=True)
+    DISPLAY = models.CharField(max_length=200)
+    ACTIVE = models.BooleanField()
+    SOURCE = models.CharField(max_length=50)
+    DESCRIPTION = models.CharField(max_length=2000)
+    
+    class Meta:
+        verbose_name_plural = "Battery Manufacturers"
+
+    def __str__(self): 
+        return str(self.DISPLAY)
+
+class origin_countries(models.Model):
+
+    VALUE = models.CharField(max_length=100, unique=True)
+    DISPLAY = models.CharField(max_length=200)
+    ACTIVE = models.BooleanField()
+    SOURCE = models.CharField(max_length=50)
+    DESCRIPTION = models.CharField(max_length=2000)
+    
+    class Meta:
+        verbose_name_plural = "Origin Countries"
+
+    def __str__(self): 
+        return str(self.DISPLAY)
+
 class platform_makers(models.Model):
 
     VALUE = models.CharField(max_length=100, unique=True)

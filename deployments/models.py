@@ -32,7 +32,7 @@ class deployment(models.Model):
         on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     PLATFORM_TYPE = models.ForeignKey(platform_types, to_field="VALUE", max_length=25, blank=True, null=True, 
         on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
-    INST_TYPE = models.CharField(max_length=25, blank=True, null=True)
+    INST_TYPE = models.CharField("INST TYPE (AOML)", max_length=25, blank=True, null=True)
     WMO_INST_TYPE = models.ForeignKey(instrument_types, to_field="VALUE", max_length=25, blank=True, null=True, 
         on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     WMO_RECORDER_TYPE = models.CharField(max_length=25, blank=True, null=True)
