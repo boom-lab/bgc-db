@@ -93,8 +93,6 @@ class battery_types(models.Model):
     VALUE = models.CharField(max_length=100, unique=True)
     DISPLAY = models.CharField(max_length=200)
     ACTIVE = models.BooleanField()
-    SOURCE = models.CharField(max_length=50)
-    DESCRIPTION = models.CharField(max_length=2000)
     
     class Meta:
         verbose_name_plural = "Battery Types"
@@ -107,8 +105,6 @@ class battery_manufacturers(models.Model):
     VALUE = models.CharField(max_length=100, unique=True)
     DISPLAY = models.CharField(max_length=200)
     ACTIVE = models.BooleanField()
-    SOURCE = models.CharField(max_length=50)
-    DESCRIPTION = models.CharField(max_length=2000)
     
     class Meta:
         verbose_name_plural = "Battery Manufacturers"
@@ -121,8 +117,6 @@ class origin_countries(models.Model):
     VALUE = models.CharField(max_length=100, unique=True)
     DISPLAY = models.CharField(max_length=200)
     ACTIVE = models.BooleanField()
-    SOURCE = models.CharField(max_length=50)
-    DESCRIPTION = models.CharField(max_length=2000)
     
     class Meta:
         verbose_name_plural = "Origin Countries"
@@ -135,8 +129,7 @@ class deployment_platforms(models.Model):
     VALUE = models.CharField(max_length=100, unique=True)
     DISPLAY = models.CharField(max_length=200)
     ACTIVE = models.BooleanField()
-    SOURCE = models.CharField(max_length=50)
-    DESCRIPTION = models.CharField(max_length=2000)
+    DESCRIPTION = models.CharField(max_length=2000, blank=True, null=True)
     
     class Meta:
         verbose_name_plural = "Deployment Platforms"
@@ -150,7 +143,7 @@ class platform_makers(models.Model):
     DISPLAY = models.CharField(max_length=200)
     ACTIVE = models.BooleanField()
     SOURCE = models.CharField(max_length=50)
-    DESCRIPTION = models.CharField(max_length=2000)
+    DESCRIPTION = models.CharField(max_length=2000, blank=True, null=True)
     
     class Meta:
         verbose_name_plural = "Platform Makers"
@@ -163,7 +156,7 @@ class platform_types(models.Model):
     DISPLAY = models.CharField(max_length=200)
     ACTIVE = models.BooleanField()
     SOURCE = models.CharField(max_length=50)
-    DESCRIPTION = models.CharField(max_length=2000)
+    DESCRIPTION = models.CharField(max_length=2000, blank=True, null=True)
     KEY = models.IntegerField()
     
     class Meta:
@@ -177,7 +170,7 @@ class transmission_systems(models.Model):
     DISPLAY = models.CharField(max_length=200)
     ACTIVE = models.BooleanField()
     SOURCE = models.CharField(max_length=50)
-    DESCRIPTION = models.CharField(max_length=2000)
+    DESCRIPTION = models.CharField(max_length=2000, blank=True, null=True)
     
     class Meta:
         verbose_name_plural = "Transmission Systems"

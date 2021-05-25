@@ -60,27 +60,27 @@ class EventsAdmin(ExportMixin, admin.ModelAdmin):
 admin.site.register(cm.events, EventsAdmin)
 
 class InstTypesAOMLAdmin(ExportMixin, admin.ModelAdmin):
-    list_display = ['VALUE','DISPLAY','ACTIVE','DESCRIPTION']
+    list_display = ['VALUE','DISPLAY','ACTIVE','SOURCE','DESCRIPTION']
     list_per_page = 100
 admin.site.register(cm.instrument_types_AOML, InstTypesAOMLAdmin)
 
 class WMOrecorderTypesAdmin(ExportMixin, admin.ModelAdmin):
-    list_display = ['VALUE','DISPLAY','ACTIVE','DESCRIPTION']
+    list_display = ['VALUE','DISPLAY','ACTIVE','SOURCE','DESCRIPTION']
     list_per_page = 100
 admin.site.register(cm.wmo_recorder_types, WMOrecorderTypesAdmin)
 
 class BatteryTypesAdmin(ExportMixin, admin.ModelAdmin):
-    list_display = ['VALUE','DISPLAY','ACTIVE','DESCRIPTION']
+    list_display = ['VALUE','DISPLAY','ACTIVE']
     list_per_page = 100
 admin.site.register(cm.battery_types, BatteryTypesAdmin)
 
 class BatteryManufacturersAdmin(ExportMixin, admin.ModelAdmin):
-    list_display = ['VALUE','DISPLAY','ACTIVE','DESCRIPTION']
+    list_display = ['VALUE','DISPLAY','ACTIVE']
     list_per_page = 100
 admin.site.register(cm.battery_manufacturers, BatteryManufacturersAdmin)
 
 class OriginCountriesAdmin(ExportMixin, admin.ModelAdmin):
-    list_display = ['VALUE','DISPLAY','ACTIVE','DESCRIPTION']
+    list_display = ['VALUE','DISPLAY','ACTIVE']
     list_per_page = 100
 admin.site.register(cm.origin_countries, OriginCountriesAdmin)
 
