@@ -67,6 +67,7 @@ class deployment(models.Model):
     DEPLOYMENT_CRUISE_ID = models.CharField(max_length=25, blank=True, null=True)
     DEPLOYMENT_REFERENCE_STATION_ID = models.CharField(max_length=25, blank=True, null=True)
     DEPLOYMENT_PLATFORM_ID = models.CharField(max_length=25, blank=True, null=True)
+    DEPLOYMENT_EXPECTED_MOB = models.DateTimeField(blank=True, null=True)
     
     FLOAT_CONTROLLER_SERIAL_NO = models.CharField(max_length=25, blank=True, null=True)
     GPS_SERIAL_NO = models.CharField(max_length=25, blank=True, null=True)

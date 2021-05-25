@@ -77,7 +77,6 @@ def export_metadata(request, entry_id):
     if not d.COMMENTS:
         d.COMMENTS = 'n/a'
         
-    nitrate_coefs = []
     for s in sensors:
         if s.SENSOR_CALIB_DATE:
             s.SENSOR_CALIB_DATE = s.SENSOR_CALIB_DATE.strftime('%d %m %Y')
