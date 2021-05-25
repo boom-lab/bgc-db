@@ -67,7 +67,7 @@ class deployment(models.Model):
     DEPLOYMENT_CRUISE_ID = models.CharField(max_length=25, blank=True, null=True)
     DEPLOYMENT_REFERENCE_STATION_ID = models.CharField(max_length=25, blank=True, null=True)
     DEPLOYMENT_PLATFORM_ID = models.CharField(max_length=25, blank=True, null=True)
-    DEPLOYMENT_MOB = models.DateTimeField(blank=True, null=True)
+    DEPLOYMENT_MOB = models.DateField(blank=True, null=True)
     DEPLOYMENT_PORT = models.CharField(max_length=50, blank=True, null=True)
     
     FLOAT_CONTROLLER_SERIAL_NO = models.CharField(max_length=25, blank=True, null=True)
