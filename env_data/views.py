@@ -1,8 +1,11 @@
+from env_data.serializers import CycleMetaSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from .models import continuous_profile, discrete_profile, park, cycle_metadata, mission_reported
 from django.http.response import JsonResponse
-from rest_framework import status
+from rest_framework import status, generics
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.response import Response
 
 @api_view(['DELETE','GET'])
 @permission_classes([IsAuthenticated])
@@ -66,7 +69,6 @@ def cycle_metadata_view(request):
         filters={"PROFILE_ID":profile_id}
         query = cycle_metadata.objects.filter(**filters)
         res = query.delete()
-        print(res[0])
         if res[0]==0: #If nothing was deleted
             return JsonResponse({'status': 'nothing deleted'}, status=status.HTTP_400_BAD_REQUEST)
         return JsonResponse({'status': 'deleted '+str(res[0])+" entries"}, status=status.HTTP_200_OK)

@@ -1,3 +1,4 @@
+from env_data import serializers
 from django.shortcuts import render, get_object_or_404
 from django.http.response import JsonResponse
 from django.http import HttpResponse
@@ -13,8 +14,6 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from .models import deployment
 from .serializers import DeploymentSerializer, CurrentDeploymentSerializer
-
-
 
 
 #Admin area
@@ -104,14 +103,14 @@ def export_metadata(request, entry_id):
     return response
 
 #APIs
-#Current metadata api, only most recent mission record (all sensors), public
+#Current metadata api, only most recent mission record, all sensors, most recent cycle_metadata. public
 class GetCrtMetadata(generics.ListAPIView): #Read only
     serializer_class = CurrentDeploymentSerializer
     queryset=deployment.objects.all()
     filter_backends = [DjangoFilterBackend]
     filter_fields = [field.name for field in deployment._meta.fields]
 
-
+# All metadata
 class Metadata(APIView):
     permission_classes=[IsAuthenticated]
 
@@ -121,7 +120,6 @@ class Metadata(APIView):
         filters['PLATFORM_TYPE'] = request.GET.get("PLATFORM_TYPE", None)
         if not filters['PLATFORM_TYPE'] or not filters['FLOAT_SERIAL_NO']:
             return JsonResponse({'details':'Error: FLOAT_SERIAL_NO or PLATFORM_TYPE not provided'}, status=status.HTTP_400_BAD_REQUEST)
-        print(filters)
         dep = deployment.objects.filter(**filters)
         serializer = DeploymentSerializer(dep, many=True)
         return Response(serializer.data)
@@ -150,14 +148,10 @@ class Metadata(APIView):
 @api_view(['GET'])
 def get_wmo(request):
     filters={}
-    try:
-        filters['FLOAT_SERIAL_NO'] = request.GET['FLOAT_SERIAL_NO']
-    except:
-        return JsonResponse({'details':'Error: FLOAT_SERIAL_NO not provided'}, status=status.HTTP_400_BAD_REQUEST)
-    try:
-        filters['PLATFORM_TYPE'] = request.GET['PLATFORM_TYPE']
-    except:
-        return JsonResponse({'details':'Error: PLATFORM_TYPE not provided'}, status=status.HTTP_400_BAD_REQUEST)
+    filters['FLOAT_SERIAL_NO'] = request.GET.get("FLOAT_SERIAL_NO", None)
+    filters['PLATFORM_TYPE'] = request.GET.get("PLATFORM_TYPE", None)
+    if not filters['PLATFORM_TYPE'] or not filters['FLOAT_SERIAL_NO']:
+        return JsonResponse({'details':'Error: FLOAT_SERIAL_NO or PLATFORM_TYPE not provided'}, status=status.HTTP_400_BAD_REQUEST)
 
     queryset = deployment.objects.filter(**filters)
 
@@ -172,6 +166,7 @@ def get_wmo(request):
         'FLOAT_SERIAL_NO':deployment_entry.FLOAT_SERIAL_NO,
         'WMO':deployment_entry.PLATFORM_NUMBER,
     })
+
 
 @api_view(['GET'])
 def get_cal(request):
