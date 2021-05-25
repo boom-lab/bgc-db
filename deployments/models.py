@@ -1,6 +1,7 @@
 from datetime import datetime, timezone, timedelta
 from django.db import models
 from choices.models import platform_makers, platform_types, transmission_systems, instrument_types, institutions, funders
+from choices import models as cm
 import numpy as np
 
 #Domains for choices and db contstraints
@@ -32,10 +33,12 @@ class deployment(models.Model):
         on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     PLATFORM_TYPE = models.ForeignKey(platform_types, to_field="VALUE", max_length=25, blank=True, null=True, 
         on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
-    INST_TYPE = models.CharField("INST TYPE (AOML)", max_length=25, blank=True, null=True)
+    INST_TYPE = models.ForeignKey(cm.instrument_types_AOML, to_field="VALUE", max_length=25, blank=True, null=True, 
+        on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     WMO_INST_TYPE = models.ForeignKey(instrument_types, to_field="VALUE", max_length=25, blank=True, null=True, 
         on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
-    WMO_RECORDER_TYPE = models.CharField(max_length=25, blank=True, null=True)
+    WMO_RECORDER_TYPE = models.ForeignKey(cm.wmo_recorder_types, to_field="VALUE", max_length=25, blank=True, null=True, 
+        on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
 
     TRANS_SYSTEM = models.ForeignKey(transmission_systems, to_field="VALUE", max_length=25, blank=True, null=True, 
         on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
@@ -58,12 +61,14 @@ class deployment(models.Model):
         on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     PI_NAME  = models.CharField(max_length=100, blank=True, null=True)
     PI_ADDRESS = models.CharField(max_length=100, blank=True, null=True)
-    ORIGIN_COUNTRY = models.CharField(max_length=25, blank=True, null=True)
+    ORIGIN_COUNTRY = models.ForeignKey(cm.origin_countries, to_field="VALUE", max_length=25, blank=True, null=True, 
+        on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
 
     DEPLOYER = models.CharField(max_length=25, blank=True, null=True)
     DEPLOYER_ADDRESS = models.CharField(max_length=100, blank=True, null=True)
     DEPLOYMENT_TYPE = models.CharField(choices=DeploymentType.choices, max_length=25, blank=True, null=True)
-    DEPLOYMENT_PLATFORM = models.CharField(max_length=25, blank=True, null=True)
+    DEPLOYMENT_PLATFORM = models.ForeignKey(cm.deployment_platforms, to_field="VALUE", max_length=25, blank=True, null=True, 
+        on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     DEPLOYMENT_CRUISE_ID = models.CharField(max_length=25, blank=True, null=True)
     DEPLOYMENT_REFERENCE_STATION_ID = models.CharField(max_length=25, blank=True, null=True)
     DEPLOYMENT_PLATFORM_ID = models.CharField(max_length=25, blank=True, null=True)
@@ -74,8 +79,10 @@ class deployment(models.Model):
     GPS_SERIAL_NO = models.CharField(max_length=25, blank=True, null=True)
     ROM_VERSION = models.CharField(max_length=25, blank=True, null=True)
 
-    BATTERY_TYPE = models.CharField(max_length=25, blank=True, null=True)
-    BATTERY_MANUFACTURER = models.CharField(max_length=25, blank=True, null=True)
+    BATTERY_TYPE = models.ForeignKey(cm.battery_types, to_field="VALUE", max_length=25, blank=True, null=True, 
+        on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
+    BATTERY_MANUFACTURER = models.ForeignKey(cm.battery_manufacturers, to_field="VALUE", max_length=25, blank=True, null=True, 
+        on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     BATTERY_MODEL = models.CharField(max_length=25, blank=True, null=True)
     BATTERY_SERIAL_NO = models.CharField(max_length=25, blank=True, null=True)
     BATTERY_VOLTAGE = models.FloatField(max_length=25, blank=True, null=True)
