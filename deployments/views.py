@@ -141,6 +141,13 @@ class Metadata(APIView):
             return JsonResponse(data=serializer.data)
         return JsonResponse(status=status.HTTP_400_BAD_REQUEST, data="wrong parameters")
 
+    def post(self, request, format=None):
+        serializer = DeploymentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 #Get WMO# by serial number
 #No token needed
