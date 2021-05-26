@@ -58,7 +58,7 @@ class deployment(models.Model):
     ORIGIN_COUNTRY = models.ForeignKey(cm.origin_countries, to_field="VALUE", max_length=25, blank=True, null=True, 
         on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
 
-    DEPLOYER = models.CharField(max_length=25, blank=True, null=True)
+    DEPLOYER = models.CharField(max_length=100, blank=True, null=True)
     DEPLOYER_ADDRESS = models.CharField(max_length=100, blank=True, null=True)
     DEPLOYMENT_PLATFORM = models.ForeignKey(cm.deployment_platforms, to_field="VALUE", max_length=25, blank=True, null=True, 
         on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
@@ -98,6 +98,8 @@ class deployment(models.Model):
         if not self.LAUNCH_DATE: #Before launch
             return "Predeployment"
         latest = self.cycle_metadata.order_by('-DATE_ADD').first()
+        if not latest:
+            return ""
         if latest.PROFILE_ID[-3:] == '000': #first .msg file reported
             return "Prelude"
         if datetime.now(timezone.utc)-self.last_report > timedelta(days = 10): #Most recent report is older than 10 days
@@ -110,18 +112,17 @@ class deployment(models.Model):
         n_reports = self.cycle_metadata.count()
         if n_reports <2:
             return None
+        if n_reports < 5:
+            n_mean = n_reports
         else:
-            if n_reports < 5:
-                n_mean = n_reports
-            else:
-                n_mean = 5
+            n_mean = 5
 
-            query = self.cycle_metadata.order_by('-GpsFixDate').all()[0:n_mean]
-            recent_reports = np.array(query.values_list('GpsFixDate', flat=True))
-            time_diff = (np.diff(np.flip(recent_reports, axis=0)))
-            mean_time_diff = np.mean(time_diff)
+        query = self.cycle_metadata.order_by('-GpsFixDate').all()[0:n_mean]
+        recent_reports = np.array(query.values_list('GpsFixDate', flat=True))
+        time_diff = (np.diff(np.flip(recent_reports, axis=0)))
+        mean_time_diff = np.mean(time_diff)
 
-            return recent_reports[0] + mean_time_diff
+        return recent_reports[0] + mean_time_diff
 
     @property
     def age(self):

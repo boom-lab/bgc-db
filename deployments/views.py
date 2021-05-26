@@ -1,16 +1,14 @@
-from env_data import serializers
 from django.shortcuts import render, get_object_or_404
 from django.http.response import JsonResponse
 from django.http import HttpResponse
-from jinja2 import Environment, FileSystemLoader
-import json
 
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view
-from rest_framework.views import APIView
-from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
+
+from jinja2 import Environment, FileSystemLoader
+import json
 
 from .models import deployment
 from .serializers import DeploymentSerializer, CurrentDeploymentSerializer
@@ -32,6 +30,7 @@ def admin_detail_view(request, admin_site, entry_id):
     )
     return render(request, 'admin/detail_view.html', context)
 
+#Create AOML metadata file
 def export_metadata(request, entry_id):
 
     #Get data from deployment, sensor, and mission tables
@@ -101,7 +100,7 @@ def export_metadata(request, entry_id):
     response['Content-Disposition'] = 'attachment; filename="{}_{}.meta"'.format(d.AOML_ID, str(d.FLOAT_SERIAL_NO))
     return response
 
-#APIs
+#----------------------- APIs --------------------------------#
 #Current metadata api, only most recent mission record, all sensors, most recent cycle_metadata. public
 class GetCrtMetadata(generics.ListAPIView): #Read only
     serializer_class = CurrentDeploymentSerializer
@@ -109,44 +108,27 @@ class GetCrtMetadata(generics.ListAPIView): #Read only
     filter_backends = [DjangoFilterBackend]
     filter_fields = [field.name for field in deployment._meta.fields]
 
-# All metadata
-class Metadata(APIView):
+#Get all metadata, post new metadata
+class MetadataGetPost(generics.ListCreateAPIView): #Read and write only, token
     permission_classes=[IsAuthenticated]
+    serializer_class=DeploymentSerializer
+    queryset=deployment.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filter_fields = [field.name for field in deployment._meta.fields]
 
-    def get(self, request):
+class MetadataUpdate(generics.UpdateAPIView): #Update (patch) only, token
+    permission_classes=[IsAuthenticated]
+    serializer_class=DeploymentSerializer
+    queryset=deployment.objects.all()
+
+    def get_object(self):
         filters={}
-        filters['FLOAT_SERIAL_NO'] = request.GET.get("FLOAT_SERIAL_NO", None)
-        filters['PLATFORM_TYPE'] = request.GET.get("PLATFORM_TYPE", None)
+        filters['FLOAT_SERIAL_NO'] = self.request.GET.get("FLOAT_SERIAL_NO", None)
+        filters['PLATFORM_TYPE'] = self.request.GET.get("PLATFORM_TYPE", None)
         if not filters['PLATFORM_TYPE'] or not filters['FLOAT_SERIAL_NO']:
             return JsonResponse({'details':'Error: FLOAT_SERIAL_NO or PLATFORM_TYPE not provided'}, status=status.HTTP_400_BAD_REQUEST)
-        dep = deployment.objects.filter(**filters)
-        serializer = DeploymentSerializer(dep, many=True)
-        return Response(serializer.data)
-
-    def get_object(self, filters):
+        
         return deployment.objects.get(**filters)
-
-    def patch(self, request): #Only updated deployment table, not mission or sensors
-        filters={}
-        filters['FLOAT_SERIAL_NO'] = request.GET.get("FLOAT_SERIAL_NO", None)
-        filters['PLATFORM_TYPE'] = request.GET.get("PLATFORM_TYPE", None)
-        if not filters['PLATFORM_TYPE'] or not filters['FLOAT_SERIAL_NO']:
-            return JsonResponse({'details':'Error: FLOAT_SERIAL_NO or PLATFORM_TYPE not provided'}, status=status.HTTP_400_BAD_REQUEST)
-
-        dep_obj = self.get_object(filters)
-
-        serializer = DeploymentSerializer(dep_obj, data=request.data, partial=True) # set partial=True to update a data partially
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(data=serializer.data)
-        return JsonResponse(status=status.HTTP_400_BAD_REQUEST, data="wrong parameters")
-
-    def post(self, request, format=None):
-        serializer = DeploymentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 #Get WMO# by serial number

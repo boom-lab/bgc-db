@@ -1,11 +1,11 @@
 from django.conf.urls import url 
-from django.urls import path, re_path
 from deployments import views
 
 #from django.urls import path
 
 urlpatterns = [ 
-    url(r'^api/metadata$', views.Metadata.as_view()),
+    url('api/metadata', views.MetadataGetPost.as_view()),
+    url('api/metadata_update', views.MetadataUpdate.as_view()),
     url('api/current_metadata', views.GetCrtMetadata.as_view()),
     url('api/wmo/', views.get_wmo, name='getwmo'),
     url('api/cal', views.get_cal, name='getcal'),

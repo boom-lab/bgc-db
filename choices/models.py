@@ -137,6 +137,8 @@ class deployment_platforms(models.Model):
     DISPLAY = models.CharField(max_length=200)
     ACTIVE = models.BooleanField()
     TYPE = models.CharField(max_length=25, choices=DeploymentType.choices)
+    NODC = models.CharField(max_length=25, blank=True, null=True)
+    SOURCE = models.CharField(max_length=25, blank=True, null=True)
     DESCRIPTION = models.CharField(max_length=2000, blank=True, null=True)
     
     class Meta:
