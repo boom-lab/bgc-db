@@ -45,34 +45,6 @@ class sensor_models(models.Model):
     def __str__(self): 
         return str(self.VALUE)
 
-class instrument_types(models.Model):
-
-    VALUE = models.CharField(max_length=100, unique=True)
-    DISPLAY = models.CharField(max_length=200)
-    ACTIVE = models.BooleanField()
-    SOURCE = models.CharField(max_length=50)
-    DESCRIPTION = models.CharField(max_length=2000)
-    
-    class Meta:
-        verbose_name_plural = "Intrument Types"
-
-    def __str__(self): 
-        return str(self.DISPLAY)
-
-class instrument_types_AOML(models.Model):
-
-    VALUE = models.CharField(max_length=100, unique=True)
-    DISPLAY = models.CharField(max_length=200)
-    ACTIVE = models.BooleanField()
-    SOURCE = models.CharField(max_length=50)
-    DESCRIPTION = models.CharField(max_length=2000)
-    
-    class Meta:
-        verbose_name_plural = "Intrument Types (AOML)"
-
-    def __str__(self): 
-        return str(self.DISPLAY)
-
 
 class wmo_recorder_types(models.Model):
 
@@ -161,18 +133,19 @@ class platform_makers(models.Model):
         return str(self.DISPLAY)
 
 class platform_types(models.Model):
-
-    VALUE = models.CharField(max_length=100, unique=True)
-    DISPLAY = models.CharField(max_length=200)
+    PLATFORM_TYPE = models.CharField(max_length=25, unique=True)
     ACTIVE = models.BooleanField()
-    SOURCE = models.CharField(max_length=50)
-    DESCRIPTION = models.CharField(max_length=2000, blank=True, null=True)
-    KEY = models.IntegerField()
-    
+    DESCRIPTION = models.CharField(max_length=200)
+    R08_WMO = models.CharField(max_length=25, blank=True, null=True)
+    R23_ARGO = models.CharField(max_length=25, blank=True, null=True)
+    R23_ARGO_KEY = models.CharField(max_length=25, blank=True, null=True)
+    AOML = models.CharField(max_length=25, blank=True, null=True)
+
     class Meta:
         verbose_name_plural = "Platform Types"
     def __str__(self): 
-        return str(self.DISPLAY)
+        return str(self.DESCRIPTION)
+
 
 class transmission_systems(models.Model):
 

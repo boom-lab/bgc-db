@@ -1,6 +1,6 @@
 from datetime import datetime, timezone, timedelta
 from django.db import models
-from choices.models import platform_makers, platform_types, transmission_systems, instrument_types, institutions, funders
+from choices.models import platform_makers, transmission_systems, institutions, funders
 from choices import models as cm
 import numpy as np
 
@@ -25,18 +25,13 @@ class deployment(models.Model):
     PURCHACE_ORDER = models.CharField(max_length=25, blank=True, null=True)
     PLATFORM_MAKER = models.ForeignKey(platform_makers, to_field="VALUE", max_length=25, blank=True, null=True, 
         on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
-    PLATFORM_TYPE = models.ForeignKey(platform_types, to_field="VALUE", max_length=25, blank=True, null=True, 
-        on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
-    INST_TYPE = models.ForeignKey(cm.instrument_types_AOML, to_field="VALUE", max_length=25, blank=True, null=True, 
-        on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
-    WMO_INST_TYPE = models.ForeignKey(instrument_types, to_field="VALUE", max_length=25, blank=True, null=True, 
+    PLATFORM_TYPE = models.ForeignKey(cm.platform_types, to_field="PLATFORM_TYPE", max_length=25, blank=True, null=True, 
         on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     WMO_RECORDER_TYPE = models.ForeignKey(cm.wmo_recorder_types, to_field="VALUE", max_length=25, blank=True, null=True, 
         on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
 
     TRANS_SYSTEM = models.ForeignKey(transmission_systems, to_field="VALUE", max_length=25, blank=True, null=True, 
         on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
-    IRIDIUM_PROGRAM_NO = models.CharField(max_length=25, blank=True, null=True)
     MODEM_TYPE = models.CharField(choices=ModemType.choices, max_length=25, blank=True, null=True)
     MODEM_SERIAL_NO = models.CharField(max_length=25, blank=True, null=True)
 
@@ -64,7 +59,6 @@ class deployment(models.Model):
         on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     DEPLOYMENT_CRUISE_ID = models.CharField(max_length=25, blank=True, null=True)
     DEPLOYMENT_REFERENCE_STATION_ID = models.CharField(max_length=25, blank=True, null=True)
-    DEPLOYMENT_PLATFORM_ID = models.CharField(max_length=25, blank=True, null=True)
     DEPLOYMENT_MOB = models.DateField(blank=True, null=True)
     DEPLOYMENT_PORT = models.CharField(max_length=50, blank=True, null=True)
     

@@ -1,8 +1,6 @@
 from django.contrib import admin
-from import_export.admin import ExportMixin
+from import_export.admin import ExportMixin, ImportExportMixin
 
-# Register your models here.
-from .models import *
 from choices import models as cm
 
 class SensorTypesAdmin(ExportMixin, admin.ModelAdmin):
@@ -21,20 +19,14 @@ class SensorModelsAdmin(ExportMixin, admin.ModelAdmin):
 admin.site.register(cm.sensor_models, SensorModelsAdmin)
 
 
-class InstrumentTypesAdmin(ExportMixin, admin.ModelAdmin):
-    list_display = ['VALUE','DISPLAY','ACTIVE','SOURCE','DESCRIPTION']
-    list_per_page = 100
-admin.site.register(cm.instrument_types, InstrumentTypesAdmin)
-
-
 class PlatformMakersAdmin(ExportMixin, admin.ModelAdmin):
     list_display = ['VALUE','DISPLAY','ACTIVE','SOURCE','DESCRIPTION']
     list_per_page = 100
 admin.site.register(cm.platform_makers, PlatformMakersAdmin)
 
 
-class PlatformTypesAdmin(ExportMixin, admin.ModelAdmin):
-    list_display = ['VALUE','DISPLAY','KEY','ACTIVE','SOURCE','DESCRIPTION']
+class PlatformTypesAdmin(ImportExportMixin, admin.ModelAdmin):
+    list_display = ['PLATFORM_TYPE','ACTIVE','DESCRIPTION','R08_WMO','R23_ARGO','R23_ARGO_KEY','AOML']
     list_per_page = 100
 admin.site.register(cm.platform_types, PlatformTypesAdmin)
 
@@ -43,6 +35,7 @@ class TransmissionSystemsAdmin(ExportMixin, admin.ModelAdmin):
     list_display = ['VALUE','DISPLAY','ACTIVE','SOURCE','DESCRIPTION']
     list_per_page = 100
 admin.site.register(cm.transmission_systems, TransmissionSystemsAdmin)
+
 
 class InstitutionsAdmin(ExportMixin, admin.ModelAdmin):
     list_display = ['VALUE','DISPLAY','ACTIVE','DESCRIPTION']
@@ -58,11 +51,6 @@ class EventsAdmin(ExportMixin, admin.ModelAdmin):
     list_display = ['VALUE','DISPLAY','ACTIVE','DESCRIPTION']
     list_per_page = 100
 admin.site.register(cm.events, EventsAdmin)
-
-class InstTypesAOMLAdmin(ExportMixin, admin.ModelAdmin):
-    list_display = ['VALUE','DISPLAY','ACTIVE','SOURCE','DESCRIPTION']
-    list_per_page = 100
-admin.site.register(cm.instrument_types_AOML, InstTypesAOMLAdmin)
 
 class WMOrecorderTypesAdmin(ExportMixin, admin.ModelAdmin):
     list_display = ['VALUE','DISPLAY','ACTIVE','SOURCE','DESCRIPTION']

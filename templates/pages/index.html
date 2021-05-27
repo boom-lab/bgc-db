@@ -21,10 +21,10 @@
       </thead>
       <tbody>
           {% for deployment in deployments %}
-          <tr class='clickable-row' href="/float_detail?FLOAT_SERIAL_NO={{ deployment.FLOAT_SERIAL_NO }}&PLATFORM_TYPE={{ deployment.PLATFORM_TYPE.VALUE }}">
+          <tr class='clickable-row' href="/float_detail?FLOAT_SERIAL_NO={{ deployment.FLOAT_SERIAL_NO }}&PLATFORM_TYPE={{ deployment.PLATFORM_TYPE.R23_ARGO }}">
             <th class="cursor-pointer">{{ deployment.FLOAT_SERIAL_NO }}</th>
             <td class="cursor-pointer">{{ deployment.PLATFORM_NUMBER }}</td>
-            <td class="cursor-pointer">{{ deployment.PLATFORM_TYPE.VALUE }}</td>
+            <td class="cursor-pointer">{{ deployment.PLATFORM_TYPE.R23_ARGO }}</td>
             <td class="cursor-pointer">{{ deployment.status }}</td>
             <td class="cursor-pointer">{{ deployment.LAUNCH_DATE }}</td>
             <td class="cursor-pointer">{{ deployment.last_report }}</td>

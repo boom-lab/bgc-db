@@ -1,10 +1,10 @@
 internal ID number                      {{ d.AOML_ID }}
 transmission ID number                  {{ '%06d' % d.FLOAT_SERIAL_NO | int }}
 transmission type                       {{ d.TRANS_SYSTEM.VALUE }}
-instrument type                         {{ d.INST_TYPE }}
+instrument type                         {{ d.PLATFORM_TYPE_INTERNAL.AOML }}
 IRIDIUM program number                  {{ d.IRIDIUM_PROGRAM_NO }}
 WMO ID number                           {{ d.PLATFORM_NUMBER }}
-WMO instrument type (table 1770)        {{ d.WMO_INST_TYPE.VALUE }}
+WMO instrument type (table 1770)        {{ d.PLATFORM_TYPE_INTERNAL.R08_WMO }}
 WMO recorder type (table 4770)          {{ d.WMO_RECORDER_TYPE }}
 start time [dd mm yyyy hh mm (Z)]       {{ d.START_DATE }}
 status of start time                    {{ d.START_DATE_QC }}
@@ -14,11 +14,8 @@ launch position [lat latm lon lonm]     {{ d.LAUNCH_POSITION }}
 status of launch position               {{ d.LAUNCH_POSITION_QC }}
 delay of first down time [hours]        6
 cycle time [days]                       10.0
-descent time [hours]                    7 
-neutral depth time [days]               9.2
-ascent time [hours]                     10
-surface time [hours]                    1.0
 up time [hours]                         11.
+down time [days]                        10.
 transmission repetition rate [sec]      -999
 clock drift [hours/hours]               0
 last cycle                              n/a
@@ -77,7 +74,7 @@ initial battery voltage                 {{ d.BATTERY_VOLTAGE }} V
 battery packs                           {{ d.BATTERY_PACKS }} 
 battery details                         {{ d.BATTERY_DETAILS }}
 customisation                           {{ d.CUSTOMIZATION }}
-ref table PLATFORM_TYPE                 {{ d.PLATFORM_TYPE.VALUE }}
-ref table PLATFORM_TYPE_KEY             {{ d.PLATFORM_TYPE.KEY}}
-ref table DEPLOYMENT_PLATFORM_ID        {{ d.DEPLOYMENT_PLATFORM_ID }}
+ref table PLATFORM_TYPE                 {{ d.PLATFORM_TYPE_INTERNAL.R23_ARGO }}
+ref table PLATFORM_TYPE_KEY             {{ d.PLATFORM_TYPE_INTERNAL.R23_ARGO_KEY }}
+ref table DEPLOYMENT_PLATFORM_ID        {{ d.DEPLOYMENT_PLATFORM.NODC }}
 comment                                 {{ d.COMMENTS }}
