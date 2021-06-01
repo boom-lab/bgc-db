@@ -18,6 +18,7 @@ class DeploymentAdmin(ExportMixin, admin.ModelAdmin):
 
     list_display = ['detail_link', 'edit_link'] + all_fields
     list_display_links = None
+    list_filter = ('PLATFORM_TYPE',)
     search_fields = ('FLOAT_SERIAL_NO',)
     list_per_page = 25
     actions = [Export_Metadata_File]

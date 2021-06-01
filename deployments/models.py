@@ -81,6 +81,20 @@ class deployment(models.Model):
     COMMENTS = models.TextField(blank=True, null=True)
 
     @property
+    def last_event(self):
+        latest = self.deployment_tracking.order_by("-DATE").first()
+        if latest: 
+            return latest.EVENT
+        return None
+
+    @property
+    def last_location(self):
+        latest = self.deployment_tracking.order_by("-DATE").first()
+        if latest: 
+            return latest.LOCATION
+        return None
+
+    @property
     def last_report(self):
         latest = self.cycle_metadata.order_by('-DATE_ADD').first()
         if latest: 

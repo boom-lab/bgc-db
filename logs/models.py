@@ -24,7 +24,7 @@ class file_processing(models.Model):
 
 class deployment_tracking(models.Model):
 
-    DEPLOYMENT = models.ForeignKey(deployment, on_delete=models.CASCADE)
+    DEPLOYMENT = models.ForeignKey(deployment, on_delete=models.CASCADE, related_name='deployment_tracking')
     EVENT = models.ForeignKey(events, to_field="VALUE", max_length=50, on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     DATE = models.DateField()
     LOCATION = models.CharField(max_length=100, null=True, blank=True)

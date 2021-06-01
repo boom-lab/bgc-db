@@ -3,36 +3,62 @@
 {% block header %}
     <!-- Datatabes -->
     <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.24/datatables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/searchpanes/1.2.1/js/dataTables.searchPanes.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/select/1.3.3/js/dataTables.select.min.js"></script>
+    <!-- <script type="text/javascript" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script> -->
     <script src="{% static 'js/table.js' %}"></script>
+
+    <!-- Datatables -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.24/datatables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/searchpanes/1.2.1/css/searchPanes.dataTables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.3.3/css/select.dataTables.min.css"/>
 {% endblock header %}
 {% block content %}
+
 <section class="status-table-container">
-  <table id="statustable" class="table tabel-sm table-hover">
-      <thead>
-        <tr>
-          <th scope="col">Serial Number</th>
-          <th scope="col">WMO</th>
-          <th scope="col">Platform Type</th>
-          <th scope="col">Status</th>
-          <th scope="col">Launch Date (UTC)</th>
-          <th scope="col">Last Report (UTC)</th>
-          <th scope="col">Next Report (est)</th>
-        </tr>
-      </thead>
-      <tbody>
-          {% for deployment in deployments %}
-          <tr class='clickable-row' href="/float_detail?FLOAT_SERIAL_NO={{ deployment.FLOAT_SERIAL_NO }}&PLATFORM_TYPE={{ deployment.PLATFORM_TYPE.R23_ARGO }}">
-            <th class="cursor-pointer">{{ deployment.FLOAT_SERIAL_NO }}</th>
-            <td class="cursor-pointer">{{ deployment.PLATFORM_NUMBER }}</td>
-            <td class="cursor-pointer">{{ deployment.PLATFORM_TYPE.R23_ARGO }}</td>
-            <td class="cursor-pointer">{{ deployment.status }}</td>
-            <td class="cursor-pointer">{{ deployment.LAUNCH_DATE }}</td>
-            <td class="cursor-pointer">{{ deployment.last_report }}</td>
-            <td class="cursor-pointer">{{ deployment.next_report }}</td>
-          </tr>
-          {% endfor %}
-      </tbody>
-  </table>
+  <div class='row'>
+    <div id="filters" class="col-2"></div>
+    <div class='col'>
+      <table id="statustable" class="table tabel-sm table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Serial Number</th>
+              <th scope="col">WMO</th>
+              <th scope="col">Platform Type</th>
+              <th scope="col">Status</th>
+              <th scope="col">Latest Event</th>
+              <th scope="col">Location</th>
+              <th scope="col">Deployment Cruise ID</th>
+              <th scope="col">Deployment Platform</th>
+              <th scope="col">Deployment MOB</th>
+              <th scope="col">Deployment Port</th>
+              <th scope="col">Launch Date (UTC)</th>
+              <th scope="col">Last Report (UTC)</th>
+              <th scope="col">Next Report (est)</th>
+            </tr>
+          </thead>
+          <tbody>
+              {% for deployment in deployments %}
+              <tr class='clickable-row' href="/float_detail?FLOAT_SERIAL_NO={{ deployment.FLOAT_SERIAL_NO }}&PLATFORM_TYPE={{ deployment.PLATFORM_TYPE.R23_ARGO }}">
+                <th class="cursor-pointer">{{ deployment.FLOAT_SERIAL_NO }}</th>
+                <td class="cursor-pointer">{{ deployment.PLATFORM_NUMBER }}</td>
+                <td class="cursor-pointer">{{ deployment.PLATFORM_TYPE.R23_ARGO }}</td>
+                <td class="cursor-pointer">{{ deployment.status }}</td>
+                <td class="cursor-pointer">{{ deployment.last_event }}</td>
+                <td class="cursor-pointer">{{ deployment.last_location }}</td>
+                <td class="cursor-pointer">{{ deployment.DEPLOYMENT_CRUISE_ID }}</td>
+                <td class="cursor-pointer">{{ deployment.DEPLOYMENT_PLATFORM }}</td>
+                <td class="cursor-pointer">{{ deployment.DEPLOYMENT_MOB|date:'Y-m-d' }}</td>
+                <td class="cursor-pointer">{{ deployment.DEPLOYMENT_PORT }}</td>
+                <td class="cursor-pointer">{{ deployment.LAUNCH_DATE|date:'Y-m-d' }}</td>
+                <td class="cursor-pointer">{{ deployment.last_report|date:'Y-m-d H:i' }}</td>
+                <td class="cursor-pointer">{{ deployment.next_report|date:'Y-m-d H:i' }}</td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+    </div>
+  </div>
 </section>
 {% endblock %}
 {% block footer %}

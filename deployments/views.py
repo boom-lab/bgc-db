@@ -64,9 +64,6 @@ def export_metadata(request, entry_id):
     else:
         d.LAUNCH_DATE = '99 99 9999 99 99'
 
-    if not d.IRIDIUM_PROGRAM_NO:
-        d.IRIDIUM_PROGRAM_NO = 'n/a'
-
     if not d.DEPLOYMENT_REFERENCE_STATION_ID:
         d.DEPLOYMENT_REFERENCE_STATION_ID = 'n/a'
 
