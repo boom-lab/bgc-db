@@ -19,7 +19,7 @@ class deployment(models.Model):
     ADD_DATE = models.DateTimeField() #creation of record in db
     AOML_ID = models.CharField(max_length=25, blank=True, null=True)
     PLATFORM_NUMBER = models.CharField("PLATFORM NUMBER (WMO)", max_length=25, unique=True, blank=True, null=True) #WMO
-    FLOAT_SERIAL_NO = models.IntegerField(blank=True, null=True)
+    FLOAT_SERIAL_NO = models.CharField(max_lenght=25, blank=True, null=True)
     DEATH_DATE = models.DateTimeField(blank=True, null=True)
     WHOI_TAG = models.CharField(max_length=25, blank=True, null=True)
     PURCHACE_ORDER = models.CharField(max_length=25, blank=True, null=True)
