@@ -52,4 +52,23 @@
   </tr>
   {% endfor %}
 </table>
+<h2>Events</h2>
+<table>
+  <tr>
+    <td>Date</td>
+    <td>Event</td>
+    <td>Location</td>
+    <td>Comment</td>
+    <td>User</td>
+  </tr>
+  {% for event  in entry.deployment_tracking.all %}   <!--Value rows, events -->
+  <tr>
+    <td>{{ event.DATE }}</td>
+    <td>{{ event.EVENT }}</td>
+    <td>{{ event.LOCATION }}</td>
+    <td>{{ event.COMMENT }}</td>
+    <td>{{ event.USER }}</td>
+  </tr>
+  {% endfor %}
+</table>
 {% endblock %}
