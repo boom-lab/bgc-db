@@ -71,11 +71,11 @@ class deployment(models.Model):
     BATTERY_MANUFACTURER = models.ForeignKey(cm.battery_manufacturers, to_field="VALUE", max_length=25, blank=True, null=True, 
         on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     BATTERY_MODEL = models.CharField(max_length=25, blank=True, null=True)
-    BATTERY_SERIAL_NO = models.CharField(max_length=25, blank=True, null=True)
+    BATTERY_SERIAL_NO = models.CharField(max_length=50, blank=True, null=True)
     BATTERY_VOLTAGE = models.FloatField(max_length=25, blank=True, null=True)
     BATTERY_PACKS = models.CharField(max_length=25, blank=True, null=True)
     BATTERY_DETAILS = models.CharField(max_length=25, blank=True, null=True)
-    PUMP_BATTERY_SERIAL_NO = models.IntegerField(blank=True, null=True)
+    PUMP_BATTERY_SERIAL_NO = models.CharField(max_length=50, blank=True, null=True)
 
     CUSTOMIZATION = models.CharField(max_length=200, blank=True, null=True)
     COMMENTS = models.TextField(blank=True, null=True)

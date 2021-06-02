@@ -4,9 +4,10 @@ from .views import export_NAVIS_mission_config
 from import_export.admin import ExportMixin
 
 def duplicate_record(modeladmin, request, queryset):
-    for object in queryset:
-        object.id = None
-        object.save()
+    for record in queryset:
+        record.id = None
+        record.save()
+
 
 duplicate_record.short_description = "Duplicate selected missions"
 

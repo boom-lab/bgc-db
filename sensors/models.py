@@ -9,8 +9,10 @@ class sensor(models.Model):
 
     ADD_DATE = models.DateTimeField() #creation of record in db
     SENSOR = models.ForeignKey(sensor_types, to_field="VALUE", max_length=50, on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
-    SENSOR_MAKER = models.ForeignKey(sensor_makers, to_field="VALUE", max_length=25, blank=True, null=True, on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
-    SENSOR_MODEL = models.ForeignKey(sensor_models, to_field="VALUE", max_length=50, blank=True, null=True, on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
+    SENSOR_MAKER = models.ForeignKey(sensor_makers, to_field="VALUE", max_length=25, blank=True, null=True, 
+        on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
+    SENSOR_MODEL = models.ForeignKey(sensor_models, to_field="VALUE", max_length=50, blank=True, null=True, 
+        on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     SENSOR_SERIAL_NO = models.CharField(max_length=25, blank=True, null=True)
     SENSOR_CALIB_DATE = models.DateField(blank=True, null=True)
     PREDEPLOYMENT_CALIB_EQUATION = models.JSONField(max_length=100, blank=True, null=True)

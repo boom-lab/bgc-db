@@ -8,7 +8,6 @@ import plotly.graph_objs as go
 
 from deployments.models import deployment
 from env_data.models import continuous_profile, cycle_metadata, discrete_profile
-from logs.models import deployment_tracking
 from .plot_helpers import add_bottom_trace, add_top_trace, var_translation
 import pages.engineering_plots as ep
 
@@ -106,8 +105,6 @@ def update_profile_plot(request):
             hov['float'] = hov['float_profile'].str.split('.').str[0]
             hov_data = hov.values.tolist()
             wmo = profile.split(".")[0]
-
-
 
             #Continuous data
             if cont and (bot_var != "NITRATE"):
