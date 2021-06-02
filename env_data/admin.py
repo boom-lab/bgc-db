@@ -14,6 +14,7 @@ class MissionAdmin(admin.ModelAdmin):
     list_display = [field.name for field in mission_reported._meta.fields]
     list_display_links = None
     list_per_page = 25
+    list_filter = ['DEPLOYMENT']
 
 
 admin.site.register(mission_reported, MissionAdmin)

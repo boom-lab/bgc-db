@@ -12,7 +12,8 @@ def get_file_status(request):
 
     sfiles = file_processing.objects.filter(Q(STATUS='Success') | Q(STATUS='Skip')).all()
     rfiles = file_processing.objects.filter(Q(STATUS='Reprocess')).all()
-    result = {'ignore_files': [s.DIRECTORY for s in sfiles], 'reprocess':[r.DIRECTORY for r in rfiles]}
+    ffiles = file_processing.objects.filter(Q(STATUS='Fail')).all()
+    result = {'ignore_files': [s.DIRECTORY for s in sfiles], 'reprocess':[r.DIRECTORY for r in rfiles], 'fail':[r.DIRECTORY for r in ffiles]}
 
     return JsonResponse(result)
 
