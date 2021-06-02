@@ -73,8 +73,8 @@ class deployment(models.Model):
     BATTERY_MODEL = models.CharField(max_length=25, blank=True, null=True)
     BATTERY_SERIAL_NO = models.CharField(max_length=50, blank=True, null=True)
     BATTERY_VOLTAGE = models.FloatField(max_length=25, blank=True, null=True)
-    BATTERY_PACKS = models.CharField(max_length=25, blank=True, null=True)
-    BATTERY_DETAILS = models.CharField(max_length=25, blank=True, null=True)
+    BATTERY_PACKS = models.CharField(max_length=50, blank=True, null=True)
+    BATTERY_DETAILS = models.CharField(max_length=100, blank=True, null=True)
     PUMP_BATTERY_SERIAL_NO = models.CharField(max_length=50, blank=True, null=True)
 
     CUSTOMIZATION = models.CharField(max_length=200, blank=True, null=True)
