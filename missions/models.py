@@ -6,6 +6,7 @@ class mission(models.Model):
     DEPLOYMENT = models.ForeignKey(deployment, related_name='missions', on_delete=models.CASCADE)
     ADD_DATE = models.DateTimeField() #creation of record in db
 
+    ActivateRecoveryMode = models.BooleanField(blank=True, null=True)
     AscentTimeOut = models.IntegerField("Ascent time-out (Minutes) Mta",blank=True, null=True)
     BuoyancyNudge = models.IntegerField("Ascent buoyancy nudge (Counts) Mbn",blank=True, null=True)
     BuoyancyNudgeInitial = models.IntegerField("Initial buoyancy nudge (Counts) Mbi",blank=True, null=True)
