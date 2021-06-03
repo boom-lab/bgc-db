@@ -408,12 +408,15 @@ def single_var_plot(filters, var, y_label, legend_label, y_range=None):
     return plot_div
 
 def duration_plot(filters):
-
+    #Create query
     query = cycle_metadata.objects.filter(**filters).order_by("ProfileId").values_list("ProfileId","GpsFixDate","TimeStartDescent",
         "TimeStartPark","TimeStartProfileDescent","TimeStartProfile","TimeStopProfile","TimeStartTelemetry")
+
+    #Convert to dataframe
     data = pd.DataFrame(query, columns=["ProfileId","GpsFixDate","TimeStartDescent",
         "TimeStartPark","TimeStartProfileDescent","TimeStartProfile","TimeStopProfile","TimeStartTelemetry"])
 
+    #Substract start of cycle time from all other values
     data["TimeStartDescent_py_delta"] = (data["TimeStartDescent"] - data["TimeStartDescent"])
     data["GpsFixDate_py_delta"] = (data["GpsFixDate"] - data["TimeStartDescent"])
     data["TimeStartPark_py_delta"] = (data["TimeStartPark"] - data["TimeStartDescent"])
@@ -507,20 +510,20 @@ def duration_plot(filters):
     )
 
     #Time Start Profile Descent
-    # fig.add_trace(
-    #     go.Scatter(
-    #         x=data["ProfileId"],
-    #         y=data["TimeStartProfileDescent_delta"],
-    #         mode='markers',
-    #         marker = {
-    #             'size':10,
-    #             'symbol':'square',
-    #             'color': "#65C0F0",
-    #         },
-    #         hovertemplate ='%{y}',
-    #         name="Time Start Profile Descent"
-    #     ),
-    # )
+    fig.add_trace(
+        go.Scatter(
+            x=data["ProfileId"],
+            y=data["TimeStartProfileDescent_delta"],
+            mode='markers',
+            marker = {
+                'size':10,
+                'symbol':'square',
+                'color': "#65C0F0",
+            },
+            hovertemplate ='%{y}',
+            name="Time Start Profile Descent"
+        ),
+    )
     
     #Time Start Profile
     fig.add_trace(
