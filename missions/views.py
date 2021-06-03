@@ -5,7 +5,6 @@ from .models import mission
 from django.core import serializers
 
 def navis_crc(command_string):
-    #Author: Ben Greenwood
     crc = 0x1D0F; # start value
     for c in command_string:
         crc = crc ^ (ord(c) * 256)
@@ -14,7 +13,8 @@ def navis_crc(command_string):
                 crc = (crc*2) ^ 0x1021
             else:
                 crc = (crc*2)
-        return crc & 0xffff
+    return crc & 0xffff
+
 
 def gen_commands(data):
     #Create mission configuration command string
@@ -25,10 +25,11 @@ def gen_commands(data):
                 command = key + "(" + str(value) + ")" #command
                 white_space = (32 - len(command)) * " "
                 crc = '%04X' % navis_crc(command) #checksum
+                print(crc)
                 output = output + command + white_space + "[0x" + str(crc).lower() + "]" + "\n" #add to output as new line
 
         if key == "ActivateRecoveryMode" and value: #Recovery mode command
-            command = "ActivateRecoveryMode()          [0x9848]\n" + command
+            output = "ActivateRecoveryMode()          [0x9848]\n" + output
 
     return output
 
