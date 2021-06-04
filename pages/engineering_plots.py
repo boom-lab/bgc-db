@@ -520,7 +520,8 @@ def duration_plot(filters):
                 'symbol':'square',
                 'color': "#65C0F0",
             },
-            hovertemplate ='%{y}',
+            customdata = hov_data,
+            hovertemplate ='%{customdata[3]}',
             name="Time Start Profile Descent"
         ),
     )

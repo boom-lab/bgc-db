@@ -5,6 +5,7 @@ from .models import mission
 from django.core import serializers
 
 def navis_crc(command_string):
+    #author: Ben Greenwood
     crc = 0x1D0F; # start value
     for c in command_string:
         crc = crc ^ (ord(c) * 256)

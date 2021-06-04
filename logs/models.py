@@ -6,6 +6,7 @@ from django.conf import settings
 class Status(models.TextChoices):
     Success = 'Success','Success'
     Fail = 'Fail','Fail'
+    Warning = 'Warning','Warning'
     Skip = 'Skip','Skip'
     Reprocess = 'Reprocess','Reprocess'
 
