@@ -5,7 +5,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 from django.http import JsonResponse
 
-from env_data.models import cycle_metadata
+from env_data.models import cycle_metadata, park
 
 def volts_plot(filters):
 
@@ -752,6 +752,55 @@ def upload_attempt_plot(filters):
         'displaylogo': False, 'modeBarButtonsToRemove':['lasso2d', 'select2d','resetScale2d']})  
     return plot_div
 
+def park_pres_plot(filters):
+
+    query = park.objects.filter(**filters).order_by("PROFILE_ID","DATE_MEASURED").values_list("PROFILE_ID","PRES")
+    #data = np.core.records.fromrecords(query, names=["PROFILE_ID","PRES"])
+    data = pd.DataFrame(query, columns=["PROFILE_ID","PRES"])
+    data["PRES"] = data.PRES*-1
+    data['PROFILE_ID'] = data.PROFILE_ID.str.split('.').str[1]
+    data['col'] = data.groupby("PROFILE_ID").cumcount()
+
+    print(data.head())
+    
+    data = data.pivot(index='PROFILE_ID',columns='col',values='PRES').reset_index()
+
+    max_parks = len(data.columns)-2
+
+    fig = go.Figure()
+
+    i=0
+    while i <= max_parks:
+        fig.add_trace(
+            go.Bar(
+                x=data["PROFILE_ID"],
+                y=data[i],
+                marker_color="#DC143C",
+                hovertemplate ='%{y}',
+                name= "Park " + str(i)
+            ),
+        )
+        i += 1
+
+    # Formatting
+    fig.update_layout(
+        template = "ggplot2",
+        #title = "Amps",
+        xaxis = {'title':"Cycle", 'side':'top'},
+        yaxis = {'title':"Park Pressure (dbar)"},
+        font = {"size":15},
+        height=500,
+        showlegend=False,
+        margin={'t': 30, 'l':0,'r':0,'b':0},
+        barmode='group',
+        bargap=0.15,
+        bargroupgap=0.1 
+        #yaxis_range=[0,.8]
+    )
+
+    plot_div = plot(fig,output_type='div', include_plotlyjs=False, config= {
+        'displaylogo': False, 'modeBarButtonsToRemove':['lasso2d', 'select2d','resetScale2d']})  
+    return plot_div
 
 def update_select_plot(request):
     """Float Detail Page - Plot where you can select the variable to look at"""
