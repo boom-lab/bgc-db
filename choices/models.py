@@ -144,7 +144,7 @@ class platform_types(models.Model):
     class Meta:
         verbose_name_plural = "Platform Types"
     def __str__(self): 
-        return str(self.DESCRIPTION)
+        return str(self.PLATFORM_TYPE)
 
 
 class transmission_systems(models.Model):
