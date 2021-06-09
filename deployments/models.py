@@ -82,30 +82,30 @@ class deployment(models.Model):
 
     @property
     def last_event(self):
-        latest = self.deployment_tracking.order_by("-DATE").first()
+        latest = self.deployment_tracking.order_by("DATE").last()
         if latest: 
             return latest.EVENT
         return None
 
     @property
     def last_location(self):
-        latest = self.deployment_tracking.order_by("-DATE").first()
+        latest = self.deployment_tracking.order_by("DATE").last()
         if latest: 
             return latest.LOCATION
         return None
 
     @property
     def last_report(self):
-        latest = self.cycle_metadata.order_by('-DATE_ADD').first()
+        latest = self.cycle_metadata.order_by('GpsFixDate').last()
         if latest: 
-            return latest.TimeStartTelemetry
+            return latest.GpsFixDate
         return None
 
     @property
     def status(self):
         if not self.LAUNCH_DATE: #Before launch
             return "Predeployment"
-        latest = self.cycle_metadata.order_by('-DATE_ADD').first()
+        latest = self.cycle_metadata.order_by('GpsFixDate').last()
         if not latest:
             return ""
         if latest.PROFILE_ID[-3:] == '000': #first .msg file reported
@@ -116,14 +116,14 @@ class deployment(models.Model):
 
     @property
     def next_report(self):
-        """Estimates the next report date by averaging the past five cycles (or less than 5 if there are less than 5 reports)"""
+        """Estimates the next report date by averaging the past 3 cycles (or less than 3 if there are less than 3 reports)"""
         n_reports = self.cycle_metadata.count()
         if n_reports <2:
             return None
-        if n_reports < 5:
+        if n_reports < 3:
             n_mean = n_reports
         else:
-            n_mean = 5
+            n_mean = 3
 
         query = self.cycle_metadata.order_by('-GpsFixDate').all()[0:n_mean]
         recent_reports = np.array(query.values_list('GpsFixDate', flat=True))
@@ -131,6 +131,15 @@ class deployment(models.Model):
         mean_time_diff = np.mean(time_diff)
 
         return recent_reports[0] + mean_time_diff
+
+    @property
+    def days_since_last(self):
+        """Days since last report"""
+        latest = self.cycle_metadata.order_by('GpsFixDate').last()
+        if latest:
+            since_last = datetime.now(timezone.utc)-latest.GpsFixDate
+            return since_last.days
+        return ''
 
     @property
     def age(self):

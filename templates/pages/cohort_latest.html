@@ -18,18 +18,6 @@
                     <option value=2021 selected>2021</option>
                 </select>
             </div>
-            <label>Variable</label>
-            <div class="row">
-                <select id="var_selector" class="selectpicker" aria-label="select">
-                    <option value="PSAL" selected>Salinity</option>
-                    <option value="TEMP">Temperature</option>
-                    <option value="DOXY">Dissolved Oxygen</option>
-                    <option value="PH_IN_SITU_TOTAL">pH</option>
-                    <option value="CHLA">Chlorophyll a</option>
-                    <option value="BBP700">Particle Backscatter</option>
-                    <option value="CDOM">CDOM</option>
-                </select>
-            </div>
         </div>
         <!-- Plots -->
         <div class="col">
@@ -40,14 +28,14 @@
 {% endblock %}
 {% block footer %}
 <script>
-    //Javascript for selectable variable plot
+    //Javascript for selectable year
 
     function update(year_selected, var_selected){
 
         $.ajax({
             type: 'GET',
-            url: "ajax/update_cohort_plot",
-            data: {"year_selected": year_selected, "var_selected":var_selected},
+            url: "ajax/update_cohort_latest_plot",
+            data: {"year_selected": year_selected},
             success: function (response) {
                 //If sucessful, add plot
                 $('#graph').html(response["plot_div"])
@@ -59,28 +47,16 @@
     }
 
     //Initial load
-    let var_selected = $("#var_selector").val();
     let year_selected = $("#year_selector").val();
-    update(year_selected, var_selected)
+    update(year_selected)
 
     //Change with var selection
-    $("#var_selector").change(function (e) {
-        e.preventDefault();
-        //get selectors
-        let var_selected = $("#var_selector").val();
-        let year_selected = $("#year_selector").val();
-        //update plot
-        update(year_selected, var_selected)
-    })
-
-    //Change with year selection
     $("#year_selector").change(function (e) {
         e.preventDefault();
         //get selectors
-        let var_selected = $("#var_selector").val();
         let year_selected = $("#year_selector").val();
         //update plot
-        update(year_selected, var_selected)
+        update(year_selected)
     })
 
 </script>

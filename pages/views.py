@@ -25,6 +25,9 @@ def profile_plot(request):
 def cohort(request):
     return render(request, 'pages/cohort.html')
 
+def cohort_latest(request):
+    return render(request, 'pages/cohort_latest.html')
+
 def display_map(request):
     return render(request, 'pages/map.html')
 

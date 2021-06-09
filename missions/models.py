@@ -44,6 +44,9 @@ class mission(models.Model):
 
     COMMENTS = models.TextField(blank=True, null=True)
 
+    class Meta:
+        ordering = ('-ADD_DATE',)
+        
     #For admin detail view
     def get_fields(self):
         return [(field.name, field.value_to_string(self)) for field in self._meta.fields]
