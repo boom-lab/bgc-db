@@ -760,8 +760,6 @@ def park_pres_plot(filters):
     data["PRES"] = data.PRES*-1
     data['PROFILE_ID'] = data.PROFILE_ID.str.split('.').str[1]
     data['col'] = data.groupby("PROFILE_ID").cumcount()
-
-    print(data.head())
     
     data = data.pivot(index='PROFILE_ID',columns='col',values='PRES').reset_index()
 
