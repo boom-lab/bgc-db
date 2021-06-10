@@ -81,6 +81,12 @@ class deployment(models.Model):
     BATTERY_DETAILS = models.CharField(max_length=100, blank=True, null=True)
     PUMP_BATTERY_SERIAL_NO = models.CharField(max_length=50, blank=True, null=True)
 
+    NOMINAL_DRIFT_PRES = models.IntegerField(null=True, blank=True)
+    CYCLES_FOR_DRIFT_PRES = models.IntegerField(null=True, blank=True)
+    NOMINAL_PROFILE_PRES = models.IntegerField(null=True, blank=True)
+    CYCLES_FOR_PROFILE_PRES = models.IntegerField(null=True, blank=True)
+    PROFILE_SAMPLING_METHOD = models.CharField(max_length=50, blank=True, null=True)
+
     CUSTOMIZATION = models.CharField(max_length=200, blank=True, null=True)
     COMMENTS = models.TextField(blank=True, null=True)
 
