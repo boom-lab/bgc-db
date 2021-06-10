@@ -25,8 +25,12 @@ class deployment(models.Model):
     PURCHACE_ORDER = models.CharField(max_length=25, blank=True, null=True)
     PLATFORM_MAKER = models.ForeignKey(platform_makers, to_field="VALUE", max_length=25, blank=True, null=True, 
         on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
-    PLATFORM_TYPE = models.ForeignKey(cm.platform_types, to_field="PLATFORM_TYPE", max_length=25, blank=True, null=True, 
-        on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
+    PLATFORM_TYPE = models.ForeignKey(cm.platform_types, to_field="VALUE", max_length=25, blank=True, null=True, 
+        on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True}) #R23
+    PLATFORM_TYPE_AOML = models.ForeignKey(cm.platform_types_aoml, to_field="VALUE", max_length=25, blank=True, null=True, 
+        on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True}) 
+    PLATFORM_TYPE_WMO = models.ForeignKey(cm.platform_types_wmo, to_field="VALUE", max_length=25, blank=True, null=True, 
+        on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True}) #R08
     WMO_RECORDER_TYPE = models.ForeignKey(cm.wmo_recorder_types, to_field="VALUE", max_length=25, blank=True, null=True, 
         on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
 

@@ -26,9 +26,19 @@ admin.site.register(cm.platform_makers, PlatformMakersAdmin)
 
 
 class PlatformTypesAdmin(ImportExportMixin, admin.ModelAdmin):
-    list_display = ['PLATFORM_TYPE','ACTIVE','DESCRIPTION','R08_WMO','R23_ARGO','R23_ARGO_KEY','AOML']
+    list_display = ['VALUE','KEY','DISPLAY','ACTIVE','SOURCE','DESCRIPTION']
     list_per_page = 100
 admin.site.register(cm.platform_types, PlatformTypesAdmin)
+
+class PlatformTypesAOMLAdmin(ImportExportMixin, admin.ModelAdmin):
+    list_display = ['VALUE','DISPLAY','ACTIVE','SOURCE','DESCRIPTION']
+    list_per_page = 100
+admin.site.register(cm.platform_types_aoml, PlatformTypesAOMLAdmin)
+
+class PlatformTypesWMOAdmin(ImportExportMixin, admin.ModelAdmin):
+    list_display = ['VALUE','DISPLAY','ACTIVE','SOURCE','DESCRIPTION']
+    list_per_page = 100
+admin.site.register(cm.platform_types_wmo, PlatformTypesWMOAdmin)
 
 
 class TransmissionSystemsAdmin(ExportMixin, admin.ModelAdmin):

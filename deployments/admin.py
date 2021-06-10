@@ -19,7 +19,7 @@ class DeploymentAdmin(ExportMixin, admin.ModelAdmin):
 
     list_display = ['detail_link', 'edit_link', 'event_link'] + all_fields
     list_display_links = None
-    list_filter = ('PLATFORM_TYPE',)
+    #list_filter = ('PLATFORM_TYPE',)
     search_fields = ('FLOAT_SERIAL_NO',)
     list_per_page = 25
     actions = [Export_Metadata_File]
@@ -56,7 +56,8 @@ class DeploymentAdmin(ExportMixin, admin.ModelAdmin):
     def get_urls(self):
         urls = super(DeploymentAdmin, self).get_urls()
         my_urls = [
-            url(r'^detail_view/(?P<entry_id>\d+)/$', self.admin_site.admin_view(admin_detail_view), {'admin_site' :self.admin_site}, name='detail_view'), #detail view
+            url(r'^detail_view/(?P<entry_id>\d+)/$', self.admin_site.admin_view(admin_detail_view), 
+                {'admin_site' :self.admin_site}, name='detail_view'), #detail view
             url(r'^export_metadata/(?P<entry_id>\d+)/$', self.admin_site.admin_view(export_metadata), name='export_metadata'), #export metadata
         ]
         return my_urls + urls

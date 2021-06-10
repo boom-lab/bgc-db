@@ -1,6 +1,10 @@
 from django.core.management.base import BaseCommand
-from choices.models import sensor_types, sensor_makers, sensor_models, instrument_types, platform_makers, platform_types, transmission_systems
+from choices.models import sensor_types, sensor_makers, sensor_models, platform_types_wmo, platform_makers, platform_types, transmission_systems
 import pandas as pd
+
+#Custom command to add vocabularies from csv
+#To run:
+#python manage.py add_from_vocab --add_list_of_your_choice
 
 class Command(BaseCommand):
     def add_arguments(self, parser):
@@ -8,7 +12,7 @@ class Command(BaseCommand):
         parser.add_argument('--add_sensor_types', action='store_true')
         parser.add_argument('--add_sensor_models', action='store_true')
         parser.add_argument('--add_sensor_makers', action='store_true')
-        parser.add_argument('--add_instrument_types', action='store_true')
+        parser.add_argument('--add_platform_types_wmo', action='store_true')
         parser.add_argument('--add_platform_makers', action='store_true')
         parser.add_argument('--add_platform_types', action='store_true')
         parser.add_argument('--add_transmission_systems', action='store_true')
@@ -37,11 +41,11 @@ class Command(BaseCommand):
                 smodels = sensor_models(VALUE=row['altLabel'], DISPLAY=row['prefLabel'], DESCRIPTION=row['Definition'], ACTIVE=False, SOURCE='Nerc R27')
                 smodels.save()
 
-        if options['add_instrument_types']:
+        if options['add_platform_types_wmo']:
             R08 = pd.read_csv('choices/vocab/R08.csv')
             for index, row in R08.iterrows():
                 print(index)
-                itypes = instrument_types(VALUE=row['altLabel'], DISPLAY=row['prefLabel'], DESCRIPTION=row['Definition'], ACTIVE=False, SOURCE='Nerc R08')
+                itypes = platform_types_wmo(VALUE=row['altLabel'], DISPLAY=row['prefLabel'], DESCRIPTION=row['Definition'], ACTIVE=False, SOURCE='Nerc R08')
                 itypes.save()
 
         if options['add_platform_makers']:
@@ -55,7 +59,8 @@ class Command(BaseCommand):
             R23 = pd.read_csv('choices/vocab/R23.csv')
             for index, row in R23.iterrows():
                 print(index)
-                itypes = platform_types(VALUE=row['altLabel'], DISPLAY=row['prefLabel'], DESCRIPTION=row['Definition'], ACTIVE=False, SOURCE='Nerc R23',KEY=row['Key'])
+                itypes = platform_types(VALUE=row['altLabel'], DISPLAY=row['prefLabel'], DESCRIPTION=row['Definition'], ACTIVE=False, 
+                    SOURCE='Nerc R23',KEY=row['Key'])
                 itypes.save()
 
         if options['add_transmission_systems']:

@@ -1,10 +1,10 @@
 internal ID number                      {{ d.AOML_ID }}
 transmission ID number                  {{ '%06d' % d.FLOAT_SERIAL_NO | int }}
 transmission type                       {{ d.TRANS_SYSTEM.VALUE }}
-instrument type                         {{ d.PLATFORM_TYPE.AOML }}
+instrument type                         {{ d.PLATFORM_TYPE_AOML.VALUE }}
 IRIDIUM program number                  n/a
 WMO ID number                           {{ d.PLATFORM_NUMBER }}
-WMO instrument type (table 1770)        {{ d.PLATFORM_TYPE.R08_WMO }}
+WMO instrument type (table 1770)        {{ d.PLATFORM_TYPE_WMO.VALUE }}
 WMO recorder type (table 4770)          {{ d.WMO_RECORDER_TYPE }}
 start time [dd mm yyyy hh mm (Z)]       {{ d.START_DATE }}
 status of start time                    {{ d.START_DATE_QC }}
@@ -43,7 +43,7 @@ calib coef for current                  ISLOPE=1.1502; IOFF=-21.9025;
 float manufacturer                      {{ d.PLATFORM_MAKER.VALUE }}
 float serial number                     {{ d.FLOAT_SERIAL_NO }}
 Project name                            {{ d.FUNDER }}, {{ d.INSTITUTION }}
-PI                                      {{ d.PI_NAME }}
+PI                                      {{ d.INSTITUTION }}: {{ d.PI_NAME }}
 principal investigator address          {{ d.PI_ADDRESS }}
 originating country                     {{ d.ORIGIN_COUNTRY }}
 float deployer                          {{ d.DEPLOYER }}
@@ -73,7 +73,7 @@ initial battery voltage                 {{ d.BATTERY_VOLTAGE }} V
 battery packs                           {{ d.BATTERY_PACKS }} 
 battery details                         {{ d.BATTERY_DETAILS }}
 customisation                           {{ d.CUSTOMIZATION }}
-ref table PLATFORM_TYPE                 {{ d.PLATFORM_TYPE.R23_ARGO }}
-ref table PLATFORM_TYPE_KEY             {{ d.PLATFORM_TYPE.R23_ARGO_KEY }}
+ref table PLATFORM_TYPE                 {{ d.PLATFORM_TYPE.VALUE }}
+ref table PLATFORM_TYPE_KEY             {{ d.PLATFORM_TYPE.KEY }}
 ref table DEPLOYMENT_PLATFORM_ID        {{ d.DEPLOYMENT_PLATFORM.NODC }}
 comment                                 {{ d.COMMENTS }}
