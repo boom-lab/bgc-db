@@ -40,7 +40,7 @@
           </thead>
           <tbody>
               {% for deployment in deployments %}
-              <tr class='clickable-row' href="/float_detail?FLOAT_SERIAL_NO={{ deployment.FLOAT_SERIAL_NO }}&PLATFORM_TYPE={{ deployment.PLATFORM_TYPE.R23_ARGO }}">
+              <tr class='clickable-row' href="/float_detail?FLOAT_SERIAL_NO={{ deployment.FLOAT_SERIAL_NO }}&PLATFORM_TYPE={{ deployment.PLATFORM_TYPE.VALUE }}">
                 <th class="cursor-pointer">{{ deployment.FLOAT_SERIAL_NO }}</th>
                 <td class="cursor-pointer">{{ deployment.PLATFORM_NUMBER }}</td>
                 <td class="cursor-pointer">{{ deployment.PLATFORM_TYPE.VALUE }}</td>
