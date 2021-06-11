@@ -9,7 +9,7 @@
 {% endblock header %}
 {% block content %}
 <div class="container-fluid">
-    <div class="row">
+    <div class="row" id="firstrow">
         <!-- Controls -->
         <div class="col-1">
             <label>Cohort</label>
@@ -20,9 +20,6 @@
             </div>
         </div>
         <!-- Plots -->
-        <div class="col">
-            <div id="graph"></div>
-        </div>
     </div>
 </div>
 {% endblock %}
@@ -38,7 +35,7 @@
             data: {"year_selected": year_selected},
             success: function (response) {
                 //If sucessful, add plot
-                $('#graph').html(response["plot_div"])
+                $('#firstrow').append("<div class='col'"+response["plot_div0"]+"</div><div class='col'"+response["plot_div1"]+"</div>")
             },
             error: function (response) {
                 console.log(response)
