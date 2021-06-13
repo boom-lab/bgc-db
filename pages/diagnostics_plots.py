@@ -2,11 +2,11 @@ from django.http import JsonResponse
 import plotly.graph_objs as go
 from plotly.offline import plot
 from plotly.subplots import make_subplots
-import numpy as np
 import pandas as pd
 import math
 
-from env_data.models import continuous_profile, cycle_metadata
+from env_data.models import continuous_profile, cycle_metadata, discrete_profile
+from .plot_helpers import var_translation
 
 def update_cohort_plot(request):
     """"""
@@ -15,15 +15,22 @@ def update_cohort_plot(request):
         year_selected = request.GET.get("year_selected", None)
         var_selected = request.GET.get("var_selected", None)
 
-        query = continuous_profile.objects.filter(DEPLOYMENT__LAUNCH_DATE__year=year_selected).order_by(
+        if var_selected != "NITRATE":
+            query = continuous_profile.objects.filter(DEPLOYMENT__LAUNCH_DATE__year=year_selected).order_by(
+                "PROFILE_ID", "PRES").values_list("DEPLOYMENT__FLOAT_SERIAL_NO","DEPLOYMENT__PLATFORM_NUMBER", 
+                "PROFILE_ID", "PRES", var_selected)
+            data = pd.DataFrame(query, columns=["FLOAT_SERIAL_NO","PLATFORM_NUMBER", "PROFILE_ID", "PRES", var_selected])
+
+        dis_query = discrete_profile.objects.filter(DEPLOYMENT__LAUNCH_DATE__year=year_selected).order_by(
             "PROFILE_ID", "PRES").values_list("DEPLOYMENT__FLOAT_SERIAL_NO","DEPLOYMENT__PLATFORM_NUMBER", 
             "PROFILE_ID", "PRES", var_selected)
         
         #data = np.core.records.fromrecords(query, names=["DEPLOYMENT", "PROFILE_ID", "PRES", var_selected])
-        data = pd.DataFrame(query, columns=["FLOAT_SERIAL_NO","PLATFORM_NUMBER", "PROFILE_ID", "PRES", var_selected])
-        
+        dis_data = pd.DataFrame(dis_query, columns=["FLOAT_SERIAL_NO","PLATFORM_NUMBER", 
+            "PROFILE_ID", "PRES", var_selected])
+
         #Number of subplot rows based on number of floats
-        wmos = data.PLATFORM_NUMBER.unique()
+        wmos = dis_data.PLATFORM_NUMBER.unique()
         n_rows = math.ceil(len(wmos)/2)
         fig = make_subplots(rows=n_rows, cols=2)
 
@@ -33,17 +40,45 @@ def update_cohort_plot(request):
             crt_row = math.floor(i/2)+1
             crt_col = i%2+1
 
+            #------------Continuous data -----------
+            if var_selected != "NITRATE":
+                #subset to one float
+                data_sub = data.loc[data.PLATFORM_NUMBER==wmo,:]
+                sn = data_sub.reset_index().loc[0, "FLOAT_SERIAL_NO"]
+
+                #Each profile (series)
+                for prof in data.PROFILE_ID.unique():
+                    fig.add_trace(
+                        go.Scatter(
+                            x=data_sub.loc[data["PROFILE_ID"]==prof, var_selected],
+                            y=data_sub.loc[data["PROFILE_ID"]==prof, "PRES"]*-1,
+                            mode='lines',
+                            # marker = {
+                            #     'color': "#1f77b4",
+                            # },
+                            #customdata = hov_data,
+                            hovertemplate ='%{x:.3f}',
+                            name="Profile:"+prof,
+                        ),
+                    row=crt_row,
+                    col=crt_col,
+                    )
+
+            #--------- Discrete data ------------
             #subset to one float
-            data_sub = data.loc[data.PLATFORM_NUMBER==wmo,:]
-            sn = data_sub.reset_index().loc[0, "FLOAT_SERIAL_NO"]
+            print(wmo)
+            dis_data_sub = dis_data.loc[dis_data.PLATFORM_NUMBER==wmo,:]
+            print(dis_data_sub.head())
+            sn = dis_data_sub.reset_index().loc[0, "FLOAT_SERIAL_NO"]
+            print(sn)
 
             #Each profile (series)
-            for prof in data.PROFILE_ID.unique():
+            for prof in dis_data.PROFILE_ID.unique():
                 fig.add_trace(
                     go.Scatter(
-                        x=data_sub.loc[data["PROFILE_ID"]==prof, var_selected],
-                        y=data_sub.loc[data["PROFILE_ID"]==prof, "PRES"]*-1,
-                        mode='lines',
+                        x=dis_data_sub.loc[dis_data["PROFILE_ID"]==prof, var_selected],
+                        y=dis_data_sub.loc[dis_data["PROFILE_ID"]==prof, "PRES"]*-1,
+                        mode='markers',
                         # marker = {
                         #     'color': "#1f77b4",
                         # },
@@ -69,14 +104,24 @@ def update_cohort_plot(request):
         # Formatting
         fig.update_layout(
             template = "ggplot2",
-            xaxis = {'title':var_selected},
             yaxis = {'title':"Pressure"},
-            font = {"size":15},
-            height=900,
+            font = {"size":12},
+            height=850,
             showlegend=False,
             margin={'t': 30, 'l':0,'r':0,'b':0},
         )
 
+        fig.update_xaxes(title=var_translation[var_selected],
+                showline=True,
+                linewidth=1,
+                linecolor="#000000",
+                mirror=True)
+
+        fig.update_yaxes(title="Pressure (dbar)",
+                showline=True,
+                linewidth=1,
+                linecolor="#000000",
+                mirror=True)
 
 
         plot_div = plot(fig,output_type='div', include_plotlyjs=False, config= {
@@ -214,7 +259,11 @@ def update_cohort_latest_plot(request):
                 showlegend=False,
                 margin={'t': 0, 'l':0,'r':0,'b':0},
                 yaxis=dict(
-                    domain=[0.15, 0.85]
+                    domain=[0.15, 0.85],
+                    showline=True,
+                    linewidth=1,
+                    linecolor="#000000",
+                    mirror=True
                 ),
                 xaxis=dict(
                     title=dict(
@@ -251,7 +300,8 @@ def update_cohort_latest_plot(request):
                     range=[0, .001],
                     showline=True,
                     linewidth=1,
-                    linecolor="#80BF96"
+                    linecolor="#80BF96",
+                    showgrid=False
                 ),
                 xaxis3=dict(
                     title=dict(
@@ -271,7 +321,8 @@ def update_cohort_latest_plot(request):
                     range=[0, 3],
                     showline=True,
                     linewidth=1,
-                    linecolor="#023440"
+                    linecolor="#023440",
+                    showgrid=False
                 ),
                 xaxis4=dict(
                     title=dict(
@@ -291,7 +342,8 @@ def update_cohort_latest_plot(request):
                     range=[0, 15],
                     showline=True,
                     linewidth=1,
-                    linecolor="#c9324e"
+                    linecolor="#c9324e",
+                    showgrid=False
                 ),
                 xaxis5=dict(
                     title=dict(
@@ -311,7 +363,8 @@ def update_cohort_latest_plot(request):
                     range=[150, 300],
                     showline=True,
                     linewidth=1,
-                    linecolor="#1f77b4"
+                    linecolor="#1f77b4",
+                    showgrid=False
                 ),
             )
 

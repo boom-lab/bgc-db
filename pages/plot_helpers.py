@@ -59,13 +59,13 @@ def add_top_trace(fig, top_data, y_data, top_var, hov_data, wmo, mode='lines',):
 
 
 var_translation = {
-    "TEMP":"Temperature C",
-    "PRES":"Pressure dbar",
+    "TEMP":"Temperature (°C)",
+    "PRES":"Pressure (dbar)",
     "PSAL": "Practical Salinity",
-    "DOXY":"Dissolved Oxygen umol/kg",
-    "CHLA":"Chlorophyll a mg/m3",
-    "BBP700":"Particle backscattering at 700 nm m-1",
+    "DOXY":"Dissolved Oxygen (μmol/kg)",
+    "CHLA":"Chlorophyll a (mg/m<sup>3</sup>)",
+    "BBP700":"Particle backscattering at 700 nm (m<sup>-1</sup>)",
     "PH_IN_SITU_TOTAL":"pH total scale",
-    "NITRATE":"Nitrate umol/kg",
-    "CDOM":"Coloured dissolved organic matter ppb"
+    "NITRATE":"Nitrate (μmol/kg)",
+    "CDOM":"Coloured dissolved organic matter (ppb)"
 }
