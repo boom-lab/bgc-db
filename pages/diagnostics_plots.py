@@ -5,6 +5,7 @@ from plotly.subplots import make_subplots
 import pandas as pd
 import math
 import time
+from colour import Color
 
 from env_data.models import continuous_profile, cycle_metadata, discrete_profile
 from .plot_helpers import var_translation
@@ -42,6 +43,11 @@ def update_cohort_plot(request):
         n_rows = math.ceil(len(wmos)/2)
         fig = make_subplots(rows=n_rows, cols=2)
 
+        #continuous colormaps
+        n_colors = len(data.PROFILE_ID.unique())
+        red = Color("red")
+        colors = list(red.range_to(Color("blue"),n_colors))
+
         #each float (seperate subplot)
         for i, wmo in enumerate(wmos):
             #Current row and col of subplot
@@ -55,15 +61,15 @@ def update_cohort_plot(request):
                 sn = data_sub.reset_index().loc[0, "FLOAT_SERIAL_NO"]
 
                 #Each profile (series)
-                for prof in data.PROFILE_ID.unique():
+                for i, prof in enumerate(data.PROFILE_ID.unique()):
                     fig.add_trace(
                         go.Scatter(
                             x=data_sub.loc[data["PROFILE_ID"]==prof, var_selected],
                             y=data_sub.loc[data["PROFILE_ID"]==prof, "PRES"]*-1,
                             mode='lines',
-                            # marker = {
-                            #     'color': "#1f77b4",
-                            # },
+                            marker = {
+                                'color': colors[i].hex,
+                            },
                             #customdata = hov_data,
                             hovertemplate ='%{x:.3f}',
                             name="Profile:"+prof,
@@ -84,9 +90,9 @@ def update_cohort_plot(request):
                         x=dis_data_sub.loc[dis_data["PROFILE_ID"]==prof, var_selected],
                         y=dis_data_sub.loc[dis_data["PROFILE_ID"]==prof, "PRES"]*-1,
                         mode='markers',
-                        # marker = {
-                        #     'color': "#1f77b4",
-                        # },
+                        marker = {
+                            'color': colors[i].hex,
+                        },
                         #customdata = hov_data,
                         hovertemplate ='%{x:.3f}',
                         name="Profile:"+prof,
