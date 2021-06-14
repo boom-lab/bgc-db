@@ -4,12 +4,14 @@ from plotly.offline import plot
 from plotly.subplots import make_subplots
 import pandas as pd
 import math
+import time
 
 from env_data.models import continuous_profile, cycle_metadata, discrete_profile
 from .plot_helpers import var_translation
 
 def update_cohort_plot(request):
     """"""
+    start = time.time()
     if request.is_ajax and request.method == "GET":
 
         year_selected = request.GET.get("year_selected", None)
@@ -20,14 +22,20 @@ def update_cohort_plot(request):
                 "PROFILE_ID", "PRES").values_list("DEPLOYMENT__FLOAT_SERIAL_NO","DEPLOYMENT__PLATFORM_NUMBER", 
                 "PROFILE_ID", "PRES", var_selected)
             data = pd.DataFrame(query, columns=["FLOAT_SERIAL_NO","PLATFORM_NUMBER", "PROFILE_ID", "PRES", var_selected])
-
+            
         dis_query = discrete_profile.objects.filter(DEPLOYMENT__LAUNCH_DATE__year=year_selected).order_by(
             "PROFILE_ID", "PRES").values_list("DEPLOYMENT__FLOAT_SERIAL_NO","DEPLOYMENT__PLATFORM_NUMBER", 
             "PROFILE_ID", "PRES", var_selected)
         
+        print(time.time()-start, "Query build")
+        start = time.time()
+
         #data = np.core.records.fromrecords(query, names=["DEPLOYMENT", "PROFILE_ID", "PRES", var_selected])
         dis_data = pd.DataFrame(dis_query, columns=["FLOAT_SERIAL_NO","PLATFORM_NUMBER", 
             "PROFILE_ID", "PRES", var_selected])
+
+        print(time.time()-start, "Execute query and DFs")
+        start = time.time()
 
         #Number of subplot rows based on number of floats
         wmos = dis_data.PLATFORM_NUMBER.unique()
@@ -66,11 +74,8 @@ def update_cohort_plot(request):
 
             #--------- Discrete data ------------
             #subset to one float
-            print(wmo)
             dis_data_sub = dis_data.loc[dis_data.PLATFORM_NUMBER==wmo,:]
-            print(dis_data_sub.head())
             sn = dis_data_sub.reset_index().loc[0, "FLOAT_SERIAL_NO"]
-            print(sn)
 
             #Each profile (series)
             for prof in dis_data.PROFILE_ID.unique():
@@ -127,6 +132,7 @@ def update_cohort_plot(request):
         plot_div = plot(fig,output_type='div', include_plotlyjs=False, config= {
             'displaylogo': False, 'modeBarButtonsToRemove':['lasso2d', 'select2d','resetScale2d']})  
 
+        print(time.time()-start, "Plotly")
         return JsonResponse({'plot_div': plot_div}, status = 200)
 
     return JsonResponse({}, status = 400)
@@ -142,24 +148,33 @@ def update_cohort_latest_plot(request):
         profile_ids_q = cycle_metadata.objects.filter(DEPLOYMENT__LAUNCH_DATE__year=year_selected).order_by(
             '-DEPLOYMENT__id','-PROFILE_ID').distinct('DEPLOYMENT__id').values_list("PROFILE_ID")
 
-        #Get latest continuous data
+        #latest continuous data query
         query = continuous_profile.objects.filter(PROFILE_ID__in=profile_ids_q).order_by(
             "PROFILE_ID", "PRES").values_list("DEPLOYMENT__FLOAT_SERIAL_NO","DEPLOYMENT__PLATFORM_NUMBER", 
             "PROFILE_ID", "PRES", "PSAL","TEMP","DOXY","CHLA","BBP700","CDOM","PH_IN_SITU_TOTAL")
+
+        #Latest discrete data query
+        dis_query = discrete_profile.objects.filter(PROFILE_ID__in=profile_ids_q).order_by(
+            "PROFILE_ID", "PRES").values_list("DEPLOYMENT__FLOAT_SERIAL_NO","DEPLOYMENT__PLATFORM_NUMBER", 
+            "PROFILE_ID", "PRES", "PSAL","TEMP","DOXY","CHLA","BBP700","CDOM","PH_IN_SITU_TOTAL","NITRATE")
         
+        #Get data and convert to dataframes
         data = pd.DataFrame(query, columns=["FLOAT_SERIAL_NO","PLATFORM_NUMBER", "PROFILE_ID", "PRES", "PSAL",
             "TEMP","DOXY","CHLA","BBP700","CDOM","PH_IN_SITU_TOTAL"])
 
-        #Number of subplot rows based on number of floats
+        dis_data = pd.DataFrame(dis_query, columns=["FLOAT_SERIAL_NO","PLATFORM_NUMBER", 
+            "PROFILE_ID", "PRES", "PSAL","TEMP","DOXY","CHLA","BBP700","CDOM","PH_IN_SITU_TOTAL","NITRATE"])
+
         wmos = data.PLATFORM_NUMBER.unique()
 
         #List to collect plots
         plot_divs={}
 
-        #each float (seperate subplot)
+        #each float (seperate plot)
         for i, wmo in enumerate(wmos):
             fig = go.Figure()
 
+            #------------------Continuous Traces-------------------
             #subset to one float
             data_sub = data.loc[data.PLATFORM_NUMBER==wmo,:]
             sn = data_sub.reset_index().loc[0, "FLOAT_SERIAL_NO"]
@@ -244,6 +259,107 @@ def update_cohort_latest_plot(request):
                 ),
             )
 
+            #--------------------Discrete Traces ----------------------
+            #subset to one float
+            dis_data_sub = dis_data.loc[dis_data.PLATFORM_NUMBER==wmo,:]
+            sn = dis_data_sub.reset_index().loc[0, "FLOAT_SERIAL_NO"]
+
+            #Salinity
+            fig.add_trace(
+                go.Scatter(
+                    x=dis_data_sub.loc[:, "PSAL"],
+                    y=dis_data_sub.loc[:, "PRES"]*-1,
+                    mode='markers',
+                    marker = {
+                        'color': "#FEBD17",
+                    },
+                    #customdata = hov_data,
+                    hovertemplate ='%{x:.3f}',
+                    name="Salinity",
+                    xaxis="x"
+                ),
+            )
+
+            #BBP700
+            fig.add_trace(
+                go.Scatter(
+                    x=dis_data_sub.loc[:, "BBP700"],
+                    y=dis_data_sub.loc[:, "PRES"]*-1,
+                    mode='markers',
+                    marker = {
+                        'color': "#80BF96",
+                    },
+                    #customdata = hov_data,
+                    hovertemplate ='%{x:.3f}',
+                    name="Backscattering",
+                    xaxis="x2"
+                ),
+            )
+
+            #CDOM
+            fig.add_trace(
+                go.Scatter(
+                    x=dis_data_sub.loc[:, "CDOM"],
+                    y=dis_data_sub.loc[:, "PRES"]*-1,
+                    mode='markers',
+                    marker = {
+                        'color': "#023440",
+                    },
+                    #customdata = hov_data,
+                    hovertemplate ='%{x:.3f}',
+                    name="CDOM",
+                    xaxis="x3"
+                ),
+            )
+
+            #Temeprature
+            fig.add_trace(
+                go.Scatter(
+                    x=dis_data_sub.loc[:, "TEMP"],
+                    y=dis_data_sub.loc[:, "PRES"]*-1,
+                    mode='markers',
+                    marker = {
+                        'color': "#c9324e",
+                    },
+                    #customdata = hov_data,
+                    hovertemplate ='%{x:.3f}',
+                    name="Temperature",
+                    xaxis="x4"
+                ),
+            )
+
+            #DOXY
+            fig.add_trace(
+                go.Scatter(
+                    x=dis_data_sub.loc[:, "DOXY"],
+                    y=dis_data_sub.loc[:, "PRES"]*-1,
+                    mode='markers',
+                    marker = {
+                        'color': "#1f77b4",
+                    },
+                    #customdata = hov_data,
+                    hovertemplate ='%{x:.3f}',
+                    name="Dissolved Oxygen",
+                    xaxis="x5"
+                ),
+            )
+            print(dis_data_sub.loc[:, "NITRATE"].head())
+            #Nitrate
+            fig.add_trace(
+                go.Scatter(
+                    x=dis_data_sub.loc[:, "NITRATE"],
+                    y=dis_data_sub.loc[:, "PRES"]*-1,
+                    mode='markers',
+                    marker = {
+                        'color': "#bc925a",
+                    },
+                    #customdata = hov_data,
+                    hovertemplate ='%{x:.3f}',
+                    name="Nitrate",
+                    xaxis="x6"
+                ),
+            )
+
 
             fig.add_annotation(text="WMO: "+wmo+" SN: "+str(sn),
                 xref="paper", yref="paper", xanchor='center', yanchor='bottom',
@@ -277,7 +393,7 @@ def update_cohort_latest_plot(request):
                         color="#FEBD17"
                     ),
                     position=0.15,
-                    range=[35, 36],
+                    range=[34.8, 36],
                     showline=True,
                     linewidth=1,
                     linecolor="#FEBD17"
@@ -364,6 +480,27 @@ def update_cohort_latest_plot(request):
                     showline=True,
                     linewidth=1,
                     linecolor="#1f77b4",
+                    showgrid=False
+                ),
+                xaxis6=dict(
+                    title=dict(
+                        text="Nitrate (μmol/kg)",
+                        standoff=10,
+                    ),
+                    titlefont=dict(
+                        color="#bc925a"
+                    ),
+                    tickfont=dict(
+                        color="#bc925a"
+                    ),
+                    anchor="free",
+                    overlaying="x",
+                    side="top",
+                    position=1,
+                    range=[0, 25],
+                    showline=True,
+                    linewidth=1,
+                    linecolor="#bc925a",
                     showgrid=False
                 ),
             )
