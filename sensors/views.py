@@ -1,10 +1,8 @@
 from deployments.models import deployment
-from rest_framework import generics, permissions, serializers
-from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
 from .serializers import SensorSerializer
 from .models import sensor
-from rest_framework.views import APIView
 from rest_framework import status, generics, mixins
 from django.http import JsonResponse
 

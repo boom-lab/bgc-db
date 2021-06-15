@@ -105,18 +105,12 @@ class GetCrtMetadata(generics.ListAPIView): #Read only
     filter_backends = [DjangoFilterBackend]
     filter_fields = [field.name for field in deployment._meta.fields]
 
-#Get all metadata, post new metadata
-class MetadataGetPost(generics.ListCreateAPIView): #Read and write only, token
+class MetadataView(generics.UpdateAPIView, generics.ListCreateAPIView): #Get all metadata, post new metadata, Update (patch), token
     permission_classes=[IsAuthenticated]
     serializer_class=DeploymentSerializer
     queryset=deployment.objects.all()
     filter_backends = [DjangoFilterBackend]
     filter_fields = [field.name for field in deployment._meta.fields]
-
-class MetadataUpdate(generics.UpdateAPIView): #Update (patch) only, token
-    permission_classes=[IsAuthenticated]
-    serializer_class=DeploymentSerializer
-    queryset=deployment.objects.all()
 
     def get_object(self):
         filters={}
