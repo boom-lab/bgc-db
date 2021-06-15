@@ -1,3 +1,4 @@
+from re import sub
 from django.http import JsonResponse
 import plotly.graph_objs as go
 from plotly.offline import plot
@@ -6,6 +7,7 @@ import pandas as pd
 import math
 import time
 from colour import Color
+import json
 
 from env_data.models import continuous_profile, cycle_metadata, discrete_profile
 from .plot_helpers import var_translation
@@ -43,10 +45,7 @@ def update_cohort_plot(request):
         n_rows = math.ceil(len(wmos)/2)
         fig = make_subplots(rows=n_rows, cols=2)
 
-        #continuous colormaps
-        n_colors = len(data.PROFILE_ID.unique())
-        red = Color("red")
-        colors = list(red.range_to(Color("blue"),n_colors))
+
 
         #each float (seperate subplot)
         for i, wmo in enumerate(wmos):
@@ -60,15 +59,20 @@ def update_cohort_plot(request):
                 data_sub = data.loc[data.PLATFORM_NUMBER==wmo,:]
                 sn = data_sub.reset_index().loc[0, "FLOAT_SERIAL_NO"]
 
+                #continuous colormaps
+                n_colors = len(data_sub.PROFILE_ID.unique())
+                red = Color("blue")
+                colors = list(red.range_to(Color("green"),n_colors))
+
                 #Each profile (series)
-                for i, prof in enumerate(data.PROFILE_ID.unique()):
+                for j, prof in enumerate(data_sub.PROFILE_ID.unique()):
                     fig.add_trace(
                         go.Scatter(
                             x=data_sub.loc[data["PROFILE_ID"]==prof, var_selected],
                             y=data_sub.loc[data["PROFILE_ID"]==prof, "PRES"]*-1,
                             mode='lines',
                             marker = {
-                                'color': colors[i].hex,
+                                'color': colors[j].hex,
                             },
                             #customdata = hov_data,
                             hovertemplate ='%{x:.3f}',
@@ -83,15 +87,20 @@ def update_cohort_plot(request):
             dis_data_sub = dis_data.loc[dis_data.PLATFORM_NUMBER==wmo,:]
             sn = dis_data_sub.reset_index().loc[0, "FLOAT_SERIAL_NO"]
 
+            #discrete colormaps
+            n_colors = len(dis_data_sub.PROFILE_ID.unique())
+            red = Color("blue")
+            colors = list(red.range_to(Color("green"),n_colors))
+
             #Each profile (series)
-            for prof in dis_data.PROFILE_ID.unique():
+            for k, prof in enumerate(dis_data_sub.PROFILE_ID.unique()):
                 fig.add_trace(
                     go.Scatter(
                         x=dis_data_sub.loc[dis_data["PROFILE_ID"]==prof, var_selected],
                         y=dis_data_sub.loc[dis_data["PROFILE_ID"]==prof, "PRES"]*-1,
                         mode='markers',
                         marker = {
-                            'color': colors[i].hex,
+                            'color': colors[k].hex,
                         },
                         #customdata = hov_data,
                         hovertemplate ='%{x:.3f}',
@@ -117,11 +126,12 @@ def update_cohort_plot(request):
             template = "ggplot2",
             yaxis = {'title':"Pressure"},
             font = {"size":12},
-            height=850,
+            height=825,
             showlegend=False,
             margin={'t': 30, 'l':0,'r':0,'b':0},
         )
 
+        #Black border
         fig.update_xaxes(title=var_translation[var_selected],
                 showline=True,
                 linewidth=1,
@@ -149,6 +159,9 @@ def update_cohort_latest_plot(request):
     if request.is_ajax and request.method == "GET":
 
         year_selected = request.GET.get("year_selected", None)
+        vars_selected = json.loads(request.GET.get("vars_selected", None))
+
+        print(vars_selected)
 
         #Get list of latest profiles
         profile_ids_q = cycle_metadata.objects.filter(DEPLOYMENT__LAUNCH_DATE__year=year_selected).order_by(
@@ -186,84 +199,103 @@ def update_cohort_latest_plot(request):
             sn = data_sub.reset_index().loc[0, "FLOAT_SERIAL_NO"]
 
             #Salinity
-            fig.add_trace(
-                go.Scatter(
-                    x=data_sub.loc[:, "PSAL"],
-                    y=data_sub.loc[:, "PRES"]*-1,
-                    mode='lines',
-                    marker = {
-                        'color': "#FEBD17",
-                    },
-                    #customdata = hov_data,
-                    hovertemplate ='%{x:.3f}',
-                    name="Salinity",
-                    xaxis="x"
-                ),
-            )
+            if vars_selected["SALck"]:
+                fig.add_trace(
+                    go.Scatter(
+                        x=data_sub.loc[:, "PSAL"],
+                        y=data_sub.loc[:, "PRES"]*-1,
+                        mode='lines',
+                        marker = {
+                            'color': "#FEBD17",
+                        },
+                        #customdata = hov_data,
+                        hovertemplate ='%{x:.3f}',
+                        name="Salinity",
+                        xaxis="x"
+                    ),
+                )
+            else: #Dummy blank trace, plotly needs an x axis trace
+                fig.add_trace(
+                    go.Scatter(
+                        mode='lines',
+                        marker = {
+                            'color': "#FEBD17",
+                        },
+                        #customdata = hov_data,
+                        hovertemplate ='%{x:.3f}',
+                        name="Salinity",
+                        xaxis="x"
+                    ),
+                )
+
 
             #BBP700
-            fig.add_trace(
-                go.Scatter(
-                    x=data_sub.loc[:, "BBP700"],
-                    y=data_sub.loc[:, "PRES"]*-1,
-                    mode='lines',
-                    marker = {
-                        'color': "#80BF96",
-                    },
-                    #customdata = hov_data,
-                    hovertemplate ='%{x:.3f}',
-                    name="Backscattering",
-                    xaxis="x2"
-                ),
-            )
+            if vars_selected["BBP700ck"]:
+                fig.add_trace(
+                    go.Scatter(
+                        x=data_sub.loc[:, "BBP700"],
+                        y=data_sub.loc[:, "PRES"]*-1,
+                        mode='lines',
+                        marker = {
+                            'color': "#80BF96",
+                        },
+                        #customdata = hov_data,
+                        hovertemplate ='%{x:.3f}',
+                        name="Backscattering",
+                        xaxis="x2"
+                    ),
+                )
 
             #CDOM
-            fig.add_trace(
-                go.Scatter(
-                    x=data_sub.loc[:, "CDOM"],
-                    y=data_sub.loc[:, "PRES"]*-1,
-                    mode='lines',
-                    marker = {
-                        'color': "#023440",
-                    },
-                    #customdata = hov_data,
-                    hovertemplate ='%{x:.3f}',
-                    name="CDOM",
-                    xaxis="x3"
-                ),
-            )
+            if vars_selected["CDOMck"]:
+                fig.add_trace(
+                    go.Scatter(
+                        x=data_sub.loc[:, "CDOM"],
+                        y=data_sub.loc[:, "PRES"]*-1,
+                        mode='lines',
+                        marker = {
+                            'color': "#023440",
+                        },
+                        #customdata = hov_data,
+                        hovertemplate ='%{x:.3f}',
+                        name="CDOM",
+                        xaxis="x3"
+                    ),
+                )
 
             #Temeprature
-            fig.add_trace(
-                go.Scatter(
-                    x=data_sub.loc[:, "TEMP"],
-                    y=data_sub.loc[:, "PRES"]*-1,
-                    mode='lines',
-                    marker = {
-                        'color': "#c9324e",
-                    },
-                    #customdata = hov_data,
-                    hovertemplate ='%{x:.3f}',
-                    name="Temperature",
-                    xaxis="x4"
-                ),
-            )
+            if vars_selected["TEMPck"]:
+                fig.add_trace(
+                    go.Scatter(
+                        x=data_sub.loc[:, "TEMP"],
+                        y=data_sub.loc[:, "PRES"]*-1,
+                        mode='lines',
+                        marker = {
+                            'color': "#c9324e",
+                        },
+                        #customdata = hov_data,
+                        hovertemplate ='%{x:.3f}',
+                        name="Temperature",
+                        xaxis="x4"
+                    ),
+                )
 
             #DOXY
-            fig.add_trace(
-                go.Scatter(
-                    x=data_sub.loc[:, "DOXY"],
-                    y=data_sub.loc[:, "PRES"]*-1,
-                    mode='lines',
-                    marker = {
-                        'color': "#1f77b4",
-                    },
-                    #customdata = hov_data,
-                    hovertemplate ='%{x:.3f}',
-                    name="Dissolved Oxygen",
-                    xaxis="x5"
-                ),
-            )
+            if vars_selected["DOXYck"]:
+                fig.add_trace(
+                    go.Scatter(
+                        x=data_sub.loc[:, "DOXY"],
+                        y=data_sub.loc[:, "PRES"]*-1,
+                        mode='lines',
+                        marker = {
+                            'color': "#1f77b4",
+                        },
+                        #customdata = hov_data,
+                        hovertemplate ='%{x:.3f}',
+                        name="Dissolved Oxygen",
+                        xaxis="x5"
+                    ),
+                )
 
             #--------------------Discrete Traces ----------------------
             #subset to one float
@@ -271,100 +303,106 @@ def update_cohort_latest_plot(request):
             sn = dis_data_sub.reset_index().loc[0, "FLOAT_SERIAL_NO"]
 
             #Salinity
-            fig.add_trace(
-                go.Scatter(
-                    x=dis_data_sub.loc[:, "PSAL"],
-                    y=dis_data_sub.loc[:, "PRES"]*-1,
-                    mode='markers',
-                    marker = {
-                        'color': "#FEBD17",
-                    },
-                    #customdata = hov_data,
-                    hovertemplate ='%{x:.3f}',
-                    name="Salinity",
-                    xaxis="x"
-                ),
-            )
+            if vars_selected["SALck"]:
+                fig.add_trace(
+                    go.Scatter(
+                        x=dis_data_sub.loc[:, "PSAL"],
+                        y=dis_data_sub.loc[:, "PRES"]*-1,
+                        mode='markers',
+                        marker = {
+                            'color': "#FEBD17",
+                        },
+                        #customdata = hov_data,
+                        hovertemplate ='%{x:.3f}',
+                        name="Salinity",
+                        xaxis="x"
+                    ),
+                )
 
             #BBP700
-            fig.add_trace(
-                go.Scatter(
-                    x=dis_data_sub.loc[:, "BBP700"],
-                    y=dis_data_sub.loc[:, "PRES"]*-1,
-                    mode='markers',
-                    marker = {
-                        'color': "#80BF96",
-                    },
-                    #customdata = hov_data,
-                    hovertemplate ='%{x:.3f}',
-                    name="Backscattering",
-                    xaxis="x2"
-                ),
-            )
+            if vars_selected["BBP700ck"]:
+                fig.add_trace(
+                    go.Scatter(
+                        x=dis_data_sub.loc[:, "BBP700"],
+                        y=dis_data_sub.loc[:, "PRES"]*-1,
+                        mode='markers',
+                        marker = {
+                            'color': "#80BF96",
+                        },
+                        #customdata = hov_data,
+                        hovertemplate ='%{x:.3f}',
+                        name="Backscattering",
+                        xaxis="x2"
+                    ),
+                )
 
             #CDOM
-            fig.add_trace(
-                go.Scatter(
-                    x=dis_data_sub.loc[:, "CDOM"],
-                    y=dis_data_sub.loc[:, "PRES"]*-1,
-                    mode='markers',
-                    marker = {
-                        'color': "#023440",
-                    },
-                    #customdata = hov_data,
-                    hovertemplate ='%{x:.3f}',
-                    name="CDOM",
-                    xaxis="x3"
-                ),
-            )
+            if vars_selected["CDOMck"]:
+                fig.add_trace(
+                    go.Scatter(
+                        x=dis_data_sub.loc[:, "CDOM"],
+                        y=dis_data_sub.loc[:, "PRES"]*-1,
+                        mode='markers',
+                        marker = {
+                            'color': "#023440",
+                        },
+                        #customdata = hov_data,
+                        hovertemplate ='%{x:.3f}',
+                        name="CDOM",
+                        xaxis="x3"
+                    ),
+                )
 
             #Temeprature
-            fig.add_trace(
-                go.Scatter(
-                    x=dis_data_sub.loc[:, "TEMP"],
-                    y=dis_data_sub.loc[:, "PRES"]*-1,
-                    mode='markers',
-                    marker = {
-                        'color': "#c9324e",
-                    },
-                    #customdata = hov_data,
-                    hovertemplate ='%{x:.3f}',
-                    name="Temperature",
-                    xaxis="x4"
-                ),
-            )
+            if vars_selected["TEMPck"]:
+                fig.add_trace(
+                    go.Scatter(
+                        x=dis_data_sub.loc[:, "TEMP"],
+                        y=dis_data_sub.loc[:, "PRES"]*-1,
+                        mode='markers',
+                        marker = {
+                            'color': "#c9324e",
+                        },
+                        #customdata = hov_data,
+                        hovertemplate ='%{x:.3f}',
+                        name="Temperature",
+                        xaxis="x4"
+                    ),
+                )
 
             #DOXY
-            fig.add_trace(
-                go.Scatter(
-                    x=dis_data_sub.loc[:, "DOXY"],
-                    y=dis_data_sub.loc[:, "PRES"]*-1,
-                    mode='markers',
-                    marker = {
-                        'color': "#1f77b4",
-                    },
-                    #customdata = hov_data,
-                    hovertemplate ='%{x:.3f}',
-                    name="Dissolved Oxygen",
-                    xaxis="x5"
-                ),
-            )
-            print(dis_data_sub.loc[:, "NITRATE"].head())
+            if vars_selected["DOXYck"]:
+                fig.add_trace(
+                    go.Scatter(
+                        x=dis_data_sub.loc[:, "DOXY"],
+                        y=dis_data_sub.loc[:, "PRES"]*-1,
+                        mode='markers',
+                        marker = {
+                            'color': "#1f77b4",
+                        },
+                        #customdata = hov_data,
+                        hovertemplate ='%{x:.3f}',
+                        name="Dissolved Oxygen",
+                        xaxis="x5"
+                    ),
+                )
+
             #Nitrate
-            fig.add_trace(
-                go.Scatter(
-                    x=dis_data_sub.loc[:, "NITRATE"],
-                    y=dis_data_sub.loc[:, "PRES"]*-1,
-                    mode='markers',
-                    marker = {
-                        'color': "#bc925a",
-                    },
-                    #customdata = hov_data,
-                    hovertemplate ='%{x:.3f}',
-                    name="Nitrate",
-                    xaxis="x6"
-                ),
-            )
+            if vars_selected["NITRATEck"]:
+                fig.add_trace(
+                    go.Scatter(
+                        x=dis_data_sub.loc[:, "NITRATE"],
+                        y=dis_data_sub.loc[:, "PRES"]*-1,
+                        mode='markers',
+                        marker = {
+                            'color': "#bc925a",
+                        },
+                        #customdata = hov_data,
+                        hovertemplate ='%{x:.3f}',
+                        name="Nitrate",
+                        xaxis="x6"
+                    ),
+                )
 
 
             fig.add_annotation(text="WMO: "+wmo+" SN: "+str(sn),
@@ -372,12 +410,39 @@ def update_cohort_latest_plot(request):
                 x=0.12, y=.82, showarrow=False,
                 )
 
+            if vars_selected["SALck"]:
+                fig.update_layout(
+                    xaxis=dict(
+                        title=dict(
+                            text="Practical Salinity",
+                            standoff=0,
+                        ),
+                        titlefont=dict(
+                            color="#FEBD17"
+                        ),
+                        tickfont=dict(
+                            color="#FEBD17"
+                        ),
+                        position=0.15,
+                        range=[34.8, 36],
+                        showline=True,
+                        linewidth=1,
+                        linecolor="#FEBD17"
+                    )
+                )
+            else:
+                fig.update_layout(
+                    xaxis={'showgrid': False, # thin lines in the background
+                        'zeroline': False, # thick line at x=0
+                        'visible': False} # numbers below
+                )         
+
             # Formatting
             fig.update_layout(
                 template = "ggplot2",
                 #yaxis = {'title':"Pressure"},
                 font = {"size":12},
-                height=850,
+                height=825,
                 showlegend=False,
                 margin={'t': 0, 'l':0,'r':0,'b':0},
                 yaxis=dict(
@@ -386,23 +451,6 @@ def update_cohort_latest_plot(request):
                     linewidth=1,
                     linecolor="#000000",
                     mirror=True
-                ),
-                xaxis=dict(
-                    title=dict(
-                        text="Practical Salinity",
-                        standoff=0,
-                    ),
-                    titlefont=dict(
-                        color="#FEBD17"
-                    ),
-                    tickfont=dict(
-                        color="#FEBD17"
-                    ),
-                    position=0.15,
-                    range=[34.8, 36],
-                    showline=True,
-                    linewidth=1,
-                    linecolor="#FEBD17"
                 ),
                 xaxis2=dict(
                     title=dict(

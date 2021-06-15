@@ -32,8 +32,12 @@
                 </select>
             </div>
         </div>
+
         <!-- Plots -->
         <div class="col">
+            <div class="spinner-border" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
             <div id="graph"></div>
         </div>
     </div>
@@ -51,7 +55,9 @@
             data: {"year_selected": year_selected, "var_selected":var_selected},
             success: function (response) {
                 //If sucessful, add plot
+                $('#graph').show();
                 $('#graph').html(response["plot_div"])
+                $('.spinner-border').hide();
             },
             error: function (response) {
                 console.log(response)
@@ -67,6 +73,9 @@
     //Change with var selection
     $("#var_selector").change(function (e) {
         e.preventDefault();
+        //Unhide loading spinner
+        $('#graph').hide();
+        $('.spinner-border').show();
         //get selectors
         let var_selected = $("#var_selector").val();
         let year_selected = $("#year_selector").val();
@@ -77,6 +86,9 @@
     //Change with year selection
     $("#year_selector").change(function (e) {
         e.preventDefault();
+        //Unhide loading spinner
+        $('#graph').hide();
+        $('.spinner-border').show();
         //get selectors
         let var_selected = $("#var_selector").val();
         let year_selected = $("#year_selector").val();

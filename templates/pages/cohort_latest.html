@@ -11,15 +11,41 @@
 <div class="container-fluid">
     <div class="row" id="firstrow">
         <!-- Controls -->
-        <div class="col-1">
+        <div class="col-1" style="min-width: 150px">
             <label>Cohort</label>
             <div class="row">
                 <select id="year_selector" class="selectpicker" aria-label="select">
                     <option value=2021 selected>2021</option>
                 </select>
             </div>
+            <label>Variables</label>
+            <div class="row">
+                <input id="SALck" class='checkbox' type="checkbox" checked="checked">
+                <label>Salinity</label>
+            </div>
+            <div class="row">
+                <input id="TEMPck" class='checkbox' type="checkbox" checked="checked">
+                <label>Temperature</label>
+            </div>
+            <div class="row">
+                <input id="DOXYck" class='checkbox' type="checkbox" checked="checked">
+                <label>Dissolved Oxygen</label>
+            </div>
+            <div class="row">
+                <input id="NITRATEck" class='checkbox' type="checkbox" checked="checked">
+                <label>Nitrate</label>
+            </div>
+            <div class="row">
+                <input id="BBP700ck" class='checkbox' type="checkbox" checked="checked">
+                <label>Backscattering</label>
+            </div>
+            <div class="row">
+                <input id="CDOMck" class='checkbox' type="checkbox" checked="checked">
+                <label>CDOM</label>
+            </div>
         </div>
         <!-- Plots -->
+        <div id='plots'></div>
     </div>
 </div>
 {% endblock %}
@@ -27,20 +53,37 @@
 <script>
     //Javascript for selectable year
 
-    function update(year_selected, var_selected){
-
+    //Update plots with ajax
+    function update(year_selected){
+        vars_selected = JSON.stringify(get_vars())
+        console.log(vars_selected)
         $.ajax({
             type: 'GET',
             url: "ajax/update_cohort_latest_plot",
-            data: {"year_selected": year_selected},
+            data: {"year_selected": year_selected, "vars_selected":vars_selected},
             success: function (response) {
-                //If sucessful, add plot
-                $('#firstrow').append("<div class='col'"+response["plot_div0"]+"</div><div class='col'"+response["plot_div1"]+"</div>")
+                //If sucessful, delete current plot
+                $('.plot').remove();
+                //Add plot
+                $('#firstrow').append("<div class='col plot'"+response["plot_div0"]+"</div><div class='col plot'"+response["plot_div1"]+"</div>")
             },
             error: function (response) {
                 console.log(response)
             }
         })
+    }
+
+    //Get current variable checkbox state
+    function get_vars(){
+        let vars_selected = {}
+        vars_selected['SALck'] = $('#SALck').prop('checked')
+        vars_selected['TEMPck'] = $('#TEMPck').prop('checked')
+        vars_selected['DOXYck'] = $('#DOXYck').prop('checked')
+        vars_selected['NITRATEck'] = $('#NITRATEck').prop('checked')
+        vars_selected['BBP700ck'] = $('#BBP700ck').prop('checked')
+        vars_selected['CDOMck'] = $('#CDOMck').prop('checked')
+
+        return vars_selected
     }
 
     //Initial load
@@ -49,6 +92,15 @@
 
     //Change with var selection
     $("#year_selector").change(function (e) {
+        e.preventDefault();
+        //get selectors
+        let year_selected = $("#year_selector").val();
+        //update plot
+        update(year_selected)
+    })
+
+    //change with checkbox selection
+    $('.checkbox').change(function(e) {
         e.preventDefault();
         //get selectors
         let year_selected = $("#year_selector").val();
