@@ -6,7 +6,7 @@ from env_data.models import cycle_metadata
 import pages.engineering_plots as ep
 
 def index(request):
-    deployments = deployment.objects.all()
+    deployments = deployment.objects.filter(HISTORICAL=False)
 
     context = {
         'deployments': deployments,
