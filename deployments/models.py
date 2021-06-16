@@ -89,6 +89,7 @@ class deployment(models.Model):
 
     CUSTOMIZATION = models.CharField(max_length=200, blank=True, null=True)
     COMMENTS = models.TextField(blank=True, null=True)
+    HISTORICAL = models.BooleanField(default=False)
 
     @property
     def last_event(self):
