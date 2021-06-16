@@ -85,7 +85,8 @@ class deployment(models.Model):
     CYCLES_FOR_DRIFT_PRES = models.IntegerField(null=True, blank=True)
     NOMINAL_PROFILE_PRES = models.IntegerField(null=True, blank=True)
     CYCLES_FOR_PROFILE_PRES = models.IntegerField(null=True, blank=True)
-    PROFILE_SAMPLING_METHOD = models.CharField(max_length=50, blank=True, null=True)
+    PROFILE_SAMPLING_METHOD = models.CharField(max_length=200, blank=True, null=True)
+    PROFILE_SAMPLING_METHOD_2 = models.CharField(max_length=200, blank=True, null=True)
 
     CUSTOMIZATION = models.CharField(max_length=200, blank=True, null=True)
     COMMENTS = models.TextField(blank=True, null=True)
