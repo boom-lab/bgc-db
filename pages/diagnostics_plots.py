@@ -1,4 +1,3 @@
-from re import sub
 from django.http import JsonResponse
 import plotly.graph_objs as go
 from plotly.offline import plot
@@ -6,20 +5,37 @@ from plotly.subplots import make_subplots
 import pandas as pd
 import math
 import time
-from colour import Color
 import json
+import numpy as np
+import cmocean
 
 from env_data.models import continuous_profile, cycle_metadata, discrete_profile
 from .plot_helpers import var_translation
+
+def cmocean_to_plotly(cmap, pl_entries):
+    """Function to sample cmocean colors and output list of rgb values for plotly
+    cmap = color map from cmocean
+    pl_entries = number of samples to take"""
+    
+    h = 1.0/(pl_entries-1)
+    pl_colorscale = []
+
+    for k in range(pl_entries):
+        C = list(map(np.uint8, np.array(cmap(k*h)[:3])*255))
+        pl_colorscale.append('rgb'+str((C[0], C[1], C[2])))
+
+    return pl_colorscale
 
 def update_cohort_plot(request):
     """"""
     start = time.time()
     if request.is_ajax and request.method == "GET":
 
+        #Get URL parameters
         year_selected = request.GET.get("year_selected", None)
         var_selected = request.GET.get("var_selected", None)
 
+        #Build querys
         if var_selected != "NITRATE":
             query = continuous_profile.objects.filter(DEPLOYMENT__LAUNCH_DATE__year=year_selected).order_by(
                 "PROFILE_ID", "PRES").values_list("DEPLOYMENT__FLOAT_SERIAL_NO","DEPLOYMENT__PLATFORM_NUMBER", 
@@ -33,6 +49,7 @@ def update_cohort_plot(request):
         print(time.time()-start, "Query build")
         start = time.time()
 
+        #Fetch data and convert to dataframe
         #data = np.core.records.fromrecords(query, names=["DEPLOYMENT", "PROFILE_ID", "PRES", var_selected])
         dis_data = pd.DataFrame(dis_query, columns=["FLOAT_SERIAL_NO","PLATFORM_NUMBER", 
             "PROFILE_ID", "PRES", var_selected])
@@ -45,15 +62,13 @@ def update_cohort_plot(request):
         n_rows = math.ceil(len(wmos)/2)
         fig = make_subplots(rows=n_rows, cols=2)
 
-
-
         #each float (seperate subplot)
         for i, wmo in enumerate(wmos):
             #Current row and col of subplot
             crt_row = math.floor(i/2)+1
             crt_col = i%2+1
 
-            #------------Continuous data -----------
+            #------------Continuous data -----------#
             if var_selected != "NITRATE":
                 #subset to one float
                 data_sub = data.loc[data.PLATFORM_NUMBER==wmo,:]
@@ -61,8 +76,10 @@ def update_cohort_plot(request):
 
                 #continuous colormaps
                 n_colors = len(data_sub.PROFILE_ID.unique())
-                red = Color("blue")
-                colors = list(red.range_to(Color("green"),n_colors))
+                colors = cmocean_to_plotly(cmocean.cm.dense, n_colors)
+
+                #Opacity values
+                opacity_vals = np.logspace(np.log10(0.5), np.log10(1), n_colors) 
 
                 #Each profile (series)
                 for j, prof in enumerate(data_sub.PROFILE_ID.unique()):
@@ -72,8 +89,9 @@ def update_cohort_plot(request):
                             y=data_sub.loc[data["PROFILE_ID"]==prof, "PRES"]*-1,
                             mode='lines',
                             marker = {
-                                'color': colors[j].hex,
+                                'color': colors[j],
                             },
+                            opacity=opacity_vals[j],
                             #customdata = hov_data,
                             hovertemplate ='%{x:.3f}',
                             name="Profile:"+prof,
@@ -82,15 +100,17 @@ def update_cohort_plot(request):
                     col=crt_col,
                     )
 
-            #--------- Discrete data ------------
+            #--------- Discrete data ------------#
             #subset to one float
             dis_data_sub = dis_data.loc[dis_data.PLATFORM_NUMBER==wmo,:]
             sn = dis_data_sub.reset_index().loc[0, "FLOAT_SERIAL_NO"]
 
             #discrete colormaps
             n_colors = len(dis_data_sub.PROFILE_ID.unique())
-            red = Color("blue")
-            colors = list(red.range_to(Color("green"),n_colors))
+            colors = cmocean_to_plotly(cmocean.cm.dense, n_colors)
+
+            #Opacity values
+            opacity_vals = np.logspace(np.log10(0.5), np.log10(1), n_colors) 
 
             #Each profile (series)
             for k, prof in enumerate(dis_data_sub.PROFILE_ID.unique()):
@@ -100,8 +120,9 @@ def update_cohort_plot(request):
                         y=dis_data_sub.loc[dis_data["PROFILE_ID"]==prof, "PRES"]*-1,
                         mode='markers',
                         marker = {
-                            'color': colors[k].hex,
+                            'color': colors[k],
                         },
+                        opacity=opacity_vals[k],
                         #customdata = hov_data,
                         hovertemplate ='%{x:.3f}',
                         name="Profile:"+prof,
@@ -110,12 +131,13 @@ def update_cohort_plot(request):
                 col=crt_col,
                 )
 
-            #Float Label
+            #Float Label position
             if crt_col == 1:
                 xpos = 0.07
             else:
                 xpos = 0.62
 
+            #Float label
             fig.add_annotation(text="WMO: "+wmo+" SN: "+str(sn),
                 xref="paper", yref="paper", xanchor='center', yanchor='bottom',
                 x=xpos, y=1, showarrow=False,
@@ -131,7 +153,7 @@ def update_cohort_plot(request):
             margin={'t': 30, 'l':0,'r':0,'b':0},
         )
 
-        #Black border
+        #Black border of plot
         fig.update_xaxes(title=var_translation[var_selected],
                 showline=True,
                 linewidth=1,
@@ -144,7 +166,7 @@ def update_cohort_plot(request):
                 linecolor="#000000",
                 mirror=True)
 
-
+        #Output as html div
         plot_div = plot(fig,output_type='div', include_plotlyjs=False, config= {
             'displaylogo': False, 'modeBarButtonsToRemove':['lasso2d', 'select2d','resetScale2d']})  
 
@@ -186,7 +208,7 @@ def update_cohort_latest_plot(request):
 
         wmos = data.PLATFORM_NUMBER.unique()
 
-        #List to collect plots
+        #Dict to collect plots
         plot_divs={}
 
         #each float (seperate plot)
