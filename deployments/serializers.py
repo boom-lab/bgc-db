@@ -34,19 +34,12 @@ class DeploymentSerializer(serializers.ModelSerializer):
         return deployment_ob
 
 class CurrentDeploymentSerializer(serializers.ModelSerializer):
-    #Returns deployment with only the most recent mission record (and all sensor records), and most recent cycle metadata
-    mission = serializers.SerializerMethodField(read_only=True)
-    latest_cycle = serializers.SerializerMethodField(read_only=True)
+    #Returns deployment with sensors
     sensors = SensorSerializer(many=True)
 
     class Meta:
         model = deployment
 
         fields = [field.name for field in deployment._meta.fields]
-        fields.extend(['status','last_report','next_report','age','mission','sensors','latest_cycle'])
-
-    def get_mission(self, obj):
-        return MissionSerializer(instance=obj.missions.order_by('-ADD_DATE').first()).data
-
-    def get_latest_cycle(self, obj):
-        return CycleMetaSerializer(instance=obj.cycle_metadata.order_by('-GpsFixDate').first()).data
+        fields.extend(['sensors']) #'status','last_report','next_report','age',
+        read_only_fields = fields

@@ -6,9 +6,14 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.request import Request
+from django.http.response import HttpResponseBase
 
 from jinja2 import Environment, FileSystemLoader
 import json
+import time
 
 from .models import deployment
 from .serializers import DeploymentSerializer, CurrentDeploymentSerializer
@@ -101,7 +106,7 @@ def export_metadata(request, entry_id):
 #Current metadata api, only most recent mission record, all sensors, most recent cycle_metadata. public
 class GetCrtMetadata(generics.ListAPIView): #Read only
     serializer_class = CurrentDeploymentSerializer
-    queryset=deployment.objects.all()
+    queryset=deployment.objects.all().prefetch_related("sensors")
     filter_backends = [DjangoFilterBackend]
     filter_fields = [field.name for field in deployment._meta.fields]
 

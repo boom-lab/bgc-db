@@ -4,7 +4,9 @@ from .models import cycle_metadata, continuous_profile, discrete_profile, park, 
 # Register your models here.
 class CycleMetadataAdmin(admin.ModelAdmin):
     list_display = [field.name for field in cycle_metadata._meta.fields]
-    list_per_page = 25
+    list_per_page = 10
+    list_filter = ['DEPLOYMENT__PLATFORM_TYPE']
+    search_fields = ('DEPLOYMENT__FLOAT_SERIAL_NO','DEPLOYMENT__PLATFORM_NUMBER')
 
 
 admin.site.register(cycle_metadata, CycleMetadataAdmin)
@@ -13,8 +15,9 @@ admin.site.register(cycle_metadata, CycleMetadataAdmin)
 class MissionAdmin(admin.ModelAdmin):
     list_display = [field.name for field in mission_reported._meta.fields]
     list_display_links = None
-    list_per_page = 25
-    list_filter = ['DEPLOYMENT']
+    list_per_page = 20
+    list_filter = ['DEPLOYMENT__PLATFORM_TYPE']
+    search_fields = ('DEPLOYMENT__FLOAT_SERIAL_NO','DEPLOYMENT__PLATFORM_NUMBER')
 
 
 admin.site.register(mission_reported, MissionAdmin)
