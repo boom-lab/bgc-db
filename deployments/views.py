@@ -6,17 +6,12 @@ from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework.request import Request
-from django.http.response import HttpResponseBase
 
 from jinja2 import Environment, FileSystemLoader
 import json
-import time
 
 from .models import deployment
-from .serializers import DeploymentSerializer, CurrentDeploymentSerializer
+from .serializers import PostUpdateSerializer, DeploymentMetaSerializer
 
 
 #Admin area
@@ -103,19 +98,20 @@ def export_metadata(request, entry_id):
     return response
 
 #----------------------- APIs --------------------------------#
-#Current metadata api, only most recent mission record, all sensors, most recent cycle_metadata. public
-class GetCrtMetadata(generics.ListAPIView): #Read only
-    serializer_class = CurrentDeploymentSerializer
+#get deployment metadata, can specify fields to filter and which to return. public
+class GetDeploymentMeta(generics.ListAPIView): #Read only
+    serializer_class = DeploymentMetaSerializer
     queryset=deployment.objects.all().prefetch_related("sensors")
     filter_backends = [DjangoFilterBackend]
-    filter_fields = [field.name for field in deployment._meta.fields]
+    filter_fields = {field.name:['exact'] for field in deployment._meta.fields}
 
-class MetadataView(generics.UpdateAPIView, generics.ListCreateAPIView): #Get all metadata, post new metadata, Update (patch), token
+    filter_fields['FLOAT_SERIAL_NO'] = ['gt','lt','range','exact']
+    filter_fields['LAUNCH_DATE'] = ['gt','lt','range','exact']
+
+class PostUpdate(generics.UpdateAPIView, generics.CreateAPIView): #Post new metadata, Update (patch), token
     permission_classes=[IsAuthenticated]
-    serializer_class=DeploymentSerializer
+    serializer_class=PostUpdateSerializer
     queryset=deployment.objects.all()
-    filter_backends = [DjangoFilterBackend]
-    filter_fields = [field.name for field in deployment._meta.fields]
 
     def get_object(self):
         filters={}

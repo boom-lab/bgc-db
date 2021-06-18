@@ -1,10 +1,10 @@
 from deployments.models import deployment
-from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
-from .serializers import SensorSerializer
+from .serializers import SensorSerializer, SensorMetaSerializer
 from .models import sensor
 from rest_framework import status, generics, mixins
 from django.http import JsonResponse
+from django_filters.rest_framework import DjangoFilterBackend
 
 class Sensors(mixins.CreateModelMixin, generics.GenericAPIView):
     permission_classes=[IsAuthenticated]
@@ -38,3 +38,17 @@ class Sensors(mixins.CreateModelMixin, generics.GenericAPIView):
             return JsonResponse(status=status.HTTP_400_BAD_REQUEST, data="wrong parameters")
         except Exception as e:
             return JsonResponse({'details':str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetSensorMeta(generics.ListAPIView): #Read only
+    serializer_class = SensorMetaSerializer
+    queryset=sensor.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filter_fields ={"SENSOR_SERIAL_NO":['gt','lt','range','exact'],
+        "ADD_DATE":['gt','lt','range','exact'],
+        "SENSOR":['exact'],
+        "SENSOR_MAKER":['exact'],
+        "SENSOR_MODEL":['exact'],
+        "SENSOR_CALIB_DATE":['gt','lt','range','exact'],
+        "COMMENTS":['contains']
+    }

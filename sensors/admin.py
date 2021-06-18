@@ -10,9 +10,9 @@ class SensorAdmin(ExportMixin, admin.ModelAdmin):
     list_display = ["id","DEPLOYMENT","ADD_DATE","SENSOR","SENSOR_MAKER","SENSOR_MODEL","SENSOR_SERIAL_NO","SENSOR_CALIB_DATE",
         "PREDEPLOYMENT_CALIB_EQUATION","PREDEPLOYMENT_CALIB_COEFFICIENT_short", "COMMENTS"]
     list_display_links = ('id',)
-    search_fields = ('DEPLOYMENT__FLOAT_SERIAL_NO','SENSOR__VALUE','SENSOR_MODEL__VALUE','SENSOR_SERIAL_NO')
+    search_fields = ('DEPLOYMENT__FLOAT_SERIAL_NO',)
     list_per_page = 25
-    list_filter = ('DEPLOYMENT','SENSOR')
+    list_filter = ('SENSOR',)
 
     def PREDEPLOYMENT_CALIB_COEFFICIENT_short(self, obj):
         if obj.PREDEPLOYMENT_CALIB_COEFFICIENT:

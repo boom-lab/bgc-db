@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'corsheaders',
     'import_export',
+    'django_filters'
 ]
 
 MIDDLEWARE = [
@@ -95,7 +96,11 @@ REST_FRAMEWORK = {
     'DEFAULT_THROTTLE_RATES': {
         'anon': '10000/day',
         'user': '10000/day'
-    }
+    },
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    )
 }
 
 

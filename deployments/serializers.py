@@ -1,14 +1,34 @@
 from env_data.serializers import CycleMetaSerializer
 from rest_framework import serializers 
 from .models import deployment
-from missions.serializers import AddMissionSerializer, MissionSerializer
+from missions.serializers import AddMissionSerializer
 from sensors.serializers import AddSensorSerializer, SensorSerializer
 from missions.models import mission
 from sensors.models import sensor
 
-#API
-class DeploymentSerializer(serializers.ModelSerializer):
-    #Returns deployment with all mission records (and all sensor records)
+class DynamicFieldsModelSerializer(serializers.ModelSerializer):
+    """
+    A ModelSerializer that takes an additional `fields` argument that
+    controls which fields should be displayed.
+    """
+
+    def __init__(self, *args, **kwargs):
+        # Instantiate the superclass normally
+     
+        super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)
+
+        fields = self.context['request'].query_params.get('fields')
+        if fields:
+            fields = fields.split(',')
+            # Drop any fields that are not specified in the `fields` argument.
+            allowed = set(fields)
+            existing = set(self.fields.keys())
+            for field_name in existing - allowed:
+                self.fields.pop(field_name)
+
+#Posting and updating metadata
+class PostUpdateSerializer(serializers.ModelSerializer):
+    #
     missions = AddMissionSerializer(many=True)
     sensors = AddSensorSerializer(many=True)
 
@@ -33,9 +53,26 @@ class DeploymentSerializer(serializers.ModelSerializer):
 
         return deployment_ob
 
-class CurrentDeploymentSerializer(serializers.ModelSerializer):
-    #Returns deployment with sensors
-    sensors = SensorSerializer(many=True)
+class SensorSerForDeployment(serializers.ModelSerializer):
+    class Meta:
+        model = sensor
+        fields = [field.name for field in sensor._meta.fields]
+
+    #Filters which fields are returned
+    def __init__(self, *args, **kwargs):
+        super(SensorSerForDeployment, self).__init__(*args, **kwargs)
+
+        fields = self.context['request'].query_params.get('sensor_fields')
+        if fields:
+            fields = fields.split(',')
+            # Drop any fields that are not specified in the `sensor_fields` argument.
+            allowed = set(fields)
+            existing = set(self.fields.keys())
+            for field_name in existing - allowed:
+                self.fields.pop(field_name)
+
+#Fields from deployment table with nested sensor data
+class DeploymentMetaSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = deployment
@@ -43,3 +80,17 @@ class CurrentDeploymentSerializer(serializers.ModelSerializer):
         fields = [field.name for field in deployment._meta.fields]
         fields.extend(['sensors']) #'status','last_report','next_report','age',
         read_only_fields = fields
+
+    def __init__(self, *args, **kwargs): #For gettting request to results column filter of sensor data
+        super(DeploymentMetaSerializer, self).__init__(*args, **kwargs)
+        self.fields['sensors'] = SensorSerForDeployment(many=True, context=self.context)
+
+        #Filters which fields are returned
+        fields = self.context['request'].query_params.get('deployment_fields')
+        if fields:
+            fields = fields.split(',')
+            # Drop any fields that are not specified in the `fields` argument.
+            allowed = set(fields)
+            existing = set(self.fields.keys())
+            for field_name in existing - allowed:
+                self.fields.pop(field_name)
