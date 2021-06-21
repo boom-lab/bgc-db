@@ -4,8 +4,9 @@ import numpy as np
 import pandas as pd
 from datetime import datetime, timedelta
 from django.http import JsonResponse
+from django.db.models import Max
 
-from env_data.models import cycle_metadata, park
+from env_data.models import cycle_metadata, discrete_profile, park
 
 def volts_plot(filters):
 
@@ -444,14 +445,14 @@ def duration_plot(filters):
 
     tickvals = []
     startdate =datetime(1970, 1, 1, 00, 00)
-    enddate = datetime(1970, 1, 3, 00, 00)
-    delta = timedelta(hours=6)
+    enddate = datetime(1970, 1, 15, 00, 00)
+    delta = timedelta(hours=24)
 
     while startdate < enddate:
         tickvals.append(startdate)
         startdate += delta
 
-    ticktext = [str(e.day-1)+" days "+e.strftime('%H:%M') for e in tickvals]
+    ticktext = [str(e.day-1) for e in tickvals]
 
     fig = go.Figure()
 
@@ -582,7 +583,7 @@ def duration_plot(filters):
         template = "ggplot2",
         #title = "Amps",
         xaxis = {'title':"Cycle",},
-        yaxis = {'title':"Phase Duration",
+        yaxis = {'title':"Phase Duration (days)",
             "tickvals":tickvals,
             "ticktext":ticktext},
         font = {"size":15},
@@ -757,13 +758,13 @@ def park_pres_plot(filters):
     query = park.objects.filter(**filters).order_by("PROFILE_ID","DATE_MEASURED").values_list("PROFILE_ID","PRES")
     #data = np.core.records.fromrecords(query, names=["PROFILE_ID","PRES"])
     data = pd.DataFrame(query, columns=["PROFILE_ID","PRES"])
-    data["PRES"] = data.PRES*-1
     data['PROFILE_ID'] = data.PROFILE_ID.str.split('.').str[1]
     data['col'] = data.groupby("PROFILE_ID").cumcount()
     
     data = data.pivot(index='PROFILE_ID',columns='col',values='PRES').reset_index()
 
     max_parks = len(data.columns)-2
+    latest_cycle_id = data.PROFILE_ID.max()
 
     fig = go.Figure()
 
@@ -785,15 +786,56 @@ def park_pres_plot(filters):
         template = "ggplot2",
         #title = "Amps",
         xaxis = {'title':"Cycle", 'side':'top'},
-        yaxis = {'title':"Park Pressure (dbar)"},
+        yaxis = {'title':"Park Pressure (dbar)",'autorange':'reversed'},
         font = {"size":15},
         height=500,
         showlegend=False,
         margin={'t': 30, 'l':0,'r':0,'b':0},
         barmode='group',
-        bargap=0.15,
-        bargroupgap=0.1 
-        #yaxis_range=[0,.8]
+        bargap=0,
+        bargroupgap=0,
+
+        xaxis_range=[int(latest_cycle_id)-5,latest_cycle_id]
+    )
+
+    plot_div = plot(fig,output_type='div', include_plotlyjs=False, config= {
+        'displaylogo': False, 'modeBarButtonsToRemove':['lasso2d', 'select2d','resetScale2d']})  
+    return plot_div
+
+def profile_start_pres_plot(filters):
+
+    query = discrete_profile.objects.filter(**filters).values('PROFILE_ID').annotate(max=Max('PRES')).values_list("PROFILE_ID","max")
+    data = pd.DataFrame(query, columns=["PROFILE_ID","PRES"])
+    data['PROFILE_ID'] = data.PROFILE_ID.str.split('.').str[1]
+    fig = go.Figure()
+
+
+    fig.add_trace(
+        go.Bar(
+            x=data["PROFILE_ID"],
+            y=data['PRES'],
+            marker_color="#DC143C",
+            hovertemplate ='%{y}',
+            name= ""
+        ),
+    )
+
+    # Formatting
+    fig.update_layout(
+        template = "ggplot2",
+        #title = "Amps",
+        xaxis = {'title':"Cycle", 'side':'top'},
+        yaxis = {'title':"Profile Starting Pressure (dbar)",'autorange':'reversed'},
+        font = {"size":15},
+        height=500,
+        showlegend=False,
+        margin={'t': 30, 'l':0,'r':0,'b':0},
+        barmode='group',
+        bargap=0,
+        bargroupgap=0,
+
+
+        #xaxis_range=[int(latest_cycle_id)-5,latest_cycle_id]
     )
 
     plot_div = plot(fig,output_type='div', include_plotlyjs=False, config= {

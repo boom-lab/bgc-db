@@ -198,6 +198,10 @@ def update_cohort_latest_plot(request):
         dis_query = discrete_profile.objects.filter(PROFILE_ID__in=profile_ids_q).order_by(
             "PROFILE_ID", "PRES").values_list("DEPLOYMENT__FLOAT_SERIAL_NO","DEPLOYMENT__PLATFORM_NUMBER", 
             "PROFILE_ID", "PRES", "PSAL","TEMP","DOXY","CHLA","BBP700","CDOM","PH_IN_SITU_TOTAL","NITRATE")
+
+        #Cycle metadata query
+        cycle_meta_query = cycle_metadata.objects.filter(PROFILE_ID__in=profile_ids_q).order_by(
+            "PROFILE_ID").values_list("TimeStartProfile")
         
         #Get data and convert to dataframes
         data = pd.DataFrame(query, columns=["FLOAT_SERIAL_NO","PLATFORM_NUMBER", "PROFILE_ID", "PRES", "PSAL",
@@ -319,6 +323,22 @@ def update_cohort_latest_plot(request):
                     ),
                 )
 
+            #pH
+            if vars_selected["pHck"]:
+                fig.add_trace(
+                    go.Scatter(
+                        x=data_sub.loc[:, "PH_IN_SITU_TOTAL"],
+                        y=data_sub.loc[:, "PRES"]*-1,
+                        mode='lines',
+                        marker = {
+                            'color': "#a8018c",
+                        },
+                        #customdata = hov_data,
+                        hovertemplate ='%{x:.3f}',
+                        name="pH In Situ Total",
+                        xaxis="x7"
+                    ),
+                )
             #--------------------Discrete Traces ----------------------
             #subset to one float
             dis_data_sub = dis_data.loc[dis_data.PLATFORM_NUMBER==wmo,:]
@@ -426,10 +446,26 @@ def update_cohort_latest_plot(request):
                     ),
                 )
 
+            #pH
+            if vars_selected["pHck"]:
+                fig.add_trace(
+                    go.Scatter(
+                        x=dis_data_sub.loc[:, "PH_IN_SITU_TOTAL"],
+                        y=dis_data_sub.loc[:, "PRES"]*-1,
+                        mode='markers',
+                        marker = {
+                            'color': "#a8018c",
+                        },
+                        #customdata = hov_data,
+                        hovertemplate ='%{x:.3f}',
+                        name="pH",
+                        xaxis="x7"
+                    ),
+                )
 
-            fig.add_annotation(text="WMO: "+wmo+" SN: "+str(sn),
-                xref="paper", yref="paper", xanchor='center', yanchor='bottom',
-                x=0.12, y=.82, showarrow=False,
+            fig.add_annotation(text="WMO: "+wmo+" SN: "+str(sn)+"    "+cycle_meta_query[i][0].strftime("%Y-%m-%d %H:%M"),
+                xref="paper", yref="paper", xanchor='left', yanchor='bottom',
+                x=0.02, y=.75, showarrow=False,
                 )
 
             if vars_selected["SALck"]:
@@ -468,7 +504,7 @@ def update_cohort_latest_plot(request):
                 showlegend=False,
                 margin={'t': 0, 'l':0,'r':0,'b':0},
                 yaxis=dict(
-                    domain=[0.15, 0.85],
+                    domain=[0.15, 0.78],
                     showline=True,
                     linewidth=1,
                     linecolor="#000000",
@@ -530,7 +566,7 @@ def update_cohort_latest_plot(request):
                     anchor="free",
                     overlaying="x",
                     side="top",
-                    position=.85,
+                    position=.78,
                     range=[0, 15],
                     showline=True,
                     linewidth=1,
@@ -551,7 +587,7 @@ def update_cohort_latest_plot(request):
                     anchor="free",
                     overlaying="x",
                     side="top",
-                    position=.92,
+                    position=.85,
                     range=[150, 300],
                     showline=True,
                     linewidth=1,
@@ -561,7 +597,7 @@ def update_cohort_latest_plot(request):
                 xaxis6=dict(
                     title=dict(
                         text="Nitrate (μmol/kg)",
-                        standoff=10,
+                        standoff=0,
                     ),
                     titlefont=dict(
                         color="#bc925a"
@@ -572,11 +608,32 @@ def update_cohort_latest_plot(request):
                     anchor="free",
                     overlaying="x",
                     side="top",
-                    position=1,
+                    position=.92,
                     range=[0, 25],
                     showline=True,
                     linewidth=1,
                     linecolor="#bc925a",
+                    showgrid=False
+                ),
+                xaxis7=dict(
+                    title=dict(
+                        text="In-situ pH (total)",
+                        standoff=10,
+                    ),
+                    titlefont=dict(
+                        color="#a8018c"
+                    ),
+                    tickfont=dict(
+                        color="#a8018c"
+                    ),
+                    anchor="free",
+                    overlaying="x",
+                    side="top",
+                    position=1,
+                    #range=[0, 25],
+                    showline=True,
+                    linewidth=1,
+                    linecolor="#a8018c",
                     showgrid=False
                 ),
             )

@@ -28,21 +28,25 @@
                 <label>Temperature</label>
             </div>
             <div class="row">
-                <input id="DOXYck" class='checkbox' type="checkbox" checked="checked">
+                <input id="DOXYck" class='checkbox' type="checkbox">
                 <label>Dissolved Oxygen</label>
             </div>
             <div class="row">
-                <input id="NITRATEck" class='checkbox' type="checkbox" checked="checked">
+                <input id="NITRATEck" class='checkbox' type="checkbox">
                 <label>Nitrate</label>
             </div>
             <div class="row">
-                <input id="BBP700ck" class='checkbox' type="checkbox" checked="checked">
+                <input id="BBP700ck" class='checkbox' type="checkbox">
                 <label>Backscattering</label>
             </div>
             <div class="row">
-                <input id="CDOMck" class='checkbox' type="checkbox" checked="checked">
+                <input id="CDOMck" class='checkbox' type="checkbox">
                 <label>CDOM</label>
             </div>
+            <div class="row">
+                <input id="pHck" class='checkbox' type="checkbox">
+                <label>pH</label>
+            </div>            
         </div>
         <!-- Plots -->
         <div id='plots'></div>
@@ -82,6 +86,7 @@
         vars_selected['NITRATEck'] = $('#NITRATEck').prop('checked')
         vars_selected['BBP700ck'] = $('#BBP700ck').prop('checked')
         vars_selected['CDOMck'] = $('#CDOMck').prop('checked')
+        vars_selected['pHck'] = $('#pHck').prop('checked')
 
         return vars_selected
     }

@@ -71,7 +71,8 @@ def float_detail(request):
             'con_attempt_plot':ep.con_attempt_plot(filters),
             'upload_attempt_plot':ep.upload_attempt_plot(filters),
             'surface_duration_plot':ep.surface_duration_plot(filters),
-            'park_pres_plot':ep.park_pres_plot(filters)
+            'park_pres_plot':ep.park_pres_plot(filters),
+            'profile_start_pres_plot':ep.profile_start_pres_plot(filters)
         }
         return render(request, 'pages/float_detail.html', context)
     else: #Pre deployment
