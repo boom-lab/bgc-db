@@ -96,8 +96,8 @@ def get_profiles_list(request):
 def get_deployments_list(request):
     # for populationg selector dropdown
     if request.is_ajax and request.method == "GET":
-        platform_number = deployment.objects.filter(HISTORICAL=False).all().values_list('PLATFORM_NUMBER', flat=True)
-        float_serial_no = deployment.objects.filter(HISTORICAL=False).all().values_list('FLOAT_SERIAL_NO', flat=True)
+        platform_number = deployment.objects.filter(HISTORICAL=False).exclude(LAUNCH_DATE=None).all().values_list('PLATFORM_NUMBER', flat=True)
+        float_serial_no = deployment.objects.filter(HISTORICAL=False).exclude(LAUNCH_DATE=None).all().values_list('FLOAT_SERIAL_NO', flat=True)
 
         res = []
         for i, item in enumerate(platform_number):
