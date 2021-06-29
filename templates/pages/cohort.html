@@ -85,8 +85,9 @@
         //get selectors
         let var_selected = $("#var_selector").val();
         let year_selected = $("#year_selector").val();
+        let slider_vals = document.getElementById('slider').noUiSlider.get();
         //update plot
-        update(year_selected, var_selected)
+        update(year_selected, var_selected, slider_vals[0], slider_vals[1])
     })
 
     //Change with year selection
@@ -98,8 +99,9 @@
         //get selectors
         let var_selected = $("#var_selector").val();
         let year_selected = $("#year_selector").val();
+        let slider_vals = document.getElementById('slider').noUiSlider.get();
         //update plot
-        update(year_selected, var_selected)
+        update(year_selected, var_selected, slider_vals[0], slider_vals[1])
     })
 
     var range_all_sliders = {
@@ -108,12 +110,10 @@
     };
     
     function format_date(day){
-        console.log(day)
         let month = day
         if (day==1){
             month='January';
         }
-        console.log(month)
         return month
     }
 
@@ -179,7 +179,6 @@
         //get selectors
         let var_selected = $("#var_selector").val();
         let year_selected = $("#year_selector").val();
-        console.log(values[0])
         //update plot
         update(year_selected, var_selected, values[0], values[1])
     });
