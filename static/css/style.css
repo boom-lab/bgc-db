@@ -47,3 +47,10 @@ label {
     margin-top: 10%
 }
 
+#slider {
+    margin: 1rem 2rem 3rem 8rem;
+}
+
+.noUi-connect {
+    background: #00599B !important;
+}

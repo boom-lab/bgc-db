@@ -8,6 +8,8 @@ import time
 import json
 import numpy as np
 import cmocean
+from datetime import datetime
+from pytz import timezone
 
 from env_data.models import continuous_profile, cycle_metadata, discrete_profile
 from .plot_helpers import var_translation
@@ -34,15 +36,29 @@ def update_cohort_plot(request):
         #Get URL parameters
         year_selected = request.GET.get("year_selected", None)
         var_selected = request.GET.get("var_selected", None)
+        start_day = request.GET.get("start", None)
+        end_day = request.GET.get("end", None)
 
-        #Build querys
+        tz = timezone("UTC")
+        start_date = tz.localize(datetime.strptime(year_selected+str(int(float(start_day))), '%Y%j'))
+        end_date = tz.localize(datetime.strptime(year_selected+str(int(float(end_day))), '%Y%j'))
+
+        #Distinct float for selected year
+        floats = cycle_metadata.objects.filter(DEPLOYMENT__LAUNCH_DATE__year=year_selected).values_list('DEPLOYMENT__PLATFORM_NUMBER','DEPLOYMENT__FLOAT_SERIAL_NO').distinct()
+
+        #Get list of profiles
+        profile_ids_q = cycle_metadata.objects.filter(DEPLOYMENT__LAUNCH_DATE__year=year_selected).filter(
+            TimeStartProfile__gt=start_date).filter(TimeStartProfile__lt=end_date).values_list("PROFILE_ID")
+
+        #Continuous data
         if var_selected != "NITRATE":
-            query = continuous_profile.objects.filter(DEPLOYMENT__LAUNCH_DATE__year=year_selected).order_by(
+            query = continuous_profile.objects.filter(PROFILE_ID__in=profile_ids_q).order_by(
                 "PROFILE_ID", "PRES").values_list("DEPLOYMENT__FLOAT_SERIAL_NO","DEPLOYMENT__PLATFORM_NUMBER", 
                 "PROFILE_ID", "PRES", var_selected)
             data = pd.DataFrame(query, columns=["FLOAT_SERIAL_NO","PLATFORM_NUMBER", "PROFILE_ID", "PRES", var_selected])
             
-        dis_query = discrete_profile.objects.filter(DEPLOYMENT__LAUNCH_DATE__year=year_selected).order_by(
+        #Discrete data
+        dis_query = discrete_profile.objects.filter(PROFILE_ID__in=profile_ids_q).order_by(
             "PROFILE_ID", "PRES").values_list("DEPLOYMENT__FLOAT_SERIAL_NO","DEPLOYMENT__PLATFORM_NUMBER", 
             "PROFILE_ID", "PRES", var_selected)
         
@@ -58,12 +74,11 @@ def update_cohort_plot(request):
         start = time.time()
 
         #Number of subplot rows based on number of floats
-        wmos = dis_data.PLATFORM_NUMBER.unique()
-        n_rows = math.ceil(len(wmos)/2)
+        n_rows = math.ceil(len(floats)/2)
         fig = make_subplots(rows=n_rows, cols=2)
 
         #each float (seperate subplot)
-        for i, wmo in enumerate(wmos):
+        for i, flt in enumerate(floats):
             #Current row and col of subplot
             crt_row = math.floor(i/2)+1
             crt_col = i%2+1
@@ -71,15 +86,14 @@ def update_cohort_plot(request):
             #------------Continuous data -----------#
             if var_selected != "NITRATE":
                 #subset to one float
-                data_sub = data.loc[data.PLATFORM_NUMBER==wmo,:]
-                sn = data_sub.reset_index().loc[0, "FLOAT_SERIAL_NO"]
+                data_sub = data.loc[data.PLATFORM_NUMBER==flt[0],:]
 
                 #continuous colormaps
                 n_colors = len(data_sub.PROFILE_ID.unique())
                 colors = cmocean_to_plotly(cmocean.cm.dense, n_colors)
 
                 #Opacity values
-                opacity_vals = np.logspace(np.log10(0.5), np.log10(1), n_colors) 
+                #opacity_vals = np.logspace(np.log10(0.5), np.log10(1), n_colors) 
 
                 #Each profile (series)
                 for j, prof in enumerate(data_sub.PROFILE_ID.unique()):
@@ -91,7 +105,7 @@ def update_cohort_plot(request):
                             marker = {
                                 'color': colors[j],
                             },
-                            opacity=opacity_vals[j],
+                            #opacity=opacity_vals[j],
                             #customdata = hov_data,
                             hovertemplate ='%{x:.3f}',
                             name="Profile:"+prof,
@@ -102,12 +116,12 @@ def update_cohort_plot(request):
 
             #--------- Discrete data ------------#
             #subset to one float
-            dis_data_sub = dis_data.loc[dis_data.PLATFORM_NUMBER==wmo,:]
-            sn = dis_data_sub.reset_index().loc[0, "FLOAT_SERIAL_NO"]
+            dis_data_sub = dis_data.loc[dis_data.PLATFORM_NUMBER==flt[0],:]
 
             #discrete colormaps
             n_colors = len(dis_data_sub.PROFILE_ID.unique())
-            colors = cmocean_to_plotly(cmocean.cm.dense, n_colors)
+            if n_colors > 1:
+                colors = cmocean_to_plotly(cmocean.cm.dense, n_colors)
 
             #Opacity values
             opacity_vals = np.logspace(np.log10(0.5), np.log10(1), n_colors) 
@@ -122,7 +136,7 @@ def update_cohort_plot(request):
                         marker = {
                             'color': colors[k],
                         },
-                        opacity=opacity_vals[k],
+                        #opacity=opacity_vals[k],
                         #customdata = hov_data,
                         hovertemplate ='%{x:.3f}',
                         name="Profile:"+prof,
@@ -138,7 +152,7 @@ def update_cohort_plot(request):
                 xpos = 0.62
 
             #Float label
-            fig.add_annotation(text="WMO: "+wmo+" SN: "+str(sn),
+            fig.add_annotation(text="WMO: "+flt[0]+" SN: "+flt[1],
                 xref="paper", yref="paper", xanchor='center', yanchor='bottom',
                 x=xpos, y=1, showarrow=False,
                 )
@@ -148,7 +162,7 @@ def update_cohort_plot(request):
             template = "ggplot2",
             yaxis = {'title':"Pressure"},
             font = {"size":12},
-            height=825,
+            height=775,
             showlegend=False,
             margin={'t': 30, 'l':0,'r':0,'b':0},
         )

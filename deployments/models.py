@@ -22,7 +22,7 @@ class deployment(models.Model):
     FLOAT_SERIAL_NO = models.CharField(max_length=25, blank=True, null=True)
     DEATH_DATE = models.DateTimeField(blank=True, null=True)
     WHOI_TAG = models.CharField(max_length=25, blank=True, null=True)
-    PURCHACE_ORDER = models.CharField(max_length=25, blank=True, null=True)
+    PURCHASE_ORDER = models.CharField(max_length=25, blank=True, null=True)
     PLATFORM_MAKER = models.ForeignKey(platform_makers, to_field="VALUE", max_length=25, blank=True, null=True, 
         on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     PLATFORM_TYPE = models.ForeignKey(cm.platform_types, to_field="VALUE", max_length=25, blank=True, null=True, 

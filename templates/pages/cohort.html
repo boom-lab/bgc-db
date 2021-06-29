@@ -6,8 +6,14 @@
     
     <!-- Plotly -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <!--noUISlider-->
+    <link href="static/css/nouislider.min.css" rel="stylesheet">
+
 {% endblock header %}
 {% block content %}
+<script src="static/js/nouislider.min.js"></script>
+
 <div class="container-fluid">
     <div class="row">
         <!-- Controls -->
@@ -30,11 +36,12 @@
                     <option value="CDOM">CDOM</option>
                     <option value="NITRATE">Nitrate</option>
                 </select>
-            </div>
+            </div>           
         </div>
-
+        
         <!-- Plots -->
         <div class="col">
+            <div id="slider"></div>
             <div class="spinner-border" role="status">
                 <span class="sr-only">Loading...</span>
             </div>
@@ -45,14 +52,13 @@
 {% endblock %}
 {% block footer %}
 <script>
-    //Javascript for selectable variable plot
-
-    function update(year_selected, var_selected){
+    //Update plot
+    function update(year_selected, var_selected, start, end){
 
         $.ajax({
             type: 'GET',
             url: "ajax/update_cohort_plot",
-            data: {"year_selected": year_selected, "var_selected":var_selected},
+            data: {"year_selected": year_selected, "var_selected":var_selected, "start":start,"end":end},
             success: function (response) {
                 //If sucessful, add plot
                 $('#graph').show();
@@ -68,7 +74,7 @@
     //Initial load
     let var_selected = $("#var_selector").val();
     let year_selected = $("#year_selector").val();
-    update(year_selected, var_selected)
+    update(year_selected, var_selected, 1, 365)
 
     //Change with var selection
     $("#var_selector").change(function (e) {
@@ -95,6 +101,90 @@
         //update plot
         update(year_selected, var_selected)
     })
+
+    var range_all_sliders = {
+        'min': [     1 ],
+        'max': [ 365 ]
+    };
+    
+    function format_date(day){
+        console.log(day)
+        let month = day
+        if (day==1){
+            month='January';
+        }
+        console.log(month)
+        return month
+    }
+
+    //Create slider
+    var slider = document.getElementById('slider');
+
+    noUiSlider.create(slider, {
+        start: [1, 365],
+        connect: true,
+        step: 1,
+        range: {
+            'min': 1,
+            'max': 365
+        },
+        range: range_all_sliders,
+        pips: {
+            mode: 'values',
+            values: [1, 60,121,182,244,305,365],
+            density: 8,
+            stepped: true,
+            format: {
+                to: function (value) {
+                    value = Math.round(value)
+                    let month = value
+                    if (value==1){
+                        month='Jan';
+                    }
+                    if (value==60){
+                        month='Mar';
+                    }
+                    if (value==121){
+                        month='May';
+                    }
+                    if (value==182){
+                        month='Jul';
+                    }
+                    if (value==244){
+                        month='Sep';
+                    }
+                    if (value==305){
+                        month='Nov';
+                    }
+                    if (value==365){
+                        month='Jan';
+                    }
+                    return month
+                },
+                // 'from' the formatted value.
+                // Receives a string, should return a number.
+                from: function (value) {
+                    return Number(value.replace(',-', ''));
+                }
+            }
+        }
+    });
+
+
+    //Slider change
+    slider.noUiSlider.on('end', function (values, handle) {
+        //Unhide loading spinner
+        $('#graph').hide();
+        $('.spinner-border').show();
+        //get selectors
+        let var_selected = $("#var_selector").val();
+        let year_selected = $("#year_selector").val();
+        console.log(values[0])
+        //update plot
+        update(year_selected, var_selected, values[0], values[1])
+    });
+
+
 
 </script>
 {% endblock footer %}
