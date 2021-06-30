@@ -105,7 +105,7 @@ class GetDeploymentMeta(generics.ListAPIView): #Read only
     filter_backends = [DjangoFilterBackend]
     filter_fields = {field.name:['exact'] for field in deployment._meta.fields}
 
-    for numfield in ['ADD_DATE','AOML_ID','PLATFORM_NUMBER','FLOAT_SERIAL_NO','WHOI_TAG','PURCHACE_ORDER','MODEM_SERIAL_NO',
+    for numfield in ['ADD_DATE','AOML_ID','PLATFORM_NUMBER','FLOAT_SERIAL_NO','WHOI_TAG','PURCHASE_ORDER','MODEM_SERIAL_NO',
         'START_DATE','LAUNCH_DATE','LAUNCH_LATITUDE','LAUNCH_LONGITUDE','FLOAT_CONTROLLER_SERIAL_NO','GPS_SERIAL_NO',
         'BATTERY_VOLTAGE','NOMINAL_DRIFT_PRES','CYCLES_FOR_DRIFT_PRES','NOMINAL_PROFILE_PRES','CYCLES_FOR_PROFILE_PRES']:
         
