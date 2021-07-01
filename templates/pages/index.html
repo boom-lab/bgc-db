@@ -29,12 +29,8 @@
               <th scope="col">WMO</th>
               <th scope="col">Platform Type</th>
               <th scope="col">Status</th>
-              <th scope="col">Latest Event</th>
-              <th scope="col">Location</th>
               <th scope="col">Deployment Cruise ID</th>
               <th scope="col">Deployment Platform</th>
-              <th scope="col">Deployment MOB</th>
-              <th scope="col">Deployment Port</th>
               <th scope="col">Launch Date (UTC)</th>
               <th scope="col">Last Report (UTC)</th>
               <th scope="col">Next Report (est)</th>
@@ -48,12 +44,8 @@
                 <td class="cursor-pointer">{{ deployment.PLATFORM_NUMBER }}</td>
                 <td class="cursor-pointer">{{ deployment.PLATFORM_TYPE.VALUE }}</td>
                 <td class="cursor-pointer">{{ deployment.status }}</td>
-                <td class="cursor-pointer">{{ deployment.last_event.EVENT.DISPLAY }}</td>
-                <td class="cursor-pointer">{{ deployment.last_location }}</td>
                 <td class="cursor-pointer">{{ deployment.DEPLOYMENT_CRUISE_ID }}</td>
                 <td class="cursor-pointer">{{ deployment.DEPLOYMENT_PLATFORM }}</td>
-                <td class="cursor-pointer">{{ deployment.DEPLOYMENT_MOB|date:'Y-m-d' }}</td>
-                <td class="cursor-pointer">{{ deployment.DEPLOYMENT_PORT }}</td>
                 <td class="cursor-pointer">{{ deployment.LAUNCH_DATE|date:'Y-m-d' }}</td>
                 <td class="cursor-pointer">{{ deployment.last_report|date:'Y-m-d H:i' }}</td>
                 <td class="cursor-pointer">{{ deployment.next_report|date:'Y-m-d H:i' }}</td>
