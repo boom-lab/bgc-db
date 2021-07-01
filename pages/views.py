@@ -6,12 +6,20 @@ from env_data.models import cycle_metadata
 import pages.engineering_plots as ep
 
 def index(request):
-    deployments = deployment.objects.filter(HISTORICAL=False)
+    deployments = deployment.objects.filter(LAUNCH_DATE__isnull=False).filter(HISTORICAL=False)
 
     context = {
         'deployments': deployments,
     }
     return render(request, 'pages/index.html', context)
+
+def floats_predeployment(request):
+    deployments = deployment.objects.filter(LAUNCH_DATE__isnull=True).filter(HISTORICAL=False)
+
+    context = {
+        'deployments': deployments,
+    }
+    return render(request, 'pages/floats_predeployment.html', context)
 
 def profile_plot(request):
     return render(request, 'pages/profile_plot.html')

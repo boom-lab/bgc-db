@@ -5,6 +5,7 @@ from . import views, engineering_plots, diagnostics_plots, profile_map_plots
 urlpatterns = [
     path('',views.index, name='index'),
     path('index',views.index),
+    path('floats_predeployment',views.floats_predeployment),
     path('profile_plot',views.profile_plot, name='profile_plot'),
     path('map',views.display_map, name='map'),
     path('float_detail',views.float_detail, name='float_detail'),

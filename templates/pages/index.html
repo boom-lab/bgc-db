@@ -17,6 +17,9 @@
 
 <section class="status-table-container">
   <div class='row'>
+      <h2>Deployed Floats</h2>
+  </div>
+  <div class='row'>
     <div id="filters" class="col-2"></div>
     <div class='col'>
       <table id="statustable" class="table tabel-sm table-hover">
@@ -45,7 +48,7 @@
                 <td class="cursor-pointer">{{ deployment.PLATFORM_NUMBER }}</td>
                 <td class="cursor-pointer">{{ deployment.PLATFORM_TYPE.VALUE }}</td>
                 <td class="cursor-pointer">{{ deployment.status }}</td>
-                <td class="cursor-pointer">{{ deployment.last_event }}</td>
+                <td class="cursor-pointer">{{ deployment.last_event.EVENT.DISPLAY }}</td>
                 <td class="cursor-pointer">{{ deployment.last_location }}</td>
                 <td class="cursor-pointer">{{ deployment.DEPLOYMENT_CRUISE_ID }}</td>
                 <td class="cursor-pointer">{{ deployment.DEPLOYMENT_PLATFORM }}</td>

@@ -96,7 +96,7 @@ class deployment(models.Model):
     def last_event(self):
         latest = self.deployment_tracking.order_by("DATE").last()
         if latest: 
-            return latest.EVENT
+            return {'EVENT':latest.EVENT,'COMMENT':latest.COMMENT,'LOCATION':latest.LOCATION}
         return None
 
     @property
@@ -112,6 +112,20 @@ class deployment(models.Model):
         if latest: 
             return latest.GpsFixDate
         return None
+
+    @property
+    def incoming_status(self):
+        events = list(self.deployment_tracking.all().values_list('EVENT', flat=True))
+        if 'PASSED_INCOMING' in events:
+            return True
+        return ''
+
+    @property
+    def docktest_status(self):
+        events = list(self.deployment_tracking.all().values_list('EVENT', flat=True))
+        if 'PASSED_DOCKTEST' in events:
+            return True
+        return ''
 
     @property
     def status(self):
