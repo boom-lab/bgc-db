@@ -197,8 +197,6 @@ def update_cohort_latest_plot(request):
         year_selected = request.GET.get("year_selected", None)
         vars_selected = json.loads(request.GET.get("vars_selected", None))
 
-        print(vars_selected)
-
         #Get list of latest profiles
         profile_ids_q = cycle_metadata.objects.filter(DEPLOYMENT__LAUNCH_DATE__year=year_selected).order_by(
             '-DEPLOYMENT__id','-PROFILE_ID').distinct('DEPLOYMENT__id').values_list("PROFILE_ID")
@@ -277,7 +275,7 @@ def update_cohort_latest_plot(request):
                         y=data_sub.loc[:, "PRES"]*-1,
                         mode='lines',
                         marker = {
-                            'color': "#80BF96",
+                            'color': "#343c91",
                         },
                         #customdata = hov_data,
                         hovertemplate ='%{x:.3f}',
@@ -302,6 +300,7 @@ def update_cohort_latest_plot(request):
                         xaxis="x3"
                     ),
                 )
+
 
             #Temeprature
             if vars_selected["TEMPck"]:
@@ -353,6 +352,23 @@ def update_cohort_latest_plot(request):
                         xaxis="x7"
                     ),
                 )
+
+            #CHLA
+            if vars_selected["CHLAck"]:
+                fig.add_trace(
+                    go.Scatter(
+                        x=data_sub.loc[:, "CHLA"],
+                        y=data_sub.loc[:, "PRES"]*-1,
+                        mode='lines',
+                        marker = {
+                            'color': "#43b53b",
+                        },
+                        #customdata = hov_data,
+                        hovertemplate ='%{x:.3f}',
+                        name="Chlorophyll",
+                        xaxis="x8"
+                    ),
+                )
             #--------------------Discrete Traces ----------------------
             #subset to one float
             dis_data_sub = dis_data.loc[dis_data.PLATFORM_NUMBER==wmo,:]
@@ -383,7 +399,7 @@ def update_cohort_latest_plot(request):
                         y=dis_data_sub.loc[:, "PRES"]*-1,
                         mode='markers',
                         marker = {
-                            'color': "#80BF96",
+                            'color': "#343c91",
                         },
                         #customdata = hov_data,
                         hovertemplate ='%{x:.3f}',
@@ -477,6 +493,23 @@ def update_cohort_latest_plot(request):
                     ),
                 )
 
+            #CHLA
+            if vars_selected["CHLAck"]:
+                fig.add_trace(
+                    go.Scatter(
+                        x=dis_data_sub.loc[:, "CHLA"],
+                        y=dis_data_sub.loc[:, "PRES"]*-1,
+                        mode='markers',
+                        marker = {
+                            'color': "#43b53b",
+                        },
+                        #customdata = hov_data,
+                        hovertemplate ='%{x:.3f}',
+                        name="Backscattering",
+                        xaxis="x8"
+                    ),
+                )
+
             fig.add_annotation(text="WMO: "+wmo+" SN: "+str(sn)+"    "+cycle_meta_query[i][0].strftime("%Y-%m-%d %H:%M"),
                 xref="paper", yref="paper", xanchor='left', yanchor='bottom',
                 x=0.02, y=.75, showarrow=False,
@@ -495,8 +528,8 @@ def update_cohort_latest_plot(request):
                         tickfont=dict(
                             color="#FEBD17"
                         ),
-                        position=0.15,
-                        range=[34.8, 36],
+                        position=0.20,
+                        range=[34.5, 37],
                         showline=True,
                         linewidth=1,
                         linecolor="#FEBD17"
@@ -518,7 +551,7 @@ def update_cohort_latest_plot(request):
                 showlegend=False,
                 margin={'t': 0, 'l':0,'r':0,'b':0},
                 yaxis=dict(
-                    domain=[0.15, 0.78],
+                    domain=[0.20, 0.78],
                     showline=True,
                     linewidth=1,
                     linecolor="#000000",
@@ -530,25 +563,25 @@ def update_cohort_latest_plot(request):
                         standoff=0,
                     ),
                     titlefont=dict(
-                        color="#80BF96"
+                        color="#343c91"
                     ),
                     tickfont=dict(
-                        color="#80BF96"
+                        color="#343c91"
                     ),
                     anchor="free",
                     overlaying="x",
                     side="bottom",
-                    position=0.08,
+                    position=0.14,
                     range=[0, .001],
                     showline=True,
                     linewidth=1,
-                    linecolor="#80BF96",
+                    linecolor="#343c91",
                     showgrid=False
                 ),
                 xaxis3=dict(
                     title=dict(
                         text="Coloured Dissolved Organic Matter (ppb)",
-                        standoff=10,
+                        standoff=0,
                     ),
                     titlefont=dict(
                         color="#023440"
@@ -559,7 +592,7 @@ def update_cohort_latest_plot(request):
                     anchor="free",
                     overlaying="x",
                     side="bottom",
-                    position=0.0,
+                    position=0.07,
                     range=[0, 3],
                     showline=True,
                     linewidth=1,
@@ -581,7 +614,7 @@ def update_cohort_latest_plot(request):
                     overlaying="x",
                     side="top",
                     position=.78,
-                    range=[0, 15],
+                    range=[0, 30],
                     showline=True,
                     linewidth=1,
                     linecolor="#c9324e",
@@ -602,7 +635,7 @@ def update_cohort_latest_plot(request):
                     overlaying="x",
                     side="top",
                     position=.85,
-                    range=[150, 300],
+                    range=[0, 300],
                     showline=True,
                     linewidth=1,
                     linecolor="#1f77b4",
@@ -648,6 +681,27 @@ def update_cohort_latest_plot(request):
                     showline=True,
                     linewidth=1,
                     linecolor="#a8018c",
+                    showgrid=False
+                ),
+                xaxis8=dict(
+                    title=dict(
+                        text="Chlorophyll a (mg/m<sup>3</sup>)",
+                        standoff=10,
+                    ),
+                    titlefont=dict(
+                        color="#43b53b"
+                    ),
+                    tickfont=dict(
+                        color="#43b53b"
+                    ),
+                    anchor="free",
+                    overlaying="x",
+                    side="bottom",
+                    position=0.0,
+                    range=[0, 10],
+                    showline=True,
+                    linewidth=1,
+                    linecolor="#43b53b",
                     showgrid=False
                 ),
             )

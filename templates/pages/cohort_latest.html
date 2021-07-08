@@ -44,6 +44,10 @@
                 <label>CDOM</label>
             </div>
             <div class="row">
+                <input id="CHLAck" class='checkbox' type="checkbox">
+                <label>Chlorophyll</label>
+            </div>
+            <div class="row">
                 <input id="pHck" class='checkbox' type="checkbox">
                 <label>pH</label>
             </div>            
@@ -86,6 +90,7 @@
         vars_selected['NITRATEck'] = $('#NITRATEck').prop('checked')
         vars_selected['BBP700ck'] = $('#BBP700ck').prop('checked')
         vars_selected['CDOMck'] = $('#CDOMck').prop('checked')
+        vars_selected['CHLAck'] = $('#CHLAck').prop('checked')
         vars_selected['pHck'] = $('#pHck').prop('checked')
 
         return vars_selected
