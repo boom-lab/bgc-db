@@ -1,9 +1,14 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from deployments.models import deployment
-from env_data.models import cycle_metadata
+from env_data.models import continuous_profile, cycle_metadata, discrete_profile
+import pandas as pd
+import cmocean
+import numpy as np
 
 import pages.engineering_plots as ep
+
+
 
 def index(request):
     deployments = deployment.objects.filter(LAUNCH_DATE__isnull=False).filter(HISTORICAL=False)
@@ -23,6 +28,9 @@ def floats_predeployment(request):
 
 def profile_plot(request):
     return render(request, 'pages/profile_plot.html')
+
+def cohort(request):
+    return render(request, 'pages/cohort.html')
 
 def cohort(request):
     return render(request, 'pages/cohort.html')
@@ -112,5 +120,86 @@ def get_deployments_list(request):
             res.append({'PLATFORM_NUMBER':item, "LABEL":"WMO: " + str(item) + " SN:" + str(float_serial_no[i])})
 
         return JsonResponse({"deployments":res}, status = 200)
+
+    return JsonResponse({}, status = 400)
+
+def cmocean_to_plotly(cmap, pl_entries):
+    """Function to sample cmocean colors and output list of rgb values for plotly
+    cmap = color map from cmocean
+    pl_entries = number of samples to take"""
+    
+    h = 1.0/(pl_entries-1)
+    pl_colorscale = []
+
+    for k in range(pl_entries):
+        C = list(map(np.uint8, np.array(cmap(k*h)[:3])*255))
+        pl_colorscale.append('rgb'+str((C[0], C[1], C[2])))
+
+    return pl_colorscale
+
+def cohort_data(request):
+    # provides flat data to plotly cohort plot
+
+    if request.is_ajax and request.method == "GET":
+        year_selected = request.GET.get('year_selected', None)
+        var_selected = request.GET.get('var_selected', None)
+
+        #Get list of profiles
+        cycle_meta_q = cycle_metadata.objects.filter(DEPLOYMENT__LAUNCH_DATE__year=year_selected).order_by("PROFILE_ID").values_list(
+            "PROFILE_ID","ProfileId","DEPLOYMENT__FLOAT_SERIAL_NO","DEPLOYMENT__PLATFORM_NUMBER","TimeStartProfile")
+        cycle_meta = pd.DataFrame(cycle_meta_q, columns=["PROFILE_ID","CYCLE_ID","FLOAT_SERIAL_NO","PLATFORM_NUMBER","TimeStartProfile"])
+
+        #Continuous data
+        if var_selected != "NITRATE":
+            query = continuous_profile.objects.filter(PROFILE_ID__in=cycle_meta.PROFILE_ID).order_by("PROFILE_ID", "PRES").values_list(
+                "DEPLOYMENT__PLATFORM_NUMBER","PROFILE_ID", "PRES", var_selected)
+            data = pd.DataFrame(query, columns=["PLATFORM_NUMBER","PROFILE_ID", "PRES", var_selected])
+            data = data.dropna(axis=0)
+
+        #Discrete data
+        query = discrete_profile.objects.filter(PROFILE_ID__in=cycle_meta.PROFILE_ID).order_by("PROFILE_ID", "PRES").values_list(
+            "DEPLOYMENT__PLATFORM_NUMBER","PROFILE_ID", "PRES", var_selected)
+        dis_data = pd.DataFrame(query, columns=["PLATFORM_NUMBER","PROFILE_ID", "PRES", var_selected])
+        dis_data = dis_data.dropna(axis=0)
+
+        plot_data = {}
+        #Loop through each float
+        for wmo in cycle_meta.PLATFORM_NUMBER.unique():
+            #continuous
+            if var_selected != "NITRATE":
+                grouped_data = data.loc[data.PLATFORM_NUMBER==wmo,:].groupby("PROFILE_ID")
+                var_flat = grouped_data[var_selected].apply(list).tolist()
+                pres_flat = grouped_data["PRES"].apply(list).tolist()
+            else:
+                var_flat = None
+                pres_flat = None
+
+            #discrete
+            dis_grouped_data = dis_data.loc[dis_data.PLATFORM_NUMBER==wmo,:].groupby("PROFILE_ID")
+            dis_var_flat = dis_grouped_data[var_selected].apply(list).tolist()
+            dis_pres_flat = dis_grouped_data["PRES"].apply(list).tolist()
+
+            #Aux data
+            sn = cycle_meta.loc[cycle_meta.PLATFORM_NUMBER==wmo,"FLOAT_SERIAL_NO"].iloc[0]
+            time_start = cycle_meta.loc[cycle_meta.PLATFORM_NUMBER==wmo,"TimeStartProfile"].dt.strftime('%Y-%m-%d').tolist()
+            day = cycle_meta.loc[cycle_meta.PLATFORM_NUMBER==wmo,"TimeStartProfile"].dt.dayofyear.tolist()
+            cycle_id = cycle_meta.loc[cycle_meta.PLATFORM_NUMBER==wmo,"CYCLE_ID"].tolist()
+
+            #continuous colormaps
+            n_colors = len(cycle_id)
+            cont_colors = cmocean_to_plotly(cmocean.cm.dense, n_colors)
+
+            plot_data[wmo] = {"x":var_flat,
+                "y":pres_flat,
+                "dis_x":dis_var_flat,
+                "dis_y":dis_pres_flat,
+                "TIME_START_PROFILE":time_start,
+                "DAY":day,
+                "CYCLE_ID":cycle_id,
+                "sn":sn,
+                "continuous_colors":cont_colors
+            }
+
+        return JsonResponse(plot_data, status=200)
 
     return JsonResponse({}, status = 400)
