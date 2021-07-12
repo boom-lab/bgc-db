@@ -57,7 +57,7 @@ function create_plot(response, var_selected){
                     'color': dp['continuous_colors'][i],
                 },
                 hovertemplate: `X: %{x}<br>PRES: %{y:.0f}`,
-                name:`Profile: ${dp['CYCLE_ID'][i]}<br>${dp['TIME_START_PROFILE'][i]}`
+                name:`Profile: ${dp['CYCLE_ID'][i]}<br>${dp['TIME_START_PROFILE'][i]}<br>${i}`
             };
             data.push(result);
         }
@@ -100,6 +100,7 @@ function slider_update(start, end){
     for (let plot of plotDivs){
 
         let days = data[plot.id]['DAY'];
+        days = days.concat(days);
         let indexes = days.map((elm, idx) => elm <= start | elm >= end ? idx : '').filter(String);
 
         //turn all traces on
@@ -125,7 +126,6 @@ function update(year_selected, var_selected){
         .then(response => response.json())
         .then(function(fetched_data){
             data = fetched_data
-            console.log(data)
             create_plot(fetched_data, var_selected);
             $('.spinner-border').hide();
         })
@@ -169,13 +169,41 @@ var range_all_sliders = {
     'max': [ 365 ]
 };
 
-function format_date(day){
-    let month = day
-    if (day==1){
-        month='January';
+function month_formatter(value) {
+    value = Math.round(value)
+    let month = value
+    if (value==1){
+        month='Jan';
+    }
+    if (value==60){
+        month='Mar';
+    }
+    if (value==121){
+        month='May';
+    }
+    if (value==182){
+        month='Jul';
+    }
+    if (value==244){
+        month='Sep';
+    }
+    if (value==305){
+        month='Nov';
+    }
+    if (value==365){
+        month='Jan';
     }
     return month
 }
+
+function dateFromDay(day){
+    let year_selected = document.getElementById("#year_selector");
+    var date = new Date(year_selected, 0); // initialize a date in `year-01-01`
+    let datef = new Date(date.setDate(day));
+    let dayofmonth = datef.getDate();
+    let month = datef.getMonth()+1;
+    return `${month}/${dayofmonth}`;
+  }
 
 //Create slider
 var slider = document.getElementById('slider');
@@ -184,6 +212,16 @@ noUiSlider.create(slider, {
     start: [1, 365],
     connect: true,
     step: 1,
+    tooltips:[
+        {
+            to: dateFromDay,
+            from: function (value) {return Number(value.replace(',-', ''));}
+        },
+        {
+            to: dateFromDay,
+            from: function (value) {return Number(value.replace(',-', ''));}
+        }
+    ],
     range: {
         'min': 1,
         'max': 365
@@ -195,32 +233,7 @@ noUiSlider.create(slider, {
         density: 8,
         stepped: true,
         format: {
-            to: function (value) {
-                value = Math.round(value)
-                let month = value
-                if (value==1){
-                    month='Jan';
-                }
-                if (value==60){
-                    month='Mar';
-                }
-                if (value==121){
-                    month='May';
-                }
-                if (value==182){
-                    month='Jul';
-                }
-                if (value==244){
-                    month='Sep';
-                }
-                if (value==305){
-                    month='Nov';
-                }
-                if (value==365){
-                    month='Jan';
-                }
-                return month
-            },
+            to: month_formatter,
             // 'from' the formatted value.
             // Receives a string, should return a number.
             from: function (value) {
@@ -232,7 +245,7 @@ noUiSlider.create(slider, {
 
 
 //Slider change
-slider.noUiSlider.on('update', function (values, handle) {
+slider.noUiSlider.on('change', function (values, handle) {
     //update plot
     slider_update(values[0], values[1])
 });

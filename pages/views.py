@@ -154,13 +154,20 @@ def cohort_data(request):
             query = continuous_profile.objects.filter(PROFILE_ID__in=cycle_meta.PROFILE_ID).order_by("PROFILE_ID", "PRES").values_list(
                 "DEPLOYMENT__PLATFORM_NUMBER","PROFILE_ID", "PRES", var_selected)
             data = pd.DataFrame(query, columns=["PLATFORM_NUMBER","PROFILE_ID", "PRES", var_selected])
-            data = data.dropna(axis=0)
+            data = data.fillna("")
 
         #Discrete data
         query = discrete_profile.objects.filter(PROFILE_ID__in=cycle_meta.PROFILE_ID).order_by("PROFILE_ID", "PRES").values_list(
             "DEPLOYMENT__PLATFORM_NUMBER","PROFILE_ID", "PRES", var_selected)
         dis_data = pd.DataFrame(query, columns=["PLATFORM_NUMBER","PROFILE_ID", "PRES", var_selected])
-        dis_data = dis_data.dropna(axis=0)
+        dis_data = dis_data.fillna("")
+
+        #Remove cycle metadata that does not have continuous data (failed profile cycle)
+        keep_profiles = data.PROFILE_ID.unique()
+        cycle_meta = cycle_meta.loc[cycle_meta.PROFILE_ID.isin(keep_profiles),:]
+
+        #Remove discrete data that does not hve continuous data (failed profile cycle)
+        dis_data = dis_data.loc[dis_data.PROFILE_ID.isin(keep_profiles),:]
 
         plot_data = {}
         #Loop through each float
