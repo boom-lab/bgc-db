@@ -204,6 +204,7 @@ def cohort_data(request):
                 "DAY":day,
                 "CYCLE_ID":cycle_id,
                 "sn":sn,
+                "wmo":wmo,
                 "continuous_colors":cont_colors
             }
 

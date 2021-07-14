@@ -57,7 +57,7 @@ function create_plot(response, var_selected){
                     'color': dp['continuous_colors'][i],
                 },
                 hovertemplate: `X: %{x}<br>PRES: %{y:.0f}`,
-                name:`Profile: ${dp['CYCLE_ID'][i]}<br>${dp['TIME_START_PROFILE'][i]}<br>${i}`
+                name:`Profile: ${dp['CYCLE_ID'][i]}<br>${dp['TIME_START_PROFILE'][i]}`
             };
             data.push(result);
         }
@@ -79,9 +79,18 @@ function create_plot(response, var_selected){
             showlegend: false,
             height: 750,
             plot_bgcolor:"#EDEDED",
-            margin: {'t': 30, 'l':60,'r':30,'b':40}
+            margin: {'t': 30, 'l':60,'r':30,'b':40},
+            annotations: [{
+                xref: 'paper',
+                yref: 'paper',
+                x: 0.02,
+                xanchor: 'left',
+                y: 1,
+                yanchor: 'bottom',
+                text: `WMO: ${dp['wmo']}   SN: ${dp['sn']}`,
+                showarrow: false
+              }]
         }
-
         
         let plot_div = document.createElement("div");
         plot_div.id = deployment;
