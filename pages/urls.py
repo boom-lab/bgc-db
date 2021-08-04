@@ -12,6 +12,7 @@ urlpatterns = [
     path('cohort',views.cohort, name='cohort'),
     path('cohort_latest',views.cohort_latest, name='cohort_latest'),
     path('ajax/update_profile_plot', profile_explorer.update_profile_plot, name = "update_profile_plot"),
+    path('ajax/blank_plot', profile_explorer.blank_plot, name = "blank_plot"),
     path('ajax/update_map', map.update_map, name = "update_map"),
     path('ajax/get_profiles_list', views.get_profiles_list, name = "get_profiles_list"),
     path('ajax/get_deployments_list', views.get_deployments_list, name = "get_deployments_list"),

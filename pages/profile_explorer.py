@@ -180,3 +180,39 @@ def update_profile_plot(request):
         return JsonResponse({'plot_div': plot_div, 'meta_table':meta_table}, status = 200)
 
     return JsonResponse({}, status = 400)
+
+def blank_plot(request):
+    # request should be ajax and method should be GET.
+    if request.is_ajax and request.method == "GET":
+        fig = go.Figure()
+        
+        # Formatting
+        fig.update_layout(
+            template = "ggplot2",
+            xaxis = dict(
+                showline=True,
+                linewidth=1,
+                linecolor="#000000",
+                mirror=True
+            ),
+            yaxis = dict(
+                title=var_translation["PRES"],
+                showline=True,
+                linewidth=1,
+                linecolor="#000000",
+                mirror=True
+            ),
+            font = {"size":12},
+            height=800,
+            width=1000,
+            showlegend=False,
+            margin={'t': 0, 'l':0,'r':0,'b':0},
+            #yaxis_range=[-2000,0],
+        )
+
+        plot_div = plot(fig,output_type='div', include_plotlyjs=False, config= {'displaylogo': False, 
+            'modeBarButtonsToRemove':['lasso2d', 'select2d','resetScale2d']})
+
+        return JsonResponse({'plot_div': plot_div}, status = 200)
+
+    return JsonResponse({}, status = 400)

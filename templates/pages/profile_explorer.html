@@ -97,6 +97,21 @@
         })
     }
 
+    function blank_plot(){
+        $.ajax({
+            type: 'GET',
+            url: "ajax/blank_plot",
+            success: function (response) {
+                //If sucessful, add plot
+                $('#graph').html(response["plot_div"])
+                $('#meta_table').html(response['meta_table'])
+            },
+            error: function (response) {
+                console.log(response)
+            }
+        })
+    }
+
 
     //Populate profiles list
     $.ajax({
@@ -124,7 +139,7 @@
     let cont = true;
     let dis = true;
 
-    //update(profiles, bot_var, top_var, cont, dis)
+    blank_plot()
 
     //Change with deployment selection
     $("#deployment_selector").change(function (e) {
