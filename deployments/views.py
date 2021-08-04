@@ -222,3 +222,10 @@ def get_locations(request):
     }
 
     return JsonResponse(results)
+
+@api_view(['GET'])
+def get_deployed_floats(request):
+
+    deployed_floats = deployment.objects.filter(LAUNCH_DATE != None).values_list('FLOAT_SERIAL_NO', flat=True)
+
+    return JsonResponse(list(deployed_floats))

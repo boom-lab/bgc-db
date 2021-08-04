@@ -23,12 +23,17 @@
                     <option value="PSAL">Salinity</option>
                     <option value="TEMP">Temperature</option>
                     <option value="DOXY">Dissolved Oxygen</option>
-                    <option value="PH_IN_SITU_TOTAL">pH</option>
                     <option value="CHLA">Chlorophyll a</option>
                     <option value="BBP700">Particle Backscatter</option>
                     <option value="CDOM">CDOM</option>
                     <option value="NITRATE">Nitrate</option>
                     <option value="POTENTIAL_DENSITY">Potential Density</option>
+                    <option value="PH_IN_SITU_TOTAL">pH Total</option>
+                    <option value="">--- Raw Sensor Values ---</option>
+                    <option value="VRS_PH">pH Vrs</option>
+                    <option value="VK_PH">pH Vk</option>
+                    <option value="IB_PH">pH Ib</option>
+                    <option value="IK_PH">pH Ik</option>
                 </select>
             </div>
             <label>Bottom Axis</label>
@@ -37,18 +42,23 @@
                     <option value="PSAL" selected>Salinity</option>
                     <option value="TEMP">Temperature</option>
                     <option value="DOXY">Dissolved Oxygen</option>
-                    <option value="PH_IN_SITU_TOTAL">pH</option>
                     <option value="CHLA">Chlorophyll a</option>
                     <option value="BBP700">Particle Backscatter</option>
                     <option value="CDOM">CDOM</option>
                     <option value="NITRATE">Nitrate</option>
                     <option value="POTENTIAL_DENSITY">Potential Density</option>
+                    <option value="PH_IN_SITU_TOTAL">pH Total</option>
+                    <option value="">--- Raw Sensor Values ---</option>
+                    <option value="VRS_PH">pH Vrs</option>
+                    <option value="VK_PH">pH Vk</option>
+                    <option value="IB_PH">pH Ib</option>
+                    <option value="IK_PH">pH Ik</option>
                 </select>
             </div>
             <label>Data</label>
             <div class="row">
-                <button id='cont_button' type="button" class="btn btn-outline-secondary active" data-toggle="button">Continuous</button>
-                <button id='dis_button' type="button" class="btn btn-outline-secondary active" data-toggle="button">Discrete</button>
+                <button id='cont_button' type="button" class="btn btn-outline-secondary active" aria-pressed="true" data-toggle="button">Continuous</button>
+                <button id='dis_button' type="button" class="btn btn-outline-secondary active" aria-pressed="true" data-toggle="button">Discrete</button>
             </div>
         </div>
         <div class="col">
@@ -99,7 +109,6 @@
                 let opt = document.createElement("option");
                 opt.textContent = this;
                 $("#deployment_selector").append(opt)
-                $('select[name=deployment_selector]').val(["1902304.001"]);
                 $('.selectpicker').selectpicker('refresh')
             })
         },
@@ -114,7 +123,8 @@
     let top_var = $("#top_var_selector").val();
     let cont = true;
     let dis = true;
-    update(profiles, bot_var, top_var, cont, dis)
+
+    //update(profiles, bot_var, top_var, cont, dis)
 
     //Change with deployment selection
     $("#deployment_selector").change(function (e) {
@@ -169,8 +179,10 @@
         let bot_var = $('#bot_var_selector').val();
         let top_var = $("#top_var_selector").val();
         dis = !dis
+        console.log(dis)
         //update plot
         update(profiles, bot_var, top_var, cont, dis)
     })
+
 </script>
 {% endblock footer %}

@@ -26,8 +26,8 @@ def floats_predeployment(request):
     }
     return render(request, 'pages/floats_predeployment.html', context)
 
-def profile_plot(request):
-    return render(request, 'pages/profile_plot.html')
+def profile_explorer(request):
+    return render(request, 'pages/profile_explorer.html')
 
 def cohort(request):
     return render(request, 'pages/cohort.html')
@@ -102,9 +102,10 @@ def float_detail(request):
 def get_profiles_list(request):
     # for populating selector dropdown
     if request.is_ajax and request.method == "GET":
-        profile_id = cycle_metadata.objects.all().values_list('PROFILE_ID', flat=True)
-
-        return JsonResponse({'profiles': list(profile_id) }, status = 200)
+        query = cycle_metadata.objects.all().values_list('PROFILE_ID', flat=True)
+        profile_ids = list(query)
+        profile_ids.sort()
+        return JsonResponse({'profiles': profile_ids }, status = 200)
 
     return JsonResponse({}, status = 400)
 
