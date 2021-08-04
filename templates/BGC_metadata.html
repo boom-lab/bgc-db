@@ -52,12 +52,12 @@ deployment type                         {{ d.DEPLOYMENT_PLATFORM.TYPE }}
 deployment platform                     {{ d.DEPLOYMENT_PLATFORM }}
 deployment cruise id                    {{ d.DEPLOYMENT_CRUISE_ID }}
 profile at deployment                   {{ d.DEPLOYMENT_REFERENCE_STATION_ID }}
-nominal drift pressure [dbar]           1000
-cycles for drift pressure               1
-nominal profile pressure [dbar]         2000
-cycles for profile pressure             1
-profile sampling method                 Primary sampling: mixed [deeper than nominal 985dbar: discrete; nominal 985dbar to surface: 2dbar-bin averaged sampled at 1.0 Hz]
-profile sampling method(2)              Secondary sampling: discrete
+nominal drift pressure [dbar]           {{ d.NOMINAL_DRIFT_PRES }}
+cycles for drift pressure               {{ d.CYCLES_FOR_DRIFT_PRES }}
+nominal profile pressure [dbar]         {{ d.NOMINAL_PROFILE_PRES }}
+cycles for profile pressure             {{ d.CYCLES_FOR_PROFILE_PRES }}
+profile sampling method                 {{ d.PROFILE_SAMPLING_METHOD }}
+profile sampling method(2)              {{ d.PROFILE_SAMPLING_METHOD_2 }}
 pump type                               260ml                         
 {% for s in sensors -%}
 {{ "%-40s" | format(s.aoml_sensor()+' sensor type',) }}{{s.SENSOR_MODEL}}
