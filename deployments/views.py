@@ -224,7 +224,9 @@ def get_locations(request):
     return JsonResponse(results)
 
 @api_view(['GET'])
-def get_deployed_floats(request):
+def wmo_assigned(request):
+    #Returns a list of float serial numbers that have been assigned WMOs (deployment is planned)
+
     filters = {}
 
     PLATFORM_TYPE = request.GET.get('PLATFORM_TYPE', None)
@@ -236,7 +238,7 @@ def get_deployed_floats(request):
         return JsonResponse({'details':'Error: PLATFORM_TYPE must be specified'}, 
         status=status.HTTP_400_BAD_REQUEST) 
     
-    filters['LAUNCH_DATE__isnull'] = False
+    filters['PLATFORM_NUMBER__isnull'] = False
     deployed_floats = deployment.objects.filter(**filters).values_list('FLOAT_SERIAL_NO', flat=True)
 
-    return JsonResponse({'deployed_floats':list(deployed_floats)})
+    return JsonResponse({'FLOAT_SERIAL_NO':list(deployed_floats)})
