@@ -9,4 +9,5 @@ urlpatterns = [
     url('api/wmo/', views.get_wmo, name='getwmo'),
     url('api/cal', views.get_cal, name='getcal'),
     url('api/locations', views.get_locations, name='getlocations'),
+    url(r'^api/deployed_floats', views.get_deployed_floats, name='getdeployedfloats'),#public, get
 ]

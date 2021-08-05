@@ -225,7 +225,18 @@ def get_locations(request):
 
 @api_view(['GET'])
 def get_deployed_floats(request):
+    filters = {}
 
-    deployed_floats = deployment.objects.filter(LAUNCH_DATE != None).values_list('FLOAT_SERIAL_NO', flat=True)
+    PLATFORM_TYPE = request.GET.get('PLATFORM_TYPE', None)
+    if PLATFORM_TYPE:
+        filters['PLATFORM_TYPE'] = PLATFORM_TYPE
 
-    return JsonResponse(list(deployed_floats))
+    #Error handling
+    if not PLATFORM_TYPE:
+        return JsonResponse({'details':'Error: PLATFORM_TYPE must be specified'}, 
+        status=status.HTTP_400_BAD_REQUEST) 
+    
+    filters['LAUNCH_DATE__isnull'] = False
+    deployed_floats = deployment.objects.filter(**filters).values_list('FLOAT_SERIAL_NO', flat=True)
+
+    return JsonResponse({'deployed_floats':list(deployed_floats)})
