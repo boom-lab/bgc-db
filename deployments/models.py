@@ -131,7 +131,7 @@ class deployment(models.Model):
     def status(self):
         if not self.LAUNCH_DATE: #Before launch
             return "Predeployment"
-        latest = self.cycle_metadata.order_by('GpsFixDate').last()
+        latest = self.cycle_metadata.order_by('GpsFixDate').last() #Historical floats
         if not latest:
             return ""
         if latest.PROFILE_ID[-3:] == '000': #first .msg file reported

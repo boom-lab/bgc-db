@@ -254,7 +254,7 @@ def amps_plot(filters):
         height=500,
         showlegend=True,
         margin={'t': 30, 'l':0,'r':0,'b':0},
-        yaxis_range=[0,.8]
+        yaxis_range=[0,.9]
     )
 
     plot_div = plot(fig,output_type='div', include_plotlyjs=False, config= {

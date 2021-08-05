@@ -63,6 +63,7 @@ def float_detail(request):
         abpres_plot = ep.single_var_plot(filters, "AirBladderPressure", y_label="Pressure", legend_label="Air Bladder Pressure")
         buoy_pump_time_plot = ep.single_var_plot(filters, "BuoyancyPumpOnTime", y_label="Time", 
             legend_label="Buoyancy Pump On Time")
+        vacuum_plot = ep.single_var_plot(filters, "Vacuum", y_label="Pressure", legend_label="Internal Vacuum")
 
         calc={}
         if latest_cycle_meta.MSG_BYTES:
@@ -88,7 +89,8 @@ def float_detail(request):
             'upload_attempt_plot':ep.upload_attempt_plot(filters),
             'surface_duration_plot':ep.surface_duration_plot(filters),
             'park_pres_plot':ep.park_pres_plot(filters),
-            'profile_start_pres_plot':ep.profile_start_pres_plot(filters)
+            'profile_start_pres_plot':ep.profile_start_pres_plot(filters),
+            'vacuum_plot':vacuum_plot
         }
         return render(request, 'pages/float_detail.html', context)
     else: #Pre deployment
