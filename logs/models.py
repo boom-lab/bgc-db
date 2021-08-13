@@ -13,6 +13,8 @@ class Status(models.TextChoices):
 class file_processing(models.Model):
 
     DIRECTORY = models.CharField(max_length=200, unique=True)
+    FLOAT_SERIAL_NO = models.CharField(max_length=25, blank=True, null=True)
+    CYCLE = models.CharField(max_length=3, blank=True, null=True)
     STATUS = models.CharField(max_length=200, choices=Status.choices)
     DETAILS = models.TextField(null=True, blank=True)
     DATE = models.DateTimeField() 
