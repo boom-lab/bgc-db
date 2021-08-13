@@ -98,6 +98,7 @@ class CycleMetaUpdate(generics.UpdateAPIView, generics.CreateAPIView): #Post new
     def get_object(self):
         filters={}
         filters['PROFILE_ID'] = self.request.GET.get("PROFILE_ID", None)
+        print(filters)
         if not filters['PROFILE_ID']:
             return JsonResponse({'details':'Error: PROFILE_ID not provided'}, status=status.HTTP_400_BAD_REQUEST)
         

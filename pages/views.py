@@ -130,14 +130,28 @@ def cmocean_to_plotly(cmap, pl_entries):
     """Function to sample cmocean colors and output list of rgb values for plotly
     cmap = color map from cmocean
     pl_entries = number of samples to take"""
-    
-    h = 1.0/(pl_entries-1)
-    pl_colorscale = []
+    colors_n = 40
 
-    for k in range(pl_entries):
+    h = 1.0/(colors_n-1)
+    pl_colorscale = []
+    for k in range(colors_n):
         C = list(map(np.uint8, np.array(cmap(k*h)[:3])*255))
         pl_colorscale.append('rgb'+str((C[0], C[1], C[2])))
+    
+    solid_add = pl_entries - colors_n
 
+    i = 0
+    while i < solid_add:
+        pl_colorscale.insert(0, 'rgb(207, 230, 233)')
+        i+=1
+    
+    if solid_add <0:
+        pl_colors = pl_entries +2
+        print('pl_colors',pl_colors)
+        print('pl_colorscale',pl_colorscale)
+        pl_colorscale = pl_colorscale[-3:]
+
+    
     return pl_colorscale
 
 def cohort_data(request):
