@@ -89,3 +89,16 @@ def mission_reported_view(request):
         if res[0]==0: #If nothing was deleted
             return JsonResponse({'status': 'nothing deleted'}, status=status.HTTP_400_BAD_REQUEST)
         return JsonResponse({'status': 'deleted '+str(res[0])+" entries"}, status=status.HTTP_200_OK)
+
+class CycleMetaUpdate(generics.UpdateAPIView, generics.CreateAPIView): #Post new metadata, Update (patch), token
+    permission_classes=[IsAuthenticated]
+    serializer_class=CycleMetaSerializer
+    queryset=cycle_metadata.objects.all()
+
+    def get_object(self):
+        filters={}
+        filters['PROFILE_ID'] = self.request.GET.get("PROFILE_ID", None)
+        if not filters['PROFILE_ID']:
+            return JsonResponse({'details':'Error: PROFILE_ID not provided'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        return cycle_metadata.objects.get(**filters)
