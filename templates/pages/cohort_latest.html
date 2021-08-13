@@ -73,7 +73,10 @@
                 //If sucessful, delete current plot
                 $('.plot').remove();
                 //Add plot
-                $('#firstrow').append("<div class='col plot'"+response["plot_div0"]+"</div><div class='col plot'"+response["plot_div1"]+"</div>")
+                n = Object.keys(response).length
+
+                $('#firstrow').append("<div class='col plot'"+response["plot_div0"]+"</div><div class='col plot'"+response["plot_div1"]+"</div>"+"</div><div class='col plot'"+response["plot_div2"]+"</div>")
+
             },
             error: function (response) {
                 console.log(response)
