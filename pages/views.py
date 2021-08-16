@@ -1,10 +1,13 @@
 from django.shortcuts import render
 from django.http import JsonResponse
+from django.db.models import Sum
 from deployments.models import deployment
 from env_data.models import continuous_profile, cycle_metadata, discrete_profile
 import pandas as pd
 import cmocean
 import numpy as np
+from datetime import datetime, timedelta
+import pytz
 
 import pages.engineering_plots as ep
 
@@ -58,6 +61,7 @@ def float_detail(request):
 
     #If deployed
     if n_reports > 0:
+
         latest_cycle_meta = cycle_metadata.objects.filter(**filters).order_by("-GpsFixDate").first()
 
         abpres_plot = ep.single_var_plot(filters, "AirBladderPressure", y_label="Pressure", legend_label="Air Bladder Pressure")
@@ -65,20 +69,20 @@ def float_detail(request):
             legend_label="Buoyancy Pump On Time")
         vacuum_plot = ep.single_var_plot(filters, "Vacuum", y_label="Pressure", legend_label="Internal Vacuum")
 
-        calc={}
-        if latest_cycle_meta.MSG_BYTES:
-            calc['MSG_KB'] = round(latest_cycle_meta.MSG_BYTES/1000,1)
-        if latest_cycle_meta.ISUS_BYTES:
-            calc['ISUS_KB'] = round(latest_cycle_meta.ISUS_BYTES/1000,1)
-        if latest_cycle_meta.LOG_BYTES:
-            calc['LOG_KB'] = round(latest_cycle_meta.LOG_BYTES/1000,1)
-        if latest_cycle_meta.MSG_BYTES and latest_cycle_meta.ISUS_BYTES and latest_cycle_meta.LOG_BYTES:
-            calc['TOTAL'] = calc['MSG_KB']+calc['ISUS_KB']+calc['LOG_KB']
+        #Monthly upload
+        now = datetime.utcnow()
+        now = now.replace(tzinfo=pytz.utc)
+        last_month = now - timedelta(days=30)
+        if dep.LAUNCH_DATE < last_month:
+            query = cycle_metadata.objects.filter(TimeStartProfile__gte=last_month).aggregate(msg=Sum('MSG_BYTES'),log=Sum('LOG_BYTES'),isus=Sum('ISUS_BYTES'))
+            monthly_upload = round((query['msg'] + query['log'] + query['isus'])/1000,1)
+        else:
+            monthly_upload = ""
 
         context = {
             'cycle_metadata': latest_cycle_meta,
-            'calc':calc,
             'deployment':dep,
+            'monthly_upload':monthly_upload,
             'battery_plot':ep.volts_plot(filters),
             'amps_plot':ep.amps_plot(filters),
             'buoyancy_plot':ep.buoyancy_position_plot(filters),

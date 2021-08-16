@@ -606,6 +606,7 @@ def surface_duration_plot(filters):
     data["GPS_DURATION_plotly"] = data["GPS_DURATION"] + pd.to_datetime('1970/01/01')
     data["TRANS_DURATION_plotly"] = data["TRANS_DURATION"] + pd.to_datetime('1970/01/01')
 
+    print(data)
     hov_data = data.loc[:,["GPS_DURATION",
         "TRANS_DURATION"]].astype(str).values.tolist()
 

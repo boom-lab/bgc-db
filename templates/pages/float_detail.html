@@ -28,7 +28,7 @@
                     </tr>
                     <tr>
                         <th scope="row">Age</th>
-                        <td>{{ deployment.age }}</td>
+                        <td>{{ deployment.age.days }} days</td>
                     </tr>
                     <tr>
                         <th scope="row">Last Report (UTC)</th>
@@ -48,24 +48,8 @@
                         <td>{{ cycle_metadata.QuiescentVolts }}</td>
                     </tr>
                     <tr>
-                        <th scope="row">Monthly Upload</th>
-                        <td></td>
-                    </tr>
-                    <tr>
-                        <th scope="row">File Size: Total</th>
-                        <td>{{ calc.TOTAL }} KB</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">File Size: .msg</th>
-                        <td>{{ calc.MSG_KB }} KB</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">File Size: .isus</th>
-                        <td>{{ calc.ISUS_KB }} KB</td>
-                    </tr>
-                    <tr>
-                        <th scope="row">File Size: .log</th>
-                        <td>{{ calc.LOG_KB }} KB</td>
+                        <th scope="row">Monthly Upload (KB)</th>
+                        <td>{{ monthly_upload }}</td>
                     </tr>
                 </tbody>
             </table>
