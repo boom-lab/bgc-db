@@ -35,25 +35,26 @@
         })
     }
 
-    //Initial Load
-    update_map(["1902304","1902303"])
-
     //Populate deployment list
     $.ajax({
         type: 'GET',
         url: "ajax/get_deployments_list",
         success: function (response) {
             //If sucessful
-            console.log(response.deployments)
+            let deployments = []
             $.each(response.deployments, function(index, item) {
-                console.log(item.LABEL)
                 let opt = document.createElement("option");
                 opt.textContent = item.LABEL;
                 opt.value =item.PLATFORM_NUMBER;
                 $("#deployment_selector").append(opt);
-                $('select[name=deployment_selector]').val(["1902304","1902303"]);
+                deployments.push(item.PLATFORM_NUMBER)
+                $('select[name=deployment_selector]').val(deployments);
                 $('.selectpicker').selectpicker('refresh')
             })
+
+
+            //Initial load
+            update_map(deployments)
         },
         error: function (response) {
             console.log(response)
@@ -64,8 +65,8 @@
     $("#deployment_selector").change(function (e) {
         e.preventDefault();
         //get selectors
-        var profiles = $(this).val();
-        update_map(profiles)
+        var deployments = $(this).val();
+        update_map(deployments)
     })
 </script>
 {% endblock footer %}
