@@ -47,14 +47,21 @@ def display_map(request):
 def float_detail(request):
     FLOAT_SERIAL_NO = request.GET.get('FLOAT_SERIAL_NO', None)
     PLATFORM_TYPE = request.GET.get('PLATFORM_TYPE', None)
+    PLATFORM_NUMBER = request.GET.get('PLATFORM_NUMBER', None)
 
     filters={}
-    filters['DEPLOYMENT__FLOAT_SERIAL_NO'] = FLOAT_SERIAL_NO
-    filters['DEPLOYMENT__PLATFORM_TYPE'] = PLATFORM_TYPE
+    if PLATFORM_NUMBER:
+        filters['DEPLOYMENT__PLATFORM_NUMBER'] = PLATFORM_NUMBER
+    else:
+        filters['DEPLOYMENT__FLOAT_SERIAL_NO'] = FLOAT_SERIAL_NO
+        filters['DEPLOYMENT__PLATFORM_TYPE'] = PLATFORM_TYPE
 
     dfilters = {}
-    dfilters['FLOAT_SERIAL_NO'] = FLOAT_SERIAL_NO
-    dfilters['PLATFORM_TYPE'] = PLATFORM_TYPE
+    if PLATFORM_NUMBER:
+        dfilters['PLATFORM_NUMBER'] = PLATFORM_NUMBER
+    else:
+        dfilters['FLOAT_SERIAL_NO'] = FLOAT_SERIAL_NO
+        dfilters['PLATFORM_TYPE'] = PLATFORM_TYPE
     dep = deployment.objects.get(**dfilters)
 
     n_reports = cycle_metadata.objects.filter(**filters).count()
@@ -151,8 +158,6 @@ def cmocean_to_plotly(cmap, pl_entries):
     
     if solid_add <0:
         pl_colors = pl_entries +2
-        print('pl_colors',pl_colors)
-        print('pl_colorscale',pl_colorscale)
         pl_colorscale = pl_colorscale[-3:]
 
     
