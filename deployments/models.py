@@ -38,6 +38,8 @@ class deployment(models.Model):
         on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     MODEM_TYPE = models.CharField(choices=ModemType.choices, max_length=25, blank=True, null=True)
     MODEM_SERIAL_NO = models.CharField(max_length=25, blank=True, null=True)
+    IMEI = models.CharField(max_length=15, blank=True, null=True)
+    SIM = models.CharField(max_length=19, blank=True, null=True)
 
     START_DATE = models.DateTimeField(blank=True, null=True)
     START_DATE_QC = models.CharField(max_length=25, choices=Status.choices, default=Status.ESTIMATED, blank=True, null=True)

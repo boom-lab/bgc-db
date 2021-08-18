@@ -77,7 +77,7 @@ class DeploymentMetaSerializer(serializers.ModelSerializer):
     class Meta:
         model = deployment
 
-        fields = [field.name for field in deployment._meta.fields]
+        fields = [field.name for field in deployment._meta.fields if field.name not in ['IMEI', 'SIM']]
         fields.extend(['sensors']) #'status','last_report','next_report','age',
         read_only_fields = fields
 

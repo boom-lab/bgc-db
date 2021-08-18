@@ -6,8 +6,8 @@ import json
 from rest_framework import status
 from django.db.models import Q
 
-@permission_classes([IsAuthenticated])
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_file_status(request):
 
     sfiles = file_processing.objects.filter(Q(STATUS='Success') | Q(STATUS='Skip') | Q(STATUS='Warning')).all()
@@ -18,9 +18,10 @@ def get_file_status(request):
     return JsonResponse(result)
 
 #@csrf_exempt
-@permission_classes([IsAuthenticated])
 @api_view(['PUT'])
+@permission_classes([IsAuthenticated])
 def put_process_log(request):
+    print('here')
     directory = request.GET['DIRECTORY']
     payload = json.loads(request.body)
     try:
