@@ -6,6 +6,7 @@ from django.http.response import JsonResponse
 from rest_framework import status, generics
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 
 @api_view(['DELETE','GET'])
 @permission_classes([IsAuthenticated])
@@ -101,5 +102,5 @@ class CycleMetaUpdate(generics.UpdateAPIView, generics.CreateAPIView): #Post new
         print(filters)
         if not filters['PROFILE_ID']:
             return JsonResponse({'details':'Error: PROFILE_ID not provided'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        return cycle_metadata.objects.get(**filters)
+
+        return get_object_or_404(cycle_metadata, **filters)

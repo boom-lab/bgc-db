@@ -64,7 +64,7 @@ pump type                               260ml
 {{ "%-40s" | format(s.aoml_sensor()+' sensor manufacturer',) }}{{s.SENSOR_MAKER.VALUE}}
 {{ "%-40s" | format(s.aoml_sensor()+' sensor serial number',) }}{{s.SENSOR_SERIAL_NO}}
 {% endfor -%}
-transmission IMEI number                
+transmission IMEI number                {{ d.IMEI }}
 CPU serial number                       {{ d.FLOAT_CONTROLLER_SERIAL_NO }}
 ROM version                             {{ d.ROM_VERSION }}
 battery type                            {{ d.BATTERY_TYPE }} 
