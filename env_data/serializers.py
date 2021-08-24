@@ -25,6 +25,19 @@ class CycleMetaSerializer(serializers.ModelSerializer):
         model = cycle_metadata
         fields = '__all__'
 
+    def __init__(self, *args, **kwargs): #For gettting request to results column filter of sensor data
+        super(CycleMetaSerializer, self).__init__(*args, **kwargs)
+
+        #Filters which fields are returned
+        fields = self.context['request'].query_params.get('output_fields')
+        if fields:
+            fields = fields.split(',')
+            # Drop any fields that are not specified in the `fields` argument.
+            allowed = set(fields)
+            existing = set(self.fields.keys())
+            for field_name in existing - allowed:
+                self.fields.pop(field_name)
+
 
 class MissionReportedSerializer(serializers.ModelSerializer):
  
