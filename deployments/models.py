@@ -34,6 +34,8 @@ class deployment(models.Model):
     WMO_RECORDER_TYPE = models.ForeignKey(cm.wmo_recorder_types, to_field="VALUE", max_length=25, blank=True, null=True, 
         on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
 
+    DRY_WEIGHT = models.FloatField(blank=True, null=True)
+    
     TRANS_SYSTEM = models.ForeignKey(transmission_systems, to_field="VALUE", max_length=25, blank=True, null=True, 
         on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     MODEM_TYPE = models.CharField(choices=ModemType.choices, max_length=25, blank=True, null=True)
