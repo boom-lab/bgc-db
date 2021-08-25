@@ -24,6 +24,7 @@ class DeploymentAdmin(ExportMixin, admin.ModelAdmin):
     list_per_page = 10
     actions = [Export_Metadata_File]
 
+
     #Custom detail link
     def detail_link(self, obj):
         admin_url = reverse('admin:detail_view', args=(obj.pk,))

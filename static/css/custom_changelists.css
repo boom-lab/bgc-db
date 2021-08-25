@@ -1,0 +1,35 @@
+:root {
+    --primary: #405f8a;
+    --secondary: #041e43;
+    --link-fg: #0a49a1;
+    --link-selected-fg: #0a49a1;
+    --accent: #ffffff;
+  }
+
+.column-PI_NAME{
+    padding-right: 150px !important;
+}
+
+.column-PI_ADDRESS{
+    padding-right: 150px !important;
+}
+
+.column-ROM_VERSION{
+    padding-right: 150px !important;
+}
+
+.column-BATTERY_DETAILS{
+    padding-right: 150px !important;
+}
+
+.column-PROFILE_SAMPLING_METHOD{
+    padding-right: 250px !important;
+}
+
+.column-ParkObs{
+    padding-right: 250px !important;
+}
+
+.column-COMMENTS{
+    padding-right: 250px !important;
+}
