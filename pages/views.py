@@ -44,6 +44,11 @@ def cohort_latest(request):
 def display_map(request):
     return render(request, 'pages/map.html')
 
+def float_tracking(request):
+    deps = deployment.objects.filter(PLATFORM_TYPE='NAVIS_EBR').order_by('FLOAT_SERIAL_NO')
+    context = {'deployments':deps}
+    return render(request, 'pages/float_tracking.html', context)
+
 def float_detail(request):
     FLOAT_SERIAL_NO = request.GET.get('FLOAT_SERIAL_NO', None)
     PLATFORM_TYPE = request.GET.get('PLATFORM_TYPE', None)
