@@ -25,9 +25,9 @@ admin.site.register(file_processing, FileProcessingAdmin)
 class DeploymentTrackingAdmin(ExportMixin, admin.ModelAdmin):
     list_display = ['DEPLOYMENT','EVENT','DATE','LOCATION','COMMENT','USER']
     #list_display_links = ('Record_Date',)
-    search_fields = ('DEPLOYMENT', 'EVENT','DATE','LOCATION','COMMENT','USER')
+    search_fields = ('DEPLOYMENT__FLOAT_SERIAL_NO',)
     list_per_page = 25
-    list_filter = ('DEPLOYMENT',)
+    list_filter = ('EVENT',)
 
     exclude = ['USER',]
 
