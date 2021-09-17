@@ -121,15 +121,30 @@ class deployment(models.Model):
     def incoming_status(self):
         events = list(self.deployment_tracking.all().values_list('EVENT', flat=True))
         if 'PASSED_INCOMING' in events:
-            return True
+            return u'\u2713'
         return ''
 
     @property
     def docktest_status(self):
         events = list(self.deployment_tracking.all().values_list('EVENT', flat=True))
         if 'PASSED_DOCKTEST' in events:
-            return True
+            return u'\u2713'
         return ''
+
+    @property
+    def pressure_test_status(self):
+        events = list(self.deployment_tracking.all().values_list('EVENT', flat=True))
+        if 'PASSED_PRESSURE_TEST' in events:
+            return u'\u2713'
+        return ''
+
+    @property
+    def flow_through_status(self):
+        events = list(self.deployment_tracking.all().values_list('EVENT', flat=True))
+        if 'PASSED_FLOW_THROUGH' in events:
+            return u'\u2713'
+        return ''
+
 
     @property
     def status(self):

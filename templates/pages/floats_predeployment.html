@@ -19,7 +19,7 @@
        <h2>Predeployment Floats</h2>
    </div>
   <div class='row'>
-    <div id="filters" class="col-2"></div>
+    <!-- <div id="filters" class="col-2"></div> -->
     <div class='col'>
       <table id="statustable" class="table tabel-sm">
           <thead>
@@ -36,6 +36,8 @@
               <th scope="col">Deployment Port</th>
               <th scope="col">Passed Incoming</th>
               <th scope="col">Passed Docktest</th>
+              <th scope="col">Passed Pressure Test</th>
+              <th scope="col">Passed Flow Through</th>
             </tr>
           </thead>
           <tbody>
@@ -53,6 +55,8 @@
                 <td>{{ deployment.DEPLOYMENT_PORT }}</td>
                 <td>{{ deployment.incoming_status }}</td>
                 <td>{{ deployment.docktest_status }}</td>
+                <td>{{ deployment.pressure_test_status }}</td>
+                <td>{{ deployment.flow_through_status }}</td>
               </tr>
               {% endfor %}
           </tbody>
