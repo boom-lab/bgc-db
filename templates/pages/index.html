@@ -35,6 +35,7 @@
               <th scope="col">Last Report (UTC)</th>
               <th scope="col">Next Report (est)</th>
               <th scope="col">Days Since Last Report</th>
+              <th scope="col">Cycles</th>
               <th scope="col">Age</th>
             </tr>
           </thead>
@@ -51,6 +52,7 @@
                 <td class="cursor-pointer">{{ deployment.last_report|date:'Y-m-d H:i' }}</td>
                 <td class="cursor-pointer">{{ deployment.next_report|date:'Y-m-d H:i' }}</td>
                 <td class="cursor-pointer">{{ deployment.days_since_last }}</td>
+                <td class="cursor-pointer">{{ deployment.last_cycle }}</td>
                 <td class="cursor-pointer">{{ deployment.age.days }} days</td>
               </tr>
               {% endfor %}

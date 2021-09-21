@@ -118,6 +118,13 @@ class deployment(models.Model):
         return None
 
     @property
+    def last_cycle(self):
+        latest = self.cycle_metadata.order_by('GpsFixDate').last()
+        if latest: 
+            return latest.ProfileId
+        return None
+
+    @property
     def incoming_status(self):
         events = list(self.deployment_tracking.all().values_list('EVENT', flat=True))
         if 'PASSED_INCOMING' in events:
