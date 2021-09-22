@@ -132,6 +132,13 @@ class deployment(models.Model):
         return ''
 
     @property
+    def internal_inspection_status(self):
+        events = list(self.deployment_tracking.all().values_list('EVENT', flat=True))
+        if 'PASSED_INTERNAL_INSPECTION' in events:
+            return u'\u2713'
+        return ''
+
+    @property
     def docktest_status(self):
         events = list(self.deployment_tracking.all().values_list('EVENT', flat=True))
         if 'PASSED_DOCKTEST' in events:

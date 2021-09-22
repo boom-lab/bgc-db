@@ -35,8 +35,9 @@
               <th scope="col">Deployment MOB</th>
               <th scope="col">Deployment Port</th>
               <th scope="col">Passed Incoming</th>
-              <th scope="col">Passed Docktest</th>
+              <th scope="col">Passed Internal Inspection</th>
               <th scope="col">Passed Pressure Test</th>
+              <th scope="col">Passed Docktest</th>
               <th scope="col">Passed Flow Through</th>
             </tr>
           </thead>
@@ -54,8 +55,9 @@
                 <td>{{ deployment.DEPLOYMENT_MOB|date:'Y-m-d' }}</td>
                 <td>{{ deployment.DEPLOYMENT_PORT }}</td>
                 <td>{{ deployment.incoming_status }}</td>
-                <td>{{ deployment.docktest_status }}</td>
+                <td>{{ deployment.internal_inspection_status }}</td>
                 <td>{{ deployment.pressure_test_status }}</td>
+                <td>{{ deployment.docktest_status }}</td>
                 <td>{{ deployment.flow_through_status }}</td>
               </tr>
               {% endfor %}
