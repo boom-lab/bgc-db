@@ -98,7 +98,7 @@ class deployment(models.Model):
 
     @property
     def last_event(self):
-        latest = self.deployment_tracking.order_by("DATE").last()
+        latest = self.deployment_tracking.order_by("DATE","id").last()
         if latest: 
             return {'EVENT':latest.EVENT,'COMMENT':latest.COMMENT,'LOCATION':latest.LOCATION}
         return None
