@@ -126,28 +126,36 @@ class deployment(models.Model):
 
     @property
     def incoming_status(self):
-        events = list(self.deployment_tracking.all().values_list('EVENT', flat=True))
+        events = list(self.deployment_tracking.order_by("DATE","id").values_list('EVENT', flat=True))
+        if "RETURNED" in events:
+            events = events[events.index('RETURNED')+1:]
         if 'PASSED_INCOMING' in events:
             return u'\u2713'
         return ''
 
     @property
     def internal_inspection_status(self):
-        events = list(self.deployment_tracking.all().values_list('EVENT', flat=True))
+        events = list(self.deployment_tracking.order_by("DATE","id").values_list('EVENT', flat=True))
+        if "RETURNED" in events:
+            events = events[events.index('RETURNED')+1:]
         if 'PASSED_INTERNAL_INSPECTION' in events:
             return u'\u2713'
         return ''
 
     @property
     def docktest_status(self):
-        events = list(self.deployment_tracking.all().values_list('EVENT', flat=True))
+        events = list(self.deployment_tracking.order_by("DATE","id").values_list('EVENT', flat=True))
+        if "RETURNED" in events:
+            events = events[events.index('RETURNED')+1:]
         if 'PASSED_DOCKTEST' in events:
             return u'\u2713'
         return ''
 
     @property
     def pressure_test_status(self):
-        events = list(self.deployment_tracking.all().values_list('EVENT', flat=True))
+        events = list(self.deployment_tracking.order_by("DATE","id").values_list('EVENT', flat=True))
+        if "RETURNED" in events:
+            events = events[events.index('RETURNED')+1:]
         if 'PASSED_PRESSURE_TEST' in events:
             return u'\u2713'
         return ''
