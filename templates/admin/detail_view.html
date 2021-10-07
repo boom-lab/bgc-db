@@ -5,6 +5,7 @@
 <a href="/metadata-admin/deployments/deployment/export_metadata/{{ entry_id }}/" class="button">Export AOML Metadata File</a>
 <h1></h1>
 <h2>Deployment Information</h2>
+<h2>SN: {{ entry.FLOAT_SERIAL_NO }}</h2>
 <table>
   
   {% for name, value in entry.get_fields %}
