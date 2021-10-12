@@ -23,9 +23,10 @@
     <td>SENSOR</td>
     <td>MAKER</td>
     <td>MODEL</td>
-    <td>SERIAL_NO</td>
-    <td>CALIB_EQUATION</td>
-    <td>CALIB_COEFFICIENT</td>
+    <td>SERIAL NO</td>
+    <td>CALIB DATE</td>
+    <td>CALIB EQUATION</td>
+    <td>CALIB COEFFICIENT</td>
   </tr>
   {% for sensor in entry.sensors.all %}
   <tr>
@@ -33,6 +34,7 @@
     <td>{{ sensor.SENSOR_MAKER }}</td>
     <td>{{ sensor.SENSOR_MODEL }}</td>
     <td>{{ sensor.SENSOR_SERIAL_NO }}</td>
+    <td>{{ sensor.SENSOR_CALIB_DATE }}</td>
     <td>{{ sensor.PREDEPLOYMENT_CALIB_EQUATION }}</td>
     <td>{{ sensor.PREDEPLOYMENT_CALIB_COEFFICIENT }}</td>
   </tr>
