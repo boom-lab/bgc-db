@@ -162,7 +162,9 @@ class deployment(models.Model):
 
     @property
     def flow_through_status(self):
-        events = list(self.deployment_tracking.all().values_list('EVENT', flat=True))
+        events = list(self.deployment_tracking.order_by("DATE","id").values_list('EVENT', flat=True))
+        if "RETURNED" in events:
+            events = events[events.index('RETURNED')+1:]
         if 'PASSED_FLOW_THROUGH' in events:
             return u'\u2713'
         return ''

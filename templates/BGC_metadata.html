@@ -26,7 +26,7 @@ calib coef for temperature              TSLOPE=0.001; TOFF=0.0;
 calib eq 1 for pressure                 pslope*cnts+poff
 calib coef for pressure                 PSLOPE=0.1; POFF=0.0;
 {% for s in sensors -%}
-{% if s.SENSOR.VALUE not in "SPECTROPHOTOMETER_NITRATE,CTD_CNDC,CTD_TEMP,CTD_PRES" -%}
+{% if s.SENSOR.VALUE not in "CTD_CNDC,CTD_TEMP,CTD_PRES" -%}
 {{ "%-40s" | format('calib coef for '+s.aoml_sensor(),) }}{{s.PREDEPLOYMENT_CALIB_COEFFICIENT}}
 {% endif -%}
 {% endfor -%}  
