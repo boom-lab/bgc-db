@@ -94,7 +94,7 @@ def export_metadata(request, entry_id):
     output = template.render(d=d, sensors=sensors)
 
     response = HttpResponse(output, content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="{}_{}.meta"'.format(d.AOML_ID, d.FLOAT_SERIAL_NO.zfill(6))
+    response['Content-Disposition'] = 'attachment; filename="{}_{}.meta"'.format(d.AOML_ID, d.FLOAT_SERIAL_NO.zfill(4))
     return response
 
 #----------------------- APIs --------------------------------#
