@@ -9,7 +9,7 @@
 {% endblock header %}
 {% block content %}
 <div class="container-fluid">
-    <div class="row" id="firstrow">
+    <div class="row" id="content">
         <!-- Controls -->
         <div class="col-1" style="min-width: 150px">
             <label>Cohort</label>
@@ -50,7 +50,11 @@
             <div class="row">
                 <input id="pHck" class='checkbox' type="checkbox">
                 <label>pH</label>
-            </div>            
+            </div>        
+        </div>
+        <!-- Plot -->
+        <div class="col" id="plot">
+
         </div>
     </div>
 </div>
@@ -68,20 +72,21 @@
             url: "ajax/update_cohort_latest_plot",
             data: {"year_selected": year_selected, "vars_selected":vars_selected},
             success: function (response) {
-                //If sucessful, delete current plot
-                $('.plot').remove();
+                //If sucessful, delete current plot and create new container
+                $('#plot').remove();
+                $('#content').append("<div class='col' id='plot'></div>")
+
                 //Add plot
                 n = Object.keys(response).length
                 console.log(n)
-
-                $('#firstrow').append("<div class='col plot'"+response["plot_div0"]+"</div><div class='col plot'"+response["plot_div1"]+"</div>"+"</div>")
+                $('#plot').append("<div class='row' id='firstplotrow'></div>")
+                $('#firstplotrow').append("<div class='col plot'"+response["plot_div0"]+"</div><div class='col plot'"+response["plot_div1"]+"</div>"+"</div>")
 
                 let row_count = 1
                 for (let i = 2; i < n; i++){
                     if (i%2 == 0) {
                         row_count = row_count + 1
-                        $('.container-fluid').append("<div class='row' id='row"+row_count+"'>")
-                        $('#row'+row_count).append("<div class='col-1' style='min-width: 150px'</div>")
+                        $('#plot').append("<div class='row' id='row"+row_count+"'>")
                     }
 
                     $('#row'+row_count).append("<div class='col plot'"+response["plot_div"+i]+"</div>")   
