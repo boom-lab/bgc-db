@@ -52,8 +52,6 @@
                 <label>pH</label>
             </div>            
         </div>
-        <!-- Plots -->
-        <div id='plots'></div>
     </div>
 </div>
 {% endblock %}
@@ -74,8 +72,20 @@
                 $('.plot').remove();
                 //Add plot
                 n = Object.keys(response).length
+                console.log(n)
 
-                $('#firstrow').append("<div class='col plot'"+response["plot_div0"]+"</div><div class='col plot'"+response["plot_div1"]+"</div>"+"</div><div class='col plot'"+response["plot_div2"]+"</div>")
+                $('#firstrow').append("<div class='col plot'"+response["plot_div0"]+"</div><div class='col plot'"+response["plot_div1"]+"</div>"+"</div>")
+
+                let row_count = 1
+                for (let i = 2; i < n; i++){
+                    if (i%2 == 0) {
+                        row_count = row_count + 1
+                        $('.container-fluid').append("<div class='row' id='row"+row_count+"'>")
+                        $('#row'+row_count).append("<div class='col-1' style='min-width: 150px'</div>")
+                    }
+
+                    $('#row'+row_count).append("<div class='col plot'"+response["plot_div"+i]+"</div>")   
+                }
 
             },
             error: function (response) {

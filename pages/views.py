@@ -146,27 +146,30 @@ def cmocean_to_plotly(cmap, pl_entries):
     """Function to sample cmocean colors and output list of rgb values for plotly
     cmap = color map from cmocean
     pl_entries = number of samples to take"""
+    
+    #Sample 40 colors from cmap
     colors_n = 40
-
     h = 1.0/(colors_n-1)
     pl_colorscale = []
     for k in range(colors_n):
         C = list(map(np.uint8, np.array(cmap(k*h)[:3])*255))
         pl_colorscale.append('rgb'+str((C[0], C[1], C[2])))
     
+    #Add light blue colors if older than 40 profiles
     solid_add = pl_entries - colors_n
-
     i = 0
     while i < solid_add:
         pl_colorscale.insert(0, 'rgb(207, 230, 233)')
         i+=1
-    
-    if solid_add <0:
-        pl_colors = pl_entries +2
-        pl_colorscale = pl_colorscale[-3:]
+
+    #chop scale if younger than 40 profiles
+    if pl_entries < colors_n:
+        final_scale = pl_colorscale[pl_entries*-1:]
+    else:
+        final_scale = pl_colorscale
 
     
-    return pl_colorscale
+    return final_scale
 
 def cohort_data(request):
     # provides flat data to plotly cohort plot
@@ -194,7 +197,7 @@ def cohort_data(request):
         dis_data = dis_data.fillna("")
 
         #Remove cycle metadata that does not have continuous data (failed profile cycle)
-        keep_profiles = data.PROFILE_ID.unique()
+        keep_profiles = dis_data.PROFILE_ID.unique()
         cycle_meta = cycle_meta.loc[cycle_meta.PROFILE_ID.isin(keep_profiles),:]
 
         #Remove discrete data that does not hve continuous data (failed profile cycle)
@@ -226,7 +229,7 @@ def cohort_data(request):
             #continuous colormaps
             n_colors = len(cycle_id)
             cont_colors = cmocean_to_plotly(cmocean.cm.dense, n_colors)
-
+            #print(cont_colors)
             plot_data[wmo] = {"x":var_flat,
                 "y":pres_flat,
                 "dis_x":dis_var_flat,
