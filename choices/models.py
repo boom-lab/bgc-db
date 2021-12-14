@@ -217,3 +217,12 @@ class events(models.Model):
         verbose_name_plural = "Events"
     def __str__(self): 
         return str(self.VALUE)
+
+class tracking_error_types(models.Model):
+    VALUE = models.CharField(max_length=100, unique=True)
+    DESCRIPTION = models.CharField(max_length=2000, blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = "Tracking - Error Types"
+    def __str__(self): 
+        return str(self.VALUE)
