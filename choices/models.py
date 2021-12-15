@@ -119,6 +119,21 @@ class deployment_platforms(models.Model):
     def __str__(self): 
         return str(self.DISPLAY)
 
+class deployment_platforms_C17(models.Model):
+
+    VALUE = models.CharField(max_length=100, unique=True)
+    ACTIVE = models.BooleanField()
+    TYPE = models.CharField(max_length=25, choices=DeploymentType.choices, blank=True, null=True)
+    ICES = models.CharField(max_length=25, blank=True, null=True)
+    SOURCE = models.CharField(max_length=25, blank=True, null=True)
+    DESCRIPTION = models.JSONField(max_length=500, blank=True, null=True)
+    
+    class Meta:
+        verbose_name_plural = "Deployment Platforms C17"
+
+    def __str__(self): 
+        return str(self.VALUE)
+
 class platform_makers(models.Model):
 
     VALUE = models.CharField(max_length=100, unique=True)

@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from choices.models import sensor_types, sensor_makers, sensor_models, platform_types_wmo, platform_makers, platform_types, transmission_systems
+from choices.models import deployment_platforms_C17, sensor_types, sensor_makers, sensor_models, platform_types_wmo, platform_makers, platform_types, transmission_systems
 import pandas as pd
 
 #Custom command to add vocabularies from csv
@@ -16,6 +16,7 @@ class Command(BaseCommand):
         parser.add_argument('--add_platform_makers', action='store_true')
         parser.add_argument('--add_platform_types', action='store_true')
         parser.add_argument('--add_transmission_systems', action='store_true')
+        parser.add_argument('--add_deployment_platform', action='store_true')
 
     def handle(self, **options):
 
@@ -68,4 +69,11 @@ class Command(BaseCommand):
             for index, row in R10.iterrows():
                 print(index)
                 itypes = transmission_systems(VALUE=row['altLabel'], DISPLAY=row['prefLabel'], DESCRIPTION=row['Definition'], ACTIVE=False, SOURCE='Nerc R10')
+                itypes.save()
+
+        if options['add_deployment_platform']:
+            C17 = pd.read_csv('choices/vocab/C17.csv')
+            for index, row in C17.iterrows():
+                print(index)
+                itypes = deployment_platforms_C17(VALUE=row['VALUE'], ICES=row['ICES'], DESCRIPTION=row['DESCRIPTION'], ACTIVE=False, SOURCE='C17', TYPE=None)
                 itypes.save()

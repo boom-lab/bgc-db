@@ -65,6 +65,8 @@ class deployment(models.Model):
     DEPLOYER_ADDRESS = models.CharField(max_length=100, blank=True, null=True)
     DEPLOYMENT_PLATFORM = models.ForeignKey(cm.deployment_platforms, to_field="VALUE", max_length=25, blank=True, null=True, 
         on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
+    DEPLOYMENT_PLATFORM_C17 = models.ForeignKey(cm.deployment_platforms_C17, blank=True, null=True, 
+        on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     DEPLOYMENT_CRUISE_ID = models.CharField(max_length=50, blank=True, null=True)
     DEPLOYMENT_REFERENCE_STATION_ID = models.CharField(max_length=50, blank=True, null=True)
     DEPLOYMENT_MOB = models.DateField(blank=True, null=True)
