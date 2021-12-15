@@ -120,7 +120,7 @@ class deployment_platforms(models.Model):
         return str(self.DISPLAY)
 
 class deployment_platforms_C17(models.Model):
-    ICES = models.CharField(max_length=25, unique=True)
+    ICES = models.CharField(max_length=25, blank=True,null=True)
     VALUE = models.CharField(max_length=100)
     ACTIVE = models.BooleanField()
     TYPE = models.CharField(max_length=25, choices=DeploymentType.choices, blank=True, null=True)

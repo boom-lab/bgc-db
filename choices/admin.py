@@ -90,6 +90,7 @@ admin.site.register(cm.deployment_platforms, DeploymentPlatformAdmin)
 class DeploymentPlatformC17Admin(ImportExportMixin, admin.ModelAdmin):
     list_display = ['VALUE','ACTIVE','TYPE','ICES','SOURCE','DESCRIPTION']
     list_per_page = 100
+    search_fields = ('VALUE',)
 admin.site.register(cm.deployment_platforms_C17, DeploymentPlatformC17Admin)
 
 class TrackingErrorTypesAdmin(ExportMixin, admin.ModelAdmin):
