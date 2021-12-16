@@ -40,7 +40,7 @@ class deployment_tracking(models.Model):
     
     class Meta:
         verbose_name_plural = "Deployment Tracking"
-        ordering = ["DATE"]
+        ordering = ["-DATE"]
 
     def __str__(self): 
         return str(self.DEPLOYMENT)
