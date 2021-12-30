@@ -37,6 +37,8 @@ class sensor(models.Model):
             'SPECTROPHOTOMETER_NITRATE':'nitrate'}
         return translation[str(self.SENSOR)]
 
+
+
     #Default return
     def __str__(self): 
         return str(self.DEPLOYMENT)

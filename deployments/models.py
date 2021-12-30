@@ -219,6 +219,10 @@ class deployment(models.Model):
             return self.DEATH_DATE - self.LAUNCH_DATE
         return datetime.now(timezone.utc) - self.LAUNCH_DATE
 
+    @property
+    def sorted_sensors(self):
+        return self.sensors.order_by('SENSOR')
+
     #For admin detail view
     def get_fields(self):
         return [(field.name, field.value_to_string(self)) for field in self._meta.fields]

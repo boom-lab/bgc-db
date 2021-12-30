@@ -10,6 +10,7 @@ urlpatterns = [
     path('map',views.display_map, name='map'),
     path('float_detail',views.float_detail, name='float_detail'),
     path('float_tracking',views.float_tracking, name='float_tracking'),
+    path('float_serial_no',views.float_serial_no, name='float_serial_no'),
     path('cohort',views.cohort, name='cohort'),
     path('cohort_latest',views.cohort_latest, name='cohort_latest'),
     path('ajax/update_profile_plot', profile_explorer.update_profile_plot, name = "update_profile_plot"),
