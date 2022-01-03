@@ -1,4 +1,4 @@
-from env_data.serializers import CycleMetaSerializer
+from env_data.serializers import CycleMetaSerializer, DisProfileSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from .models import continuous_profile, discrete_profile, park, cycle_metadata, mission_reported
@@ -9,12 +9,20 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.db.models import Max, Count
 
-@api_view(['DELETE','GET'])
+
+
+class GetDisData(generics.ListAPIView): #Read only, currently only filters by pressure, date add, and platform number. output fields can be controlled.
+    serializer_class = DisProfileSerializer
+    queryset=discrete_profile.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filter_fields ={"PRES":['gt','lt','range','exact'],
+        "DATE_ADD":['gt','lt','range','exact'],
+        "DEPLOYMENT__PLATFORM_NUMBER":['exact']
+    }
+
+@api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def con_profile_view(request):
-    if request.method == 'GET':
-        return JsonResponse({'details':'Not Implemented Yet'}, status=status.HTTP_200_OK)
-
     if request.method == 'DELETE':
         profile_id = request.GET.get('PROFILE_ID', None)
         filters={"PROFILE_ID":profile_id}

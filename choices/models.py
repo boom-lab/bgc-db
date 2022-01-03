@@ -104,20 +104,19 @@ class DeploymentType(models.TextChoices): #AOML, not Argo compliant
     AIR = 'AIR','AIR'
 
 class deployment_platforms(models.Model):
-
-    VALUE = models.CharField(max_length=100, unique=True)
-    DISPLAY = models.CharField(max_length=200)
+    ICES = models.CharField(max_length=25, blank=True,null=True)
+    VALUE = models.CharField(max_length=100)
     ACTIVE = models.BooleanField()
-    TYPE = models.CharField(max_length=25, choices=DeploymentType.choices)
-    NODC = models.CharField(max_length=25, blank=True, null=True)
+    TYPE = models.CharField(max_length=25, choices=DeploymentType.choices, blank=True, null=True)
     SOURCE = models.CharField(max_length=25, blank=True, null=True)
-    DESCRIPTION = models.CharField(max_length=2000, blank=True, null=True)
+    DESCRIPTION = models.JSONField(max_length=500, blank=True, null=True)
     
     class Meta:
         verbose_name_plural = "Deployment Platforms"
+        ordering = ["-ACTIVE","VALUE"]
 
     def __str__(self): 
-        return str(self.DISPLAY)
+        return str(self.VALUE)
 
 class platform_makers(models.Model):
 
@@ -215,5 +214,14 @@ class events(models.Model):
     
     class Meta:
         verbose_name_plural = "Events"
+    def __str__(self): 
+        return str(self.VALUE)
+
+class tracking_error_types(models.Model):
+    VALUE = models.CharField(max_length=100, unique=True)
+    DESCRIPTION = models.CharField(max_length=2000, blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = "Tracking - Error Types"
     def __str__(self): 
         return str(self.VALUE)

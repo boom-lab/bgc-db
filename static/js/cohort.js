@@ -25,6 +25,7 @@ function create_plot(response, var_selected){
 
     //Each float, seperate plots
     for (let deployment in response){
+        
         let dp = response[deployment] //original data
         let data = []; //data for plotly
 

@@ -4,6 +4,7 @@ from env_data import views
 urlpatterns = [ 
     url(r'api/continuous_profile$', views.con_profile_view), #Token, delete
     url(r'api/continuous_profile_stats$', views.continuous_profile_stats), #Public, get
+    url(r'api/get_discrete_data$', views.GetDisData.as_view()), #Public, get
     url(r'api/discrete_profile$', views.dis_profile_view), #Toeken, delete
     url(r'api/discrete_profile_stats$', views.dis_profile_stats), #Public, get
     url('api/park', views.park_view), #Token, delete

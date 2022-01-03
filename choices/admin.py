@@ -82,7 +82,13 @@ class OriginCountriesAdmin(ExportMixin, admin.ModelAdmin):
     list_per_page = 100
 admin.site.register(cm.origin_countries, OriginCountriesAdmin)
 
-class DeploymentPlatformAdmin(ExportMixin, admin.ModelAdmin):
-    list_display = ['VALUE','DISPLAY','ACTIVE','TYPE','NODC','SOURCE','DESCRIPTION']
+class DeploymentPlatformAdmin(ImportExportMixin, admin.ModelAdmin):
+    list_display = ['VALUE','ACTIVE','TYPE','ICES','SOURCE','DESCRIPTION']
     list_per_page = 100
+    search_fields = ('VALUE',)
 admin.site.register(cm.deployment_platforms, DeploymentPlatformAdmin)
+
+class TrackingErrorTypesAdmin(ExportMixin, admin.ModelAdmin):
+    list_display = ['VALUE','DESCRIPTION']
+    list_per_page = 100
+admin.site.register(cm.tracking_error_types, TrackingErrorTypesAdmin)

@@ -63,7 +63,7 @@ class deployment(models.Model):
 
     DEPLOYER = models.CharField(max_length=100, blank=True, null=True)
     DEPLOYER_ADDRESS = models.CharField(max_length=100, blank=True, null=True)
-    DEPLOYMENT_PLATFORM = models.ForeignKey(cm.deployment_platforms, to_field="VALUE", max_length=25, blank=True, null=True, 
+    DEPLOYMENT_PLATFORM = models.ForeignKey(cm.deployment_platforms, blank=True, null=True, 
         on_delete=models.PROTECT, limit_choices_to={'ACTIVE':True})
     DEPLOYMENT_CRUISE_ID = models.CharField(max_length=50, blank=True, null=True)
     DEPLOYMENT_REFERENCE_STATION_ID = models.CharField(max_length=50, blank=True, null=True)
@@ -218,6 +218,10 @@ class deployment(models.Model):
         if self.DEATH_DATE:
             return self.DEATH_DATE - self.LAUNCH_DATE
         return datetime.now(timezone.utc) - self.LAUNCH_DATE
+
+    @property
+    def sorted_sensors(self):
+        return self.sensors.order_by('SENSOR')
 
     #For admin detail view
     def get_fields(self):

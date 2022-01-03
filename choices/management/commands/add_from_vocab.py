@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
-from choices.models import sensor_types, sensor_makers, sensor_models, platform_types_wmo, platform_makers, platform_types, transmission_systems
+from choices.models import deployment_platforms_C17, sensor_types, sensor_makers, sensor_models, platform_types_wmo, platform_makers, platform_types, transmission_systems
 import pandas as pd
+import json
 
 #Custom command to add vocabularies from csv
 #To run:
@@ -16,6 +17,7 @@ class Command(BaseCommand):
         parser.add_argument('--add_platform_makers', action='store_true')
         parser.add_argument('--add_platform_types', action='store_true')
         parser.add_argument('--add_transmission_systems', action='store_true')
+        parser.add_argument('--add_deployment_platforms', action='store_true')
 
     def handle(self, **options):
 
@@ -69,3 +71,14 @@ class Command(BaseCommand):
                 print(index)
                 itypes = transmission_systems(VALUE=row['altLabel'], DISPLAY=row['prefLabel'], DESCRIPTION=row['Definition'], ACTIVE=False, SOURCE='Nerc R10')
                 itypes.save()
+
+        if options['add_deployment_platforms']:
+            C17 = pd.read_csv('choices/vocab/C17.csv')
+
+            df_records = C17.to_dict('records')
+
+            model_instances = [deployment_platforms_C17(
+                VALUE=record['VALUE'], ICES=record['ICES'], DESCRIPTION=json.loads(record["Definition"]), ACTIVE=False, SOURCE='C17', TYPE=None
+            ) for record in df_records]
+
+            deployment_platforms_C17.objects.bulk_create(model_instances)
