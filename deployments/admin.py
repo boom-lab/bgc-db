@@ -17,7 +17,7 @@ def Export_Metadata_File(modeladmin, request, queryset):
 class DeploymentAdmin(ExportMixin, admin.ModelAdmin):
     all_fields = [field.name for field in deployment._meta.fields]
 
-    list_display = ['detail_link', 'edit_link', 'event_link'] + all_fields
+    list_display = ['detail_link', 'edit_link', 'event_link', 'mission_link'] + all_fields
     list_display_links = None
     list_filter = ('PLATFORM_TYPE','HISTORICAL')
     search_fields = ('FLOAT_SERIAL_NO','PLATFORM_NUMBER')
@@ -52,6 +52,13 @@ class DeploymentAdmin(ExportMixin, admin.ModelAdmin):
 
         return mark_safe('<a href="{}">Add Event</a>'.format(admin_url + "?DEPLOYMENT=" + str(obj.pk)))
     event_link.short_description = 'Add Event'
+
+    #Add mission link
+    def mission_link(self, obj):
+        admin_url = reverse("admin:missions_mission_add")
+
+        return mark_safe('<a href="{}">Add Mission</a>'.format(admin_url + "?DEPLOYMENT=" + str(obj.pk)))
+    mission_link.short_description = 'Add Mission'
 
     #Add custom detail view to urls
     def get_urls(self):
