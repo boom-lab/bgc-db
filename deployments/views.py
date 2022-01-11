@@ -9,6 +9,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from jinja2 import Environment, FileSystemLoader
 import json
+import zipfile
 
 from .models import deployment
 from .serializers import PostUpdateSerializer, DeploymentMetaSerializer
@@ -31,7 +32,7 @@ def admin_detail_view(request, admin_site, entry_id):
     return render(request, 'admin/detail_view.html', context)
 
 #Create AOML metadata file
-def export_metadata(request, entry_id):
+def generate_metadata_file(request, entry_id):
 
     #Get data from deployment, sensor, and mission tables
     d = get_object_or_404(deployment, pk=entry_id)
@@ -92,10 +93,27 @@ def export_metadata(request, entry_id):
 
     #Render with jinja template
     output = template.render(d=d, sensors=sensors)
+    filename="{}_{}.meta".format(d.AOML_ID, d.FLOAT_SERIAL_NO.zfill(4))
+    return output, filename
 
-    response = HttpResponse(output, content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="{}_{}.meta"'.format(d.AOML_ID, d.FLOAT_SERIAL_NO.zfill(4))
-    return response
+def export_metadata(request, entry_ids):
+    if len(entry_ids) == 1: #If only one record selected
+        #Get data from mission
+        output, filename = generate_metadata_file(request, entry_ids[0])
+       
+        #Return file
+        response = HttpResponse(output, content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename='+filename
+        return response
+    else:
+        response = HttpResponse(content_type='application/zip')
+        zf = zipfile.ZipFile(response, 'w')
+        for entry in entry_ids: #loop through each mission record selected
+            output, filename = generate_metadata_file(request, entry)
+            zf.writestr(filename, output)
+        zf.close()
+        response['Content-Disposition'] = 'attachment; filename={}'.format("metafiles.zip")
+        return response
 
 #----------------------- APIs --------------------------------#
 #get deployment metadata, can specify fields to filter and which to return. public

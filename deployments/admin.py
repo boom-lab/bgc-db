@@ -8,10 +8,10 @@ from import_export.admin import ExportMixin
 from .views import admin_detail_view, export_metadata
 
 def Export_Metadata_File(modeladmin, request, queryset):
-
-    for d in queryset: #loop through each deployment selected. ToDo: Turn into zip and return
-        metadata_file = export_metadata(request, d.id)
-        return metadata_file
+    ids = []
+    for d in queryset:
+        ids.append(d.id)
+    return export_metadata(request, ids)
 
 
 class DeploymentAdmin(ExportMixin, admin.ModelAdmin):
