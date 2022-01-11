@@ -1,4 +1,4 @@
-from env_data.serializers import CycleMetaSerializer, DisProfileSerializer
+from env_data.serializers import CycleMetaSerializer, DisProfileSerializer, ParkSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from .models import continuous_profile, discrete_profile, park, cycle_metadata, mission_reported
@@ -94,12 +94,19 @@ def dis_profile_stats(request):
 
     return JsonResponse(results, status=status.HTTP_200_OK)
 
-@api_view(['DELETE','GET'])
+class GetParkData(generics.ListAPIView): #Read only, currently only filters by pressure, date add, date measured, and platform number. output fields can be controlled.
+    serializer_class = ParkSerializer
+    queryset=park.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filter_fields ={"DATE_ADD":['gt','lt','range','exact'],
+        "DATE_MEASURED":['gt','lt','range','exact'],
+        "DEPLOYMENT__PLATFORM_NUMBER":['exact'],
+        "PROFILE_ID":['exact']
+    }
+
+@api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def park_view(request):
-    if request.method == 'GET':
-        return JsonResponse({'details':'Not Implemented Yet'}, status=status.HTTP_200_OK)
-
     if request.method == 'DELETE':
         profile_id = request.GET.get('PROFILE_ID', None)
         filters={"PROFILE_ID":profile_id}

@@ -8,6 +8,7 @@ urlpatterns = [
     url(r'api/discrete_profile$', views.dis_profile_view), #Toeken, delete
     url(r'api/discrete_profile_stats$', views.dis_profile_stats), #Public, get
     url('api/park', views.park_view), #Token, delete
+    url(r'api/get_park_data$', views.GetParkData.as_view()), #Public, get
     url('api/cycle_metadata', views.cycle_metadata_view), #Token, delete
     url('api/cycle_meta_get', views.CycleMetaGet.as_view()), #Public, get
     url('api/processing/cycle_meta_update', views.CycleMetaUpdate.as_view()), #Token, post and patch
