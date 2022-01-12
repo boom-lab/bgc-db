@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.db.models import Max, Count
 
-
+#----------------------GET Data APIs------------------------------#
 
 class GetDisData(generics.ListAPIView): #Read only, currently only filters by pressure, date add, and platform number. output fields can be controlled.
     serializer_class = DisProfileSerializer
@@ -20,9 +20,30 @@ class GetDisData(generics.ListAPIView): #Read only, currently only filters by pr
         "DEPLOYMENT__PLATFORM_NUMBER":['exact']
     }
 
+class GetParkData(generics.ListAPIView): #Read only, currently only filters by pressure, date add, date measured, and platform number. output fields can be controlled.
+    serializer_class = ParkSerializer
+    queryset=park.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filter_fields ={"DATE_ADD":['gt','lt','range','exact'],
+        "DATE_MEASURED":['gt','lt','range','exact'],
+        "DEPLOYMENT__PLATFORM_NUMBER":['exact'],
+        "PROFILE_ID":['exact']
+    }
+
+class GetCycleMeta(generics.ListAPIView): #Read only
+    serializer_class = CycleMetaSerializer
+    queryset=cycle_metadata.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filter_fields ={"DEPLOYMENT__PLATFORM_NUMBER":['exact'],
+        "PROFILE_ID":['exact'],
+        "DATE_ADD":['gt','lt','range','exact'],
+    }
+
+
+#------------------DELETE APIs -------------------------#
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
-def con_profile_view(request):
+def con_profile_delete(request):
     if request.method == 'DELETE':
         profile_id = request.GET.get('PROFILE_ID', None)
         filters={"PROFILE_ID":profile_id}
@@ -32,7 +53,74 @@ def con_profile_view(request):
         if res[0]==0: #If nothing was deleted
             return JsonResponse({'status': 'nothing deleted'}, status=status.HTTP_400_BAD_REQUEST)
         return JsonResponse({'status': 'deleted '+str(res[0])+" entries"}, status=status.HTTP_200_OK)
+        
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def park_delete(request):
+    if request.method == 'DELETE':
+        profile_id = request.GET.get('PROFILE_ID', None)
+        filters={"PROFILE_ID":profile_id}
+        query = park.objects.filter(**filters)
+        res = query.delete()
 
+        if res[0]==0: #If nothing was deleted
+            return JsonResponse({'status': 'nothing deleted'}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({'status': 'deleted '+str(res[0])+" entries"}, status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def cycle_metadata_delete(request):
+    if request.method == 'DELETE':
+        profile_id = request.GET.get('PROFILE_ID', None)
+        filters={"PROFILE_ID":profile_id}
+        query = cycle_metadata.objects.filter(**filters)
+        res = query.delete()
+        if res[0]==0: #If nothing was deleted
+            return JsonResponse({'status': 'nothing deleted'}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({'status': 'deleted '+str(res[0])+" entries"}, status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def mission_reported_delete(request):
+    if request.method == 'DELETE':
+        profile_id = request.GET.get('PROFILE_ID', None)
+        filters={"PROFILE_ID":profile_id}
+        query = mission_reported.objects.filter(**filters)
+        res = query.delete()
+
+        if res[0]==0: #If nothing was deleted
+            return JsonResponse({'status': 'nothing deleted'}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({'status': 'deleted '+str(res[0])+" entries"}, status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def dis_profile_delete(request):
+    if request.method == 'DELETE':
+        profile_id = request.GET.get('PROFILE_ID', None)
+        filters={"PROFILE_ID":profile_id}
+        query = discrete_profile.objects.filter(**filters)
+        res = query.delete()
+
+        if res[0]==0: #If nothing was deleted
+            return JsonResponse({'status': 'nothing deleted'}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({'status': 'deleted '+str(res[0])+" entries"}, status=status.HTTP_200_OK)
+
+#---------------------Update Cycle Metadata ------------------------------#
+class CycleMetaUpdate(generics.UpdateAPIView, generics.CreateAPIView): #Post new metadata, Update (patch), token
+    permission_classes=[IsAuthenticated]
+    serializer_class=CycleMetaSerializer
+    queryset=cycle_metadata.objects.all()
+
+    def get_object(self):
+        filters={}
+        filters['PROFILE_ID'] = self.request.GET.get("PROFILE_ID", None)
+
+        if not filters['PROFILE_ID']:
+            return JsonResponse({'details':'Error: PROFILE_ID not provided'}, status=status.HTTP_400_BAD_REQUEST)
+
+        return get_object_or_404(cycle_metadata, **filters)
+
+#---------------------------Stats APIs ---------------------------#
 @api_view(['GET'])
 def continuous_profile_stats(request):
     filters = {}
@@ -54,22 +142,6 @@ def continuous_profile_stats(request):
     }
 
     return JsonResponse(results, status=status.HTTP_200_OK)
-
-@api_view(['DELETE','GET'])
-@permission_classes([IsAuthenticated])
-def dis_profile_view(request):
-    if request.method == 'GET':
-        return JsonResponse({'details':'Not Implemented Yet'}, status=status.HTTP_200_OK)
-
-    if request.method == 'DELETE':
-        profile_id = request.GET.get('PROFILE_ID', None)
-        filters={"PROFILE_ID":profile_id}
-        query = discrete_profile.objects.filter(**filters)
-        res = query.delete()
-
-        if res[0]==0: #If nothing was deleted
-            return JsonResponse({'status': 'nothing deleted'}, status=status.HTTP_400_BAD_REQUEST)
-        return JsonResponse({'status': 'deleted '+str(res[0])+" entries"}, status=status.HTTP_200_OK)
 
 @api_view(['GET'])
 def dis_profile_stats(request):
@@ -93,83 +165,3 @@ def dis_profile_stats(request):
     }
 
     return JsonResponse(results, status=status.HTTP_200_OK)
-
-class GetParkData(generics.ListAPIView): #Read only, currently only filters by pressure, date add, date measured, and platform number. output fields can be controlled.
-    serializer_class = ParkSerializer
-    queryset=park.objects.all()
-    filter_backends = [DjangoFilterBackend]
-    filter_fields ={"DATE_ADD":['gt','lt','range','exact'],
-        "DATE_MEASURED":['gt','lt','range','exact'],
-        "DEPLOYMENT__PLATFORM_NUMBER":['exact'],
-        "PROFILE_ID":['exact']
-    }
-
-@api_view(['DELETE'])
-@permission_classes([IsAuthenticated])
-def park_view(request):
-    if request.method == 'DELETE':
-        profile_id = request.GET.get('PROFILE_ID', None)
-        filters={"PROFILE_ID":profile_id}
-        query = park.objects.filter(**filters)
-        res = query.delete()
-
-        if res[0]==0: #If nothing was deleted
-            return JsonResponse({'status': 'nothing deleted'}, status=status.HTTP_400_BAD_REQUEST)
-        return JsonResponse({'status': 'deleted '+str(res[0])+" entries"}, status=status.HTTP_200_OK)
-
-
-@api_view(['DELETE'])
-@permission_classes([IsAuthenticated])
-def cycle_metadata_view(request):
-    if request.method == 'DELETE':
-        profile_id = request.GET.get('PROFILE_ID', None)
-        filters={"PROFILE_ID":profile_id}
-        query = cycle_metadata.objects.filter(**filters)
-        res = query.delete()
-        if res[0]==0: #If nothing was deleted
-            return JsonResponse({'status': 'nothing deleted'}, status=status.HTTP_400_BAD_REQUEST)
-        return JsonResponse({'status': 'deleted '+str(res[0])+" entries"}, status=status.HTTP_200_OK)
-
-class CycleMetaFilter(FilterSet):
-    class Meta:
-        model = cycle_metadata
-        fields = ['DEPLOYMENT__PLATFORM_NUMBER']
-
-class CycleMetaGet(generics.ListAPIView): #Read only
-    serializer_class = CycleMetaSerializer
-    queryset=cycle_metadata.objects.all()
-    filter_backends = [DjangoFilterBackend]
-    filter_class = CycleMetaFilter
-
-class CycleMetaUpdate(generics.UpdateAPIView, generics.CreateAPIView): #Post new metadata, Update (patch), token
-    permission_classes=[IsAuthenticated]
-    serializer_class=CycleMetaSerializer
-    queryset=cycle_metadata.objects.all()
-
-    def get_object(self):
-        filters={}
-        filters['PROFILE_ID'] = self.request.GET.get("PROFILE_ID", None)
-
-        if not filters['PROFILE_ID']:
-            return JsonResponse({'details':'Error: PROFILE_ID not provided'}, status=status.HTTP_400_BAD_REQUEST)
-
-        return get_object_or_404(cycle_metadata, **filters)
-
-
-
-@api_view(['DELETE','GET'])
-@permission_classes([IsAuthenticated])
-def mission_reported_view(request):
-    if request.method == 'GET':
-        return JsonResponse({'details':'Not Implemented Yet'}, status=status.HTTP_200_OK)
-
-    if request.method == 'DELETE':
-        profile_id = request.GET.get('PROFILE_ID', None)
-        filters={"PROFILE_ID":profile_id}
-        query = mission_reported.objects.filter(**filters)
-        res = query.delete()
-
-        if res[0]==0: #If nothing was deleted
-            return JsonResponse({'status': 'nothing deleted'}, status=status.HTTP_400_BAD_REQUEST)
-        return JsonResponse({'status': 'deleted '+str(res[0])+" entries"}, status=status.HTTP_200_OK)
-
