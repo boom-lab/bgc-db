@@ -28,7 +28,7 @@ def put_process_log(request):
     #Email message
     if payload['STATUS'] != 'Success':
         send_mail(
-            'BGC Processing '+payload['STATUS'],
+            'BGC Processing '+payload['STATUS'] + ' - SN:' + payload['FLOAT_SERIAL_NO'] + ' Cycle:' + payload['CYCLE'],
             payload['DETAILS'],
             'from@example.com',
             ['randerson@whoi.edu'],
