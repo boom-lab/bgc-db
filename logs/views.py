@@ -42,17 +42,17 @@ def put_process_log(request):
             payload['FLOAT_SERIAL_NO'] + ": "+"Mission prelude processed",
             'Mission prelude data processed: \n'+payload['STATUS'] +" "+ payload['DETAILS'],
             'from@example.com',
-            ['randerson@whoi.edu'],
+            ['randerson@whoi.edu','dnicholson@whoi.edu'],
             fail_silently=False,
         )
 
     #first cycle
-    if payload['CYCLE'] == '016':
+    if payload['CYCLE'] == '001':
         send_mail(
             payload['FLOAT_SERIAL_NO'] + ": "+"First cycle processed",
             'First cycle processed: \n'+payload['STATUS'] +" "+ payload['DETAILS'],
             'from@example.com',
-            ['randerson@whoi.edu'],
+            ['randerson@whoi.edu','dnicholson@whoi.edu'],
             fail_silently=False,
         )
 
