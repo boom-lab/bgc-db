@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from django.http.response import JsonResponse
+from django.core.mail import send_mail
 from .models import file_processing
 import json
 from rest_framework import status
@@ -21,9 +22,19 @@ def get_file_status(request):
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def put_process_log(request):
-    print('here')
     directory = request.GET['DIRECTORY']
     payload = json.loads(request.body)
+    
+    #Email message
+    if payload['STATUS'] != 'Success':
+        send_mail(
+            'BGC Processing '+payload['STATUS'],
+            payload['DETAILS'],
+            'from@example.com',
+            ['randerson@whoi.edu'],
+            fail_silently=False,
+        )
+        
     try:
         log_item = file_processing.objects.filter(DIRECTORY=directory)
         if log_item:
