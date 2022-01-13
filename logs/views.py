@@ -25,16 +25,38 @@ def put_process_log(request):
     directory = request.GET['DIRECTORY']
     payload = json.loads(request.body)
     
-    #Email message
+    #----------------------Email messages--------------#
+    #Error processing or warning
     if payload['STATUS'] != 'Success':
         send_mail(
-            'BGC Processing '+payload['STATUS'] + ' - SN:' + payload['FLOAT_SERIAL_NO'] + ' Cycle:' + payload['CYCLE'],
+            'BGC Processing '+payload['STATUS'] + ' - SN: ' + payload['FLOAT_SERIAL_NO'] + ' Cycle: ' + payload['CYCLE'],
             payload['DETAILS'],
             'from@example.com',
             ['randerson@whoi.edu'],
             fail_silently=False,
         )
-        
+
+    #Mision Prelude
+    if payload['CYCLE'] == '000':
+        send_mail(
+            payload['FLOAT_SERIAL_NO'] + ": "+"Mission prelude processed",
+            'Mission prelude data processed: \n'+payload['STATUS'] +" "+ payload['DETAILS'],
+            'from@example.com',
+            ['randerson@whoi.edu'],
+            fail_silently=False,
+        )
+
+    #first cycle
+    if payload['CYCLE'] == '016':
+        send_mail(
+            payload['FLOAT_SERIAL_NO'] + ": "+"First cycle processed",
+            'First cycle processed: \n'+payload['STATUS'] +" "+ payload['DETAILS'],
+            'from@example.com',
+            ['randerson@whoi.edu'],
+            fail_silently=False,
+        )
+
+    #------------------------------------------------#  
     try:
         log_item = file_processing.objects.filter(DIRECTORY=directory)
         if log_item:
