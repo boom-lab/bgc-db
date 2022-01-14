@@ -16,6 +16,7 @@ class ModemType(models.TextChoices): #internal, not argo compliant
 
 class deployment(models.Model):
     # fields of the database
+    PROCESSING_ACTIVE = models.BooleanField(default=False)
     ADD_DATE = models.DateTimeField() #creation of record in db
     AOML_ID = models.CharField(max_length=25, blank=True, null=True)
     PLATFORM_NUMBER = models.CharField("PLATFORM NUMBER (WMO)", max_length=25, unique=True, blank=True, null=True) #WMO
