@@ -30,7 +30,7 @@ def put_process_log(request):
     if payload['STATUS'] != 'Success' and payload['CYCLE'] != '000':
         send_mail(
             'BGC Processing '+payload['STATUS'] + ' - SN: ' + payload['FLOAT_SERIAL_NO'] + ' Cycle: ' + payload['CYCLE'],
-            payload['DETAILS'],
+            payload.get('DETAILS'),
             'from@example.com',
             ['randerson@whoi.edu'],
             fail_silently=False,
@@ -38,9 +38,13 @@ def put_process_log(request):
 
     #Mision Prelude
     if payload['CYCLE'] == '000':
+        if payload['DETAILS']:
+            details = payload['DETAILS']
+        else:
+            details = ""
         send_mail(
             payload['FLOAT_SERIAL_NO'] + ": "+"Mission prelude recieved",
-            payload['STATUS'] +" - "+ payload['DETAILS'],
+            payload['STATUS'] +" - "+ details,
             'from@example.com',
             ['randerson@whoi.edu','dnicholson@whoi.edu'],
             fail_silently=False,
@@ -48,9 +52,13 @@ def put_process_log(request):
 
     #first cycle
     if payload['CYCLE'] == '001':
+        if payload['DETAILS']:
+            details = payload['DETAILS']
+        else:
+            details = ""
         send_mail(
             payload['FLOAT_SERIAL_NO'] + ": "+"First cycle recieved",
-            payload['STATUS'] +" - "+ payload['DETAILS'],
+            payload['STATUS'] +" - "+ details,
             'from@example.com',
             ['randerson@whoi.edu','dnicholson@whoi.edu'],
             fail_silently=False,
