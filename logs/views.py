@@ -19,7 +19,8 @@ def get_file_status(request):
     return JsonResponse(result)
 
 def send_email(payload):
-    #----------------------Email messages--------------#
+    #Sends warning/error or recieved first cycle/prelude email messages
+
     try:
         #Error processing or warning
         if payload['STATUS'] != 'Success' and payload['CYCLE'] != '000':
@@ -61,10 +62,11 @@ def send_email(payload):
     except Exception:
         pass
 
-#@csrf_exempt
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def put_process_log(request):
+    #Updates or adds process log entries
+
     directory = request.GET['DIRECTORY']
     payload = json.loads(request.body)
     
