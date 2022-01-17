@@ -21,65 +21,44 @@ def get_file_status(request):
 
 def send_email(payload, log_item):
     #Sends warning/error or recieved first cycle/prelude email messages
-
     try:
         if log_item:
-            #print(log_item)
-            #if log_item['STATUS'] != 'Success' and payload['STATUS'] == 'Success': #Success email after failed attempts
-             #   send_mail(
-              #      'BGC Processing '+payload['STATUS'] + ' - SN: ' + payload['FLOAT_SERIAL_NO'] + ' Cycle: ' + payload['CYCLE'],
-               #     payload.get('DETAILS'),
-                #    'from@example.com',
-                 #   ['randerson@whoi.edu', 'dnicholson@whoi.edu'],
-                  #  fail_silently=False,
-                #)
-            if payload['STATUS'] != 'Success': #Any failed files after initial files
-                send_mail(
-                    'BGC Processing '+payload['STATUS'] + ' - SN: ' + payload['FLOAT_SERIAL_NO'] + ' Cycle: ' + payload['CYCLE'],
-                    payload.get('DETAILS'),
-                    'from@example.com',
-                    ['randerson@whoi.edu'],
-                    fail_silently=False,
-                )
-
-        else: #First files
-            #Error processing or warning
-            if payload['STATUS'] != 'Success' and payload['CYCLE'] != '000':
-                send_mail(
-                    'BGC Processing '+payload['STATUS'] + ' - SN: ' + payload['FLOAT_SERIAL_NO'] + ' Cycle: ' + payload['CYCLE'],
-                    payload.get('DETAILS'),
-                    'from@example.com',
-                    ['randerson@whoi.edu'],
-                    fail_silently=False,
-                )
-
-            #Mision Prelude
-            if payload['CYCLE'] == '000':
-                if payload['DETAILS']:
-                    details = payload['DETAILS']
-                else:
-                    details = ""
-                send_mail(
-                    payload['FLOAT_SERIAL_NO'] + ": "+"Mission prelude recieved",
-                    payload['STATUS'] +" - "+ details,
-                    'from@example.com',
-                    ['randerson@whoi.edu','dnicholson@whoi.edu'],
-                    fail_silently=False,
-                )
-
-            #first cycle
-            if payload['CYCLE'] == '001':
-                if payload['DETAILS']:
-                    details = payload['DETAILS']
-                else:
-                    details = ""
+            
+            if payload['CYCLE'] == '001' and payload['STATUS'] == 'Success': #Special for first profile
                 send_mail(
                     payload['FLOAT_SERIAL_NO'] + ": "+"First cycle recieved",
-                    payload['STATUS'] +" - "+ details,
+                    payload['STATUS'],
                     'from@example.com',
                     ['randerson@whoi.edu','dnicholson@whoi.edu'],
                     fail_silently=False,
                 )
+            elif log_item[0].STATUS == 'Success' and payload['STATUS'] == 'Fail': #Transition from success to fail
+                send_mail(
+                    'BGC Processing '+payload['STATUS'] + ' - SN: ' + payload['FLOAT_SERIAL_NO'] + ' Cycle: ' + payload['CYCLE'],
+                    payload.get('DETAILS'),
+                    'from@example.com',
+                    ['randerson@whoi.edu', 'dnicholson@whoi.edu'],
+                    fail_silently=False,
+                )
+            elif log_item[0].STATUS == 'Fail' and payload['STATUS'] == 'Success': #Transition from fail to success
+                send_mail(
+                    'BGC Processing '+payload['STATUS'] + ' - SN: ' + payload['FLOAT_SERIAL_NO'] + ' Cycle: ' + payload['CYCLE'],
+                    payload.get('DETAILS'),
+                    'from@example.com',
+                    ['randerson@whoi.edu'],
+                    fail_silently=False,
+                )
+
+        else: #No process log record
+            #Mission Prelude
+            send_mail(
+                payload['FLOAT_SERIAL_NO'] + ": "+"Mission prelude recieved",
+                payload.get('DETAILS'),
+                'from@example.com',
+                ['randerson@whoi.edu','dnicholson@whoi.edu'],
+                fail_silently=False,
+            )
+
     except Exception:
         pass
 
@@ -92,6 +71,7 @@ def put_process_log(request):
     payload = json.loads(request.body)
     
     try:
+        
         log_item = file_processing.objects.filter(DIRECTORY=directory)
         send_email(payload, log_item) #only send email if new record
         if log_item: #Log entry already exists
