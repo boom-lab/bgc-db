@@ -348,11 +348,13 @@ def update_cohort_latest_plot(request):
                     ),
                 )
 
+            #Float ID text
             fig.add_annotation(text="WMO: "+wmo+" SN: "+str(sn)+"    "+cycle_meta_query[i][0].strftime("%Y-%m-%d %H:%M"),
                 xref="paper", yref="paper", xanchor='left', yanchor='bottom',
                 x=0.02, y=.75, showarrow=False,
                 )
 
+            #Axis formatting
             if vars_selected["SALck"]:
                 fig.update_layout(
                     xaxis=dict(
@@ -367,7 +369,7 @@ def update_cohort_latest_plot(request):
                             color="#FEBD17"
                         ),
                         position=0.20,
-                        range=[34.5, 37],
+                        range=[34.5, 37.5],
                         showline=True,
                         linewidth=1,
                         linecolor="#FEBD17"
@@ -494,7 +496,7 @@ def update_cohort_latest_plot(request):
                     overlaying="x",
                     side="top",
                     position=.92,
-                    range=[0, 25],
+                    range=[0, 35],
                     showline=True,
                     linewidth=1,
                     linecolor="#bc925a",
@@ -515,7 +517,7 @@ def update_cohort_latest_plot(request):
                     overlaying="x",
                     side="top",
                     position=1,
-                    #range=[0, 25],
+                    range=[7.7, 8.2],
                     showline=True,
                     linewidth=1,
                     linecolor="#a8018c",

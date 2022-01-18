@@ -84,13 +84,13 @@
                 $('#firstplotrow').append("<div class='col plot'"+response["plot_div0"]+"</div><div class='col plot'"+response["plot_div1"]+"</div>"+"</div>")
 
                 let row_count = 1
-                for (let i = 2; i < n; i++){
+                for (let i = 2; i < n; i+=2){
                     if (i%2 == 0) {
                         row_count = row_count + 1
                         $('#plot').append("<div class='row' id='row"+row_count+"'>")
                     }
 
-                    $('#row'+row_count).append("<div class='col plot'"+response["plot_div"+i]+"</div>")   
+                    $('#row'+row_count).append("<div class='col plot'"+response["plot_div"+i]+"</div><div class='col plot'"+response["plot_div"+(i+1)]+"</div>"+"</div>")   
                 }
 
             },
