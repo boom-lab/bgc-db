@@ -16,6 +16,7 @@ def update_map(request):
         fig = go.Figure(go.Scattergeo())
 
         for d in deployments:
+            #Data for traces
             lat = list(cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).order_by('-GpsFixDate').all().values_list('GpsLat', flat=True))
             lon = list(cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).order_by('-GpsFixDate').all().values_list('GpsLong', flat=True))
             profile_id = list(cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).order_by('-GpsFixDate').all().values_list('PROFILE_ID', flat=True))
@@ -26,6 +27,11 @@ def update_map(request):
             #Hover data
             hov_data = np.stack((profile_id, time_start_p_human, lat, lon),axis = -1)
 
+            #Data for current location points
+            current_lat = (cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).order_by('-GpsFixDate').first().GpsLat)
+            current_lon = (cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).order_by('-GpsFixDate').first().GpsLong)
+
+            #Traces
             fig.add_trace(go.Scattermapbox(
                 mode = "lines",
                 lon = lon,
@@ -34,6 +40,19 @@ def update_map(request):
                 name = d,
                 customdata = hov_data,
                 hovertemplate ='Profile: %{customdata[0]}<br>Profile Start: %{customdata[1]}<br>Lat: %{customdata[2]}<br>Long: %{customdata[3]}',
+                showlegend=False
+            ))
+
+            #Current Location
+            fig.add_trace(go.Scattermapbox(
+                mode = "markers",
+                lon = (current_lon,),
+                lat = (current_lat,),
+                marker = dict( size=8, color='yellow'),
+                name = d,
+                hoverinfo='skip',
+                #customdata = hov_data,
+                #hovertemplate ='Profile: %{customdata[0]}<br>Profile Start: %{customdata[1]}<br>Lat: %{customdata[2]}<br>Long: %{customdata[3]}',
                 showlegend=False
             ))
 

@@ -395,7 +395,8 @@ def update_cohort_latest_plot(request):
                     showline=True,
                     linewidth=1,
                     linecolor="#000000",
-                    mirror=True
+                    mirror=True,
+                    range=[-2000,0]
                 ),
                 xaxis2=dict(
                     title=dict(
