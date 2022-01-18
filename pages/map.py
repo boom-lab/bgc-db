@@ -48,7 +48,7 @@ def update_map(request):
                 mode = "markers",
                 lon = (current_lon,),
                 lat = (current_lat,),
-                marker = dict( size=8, color='yellow'),
+                marker = dict( size=8, color='rgb(209,62,36)'),
                 name = d,
                 hoverinfo='skip',
                 #customdata = hov_data,
