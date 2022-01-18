@@ -23,41 +23,42 @@ def send_email(payload, log_item):
     #Sends warning/error or recieved first cycle/prelude email messages
     try:
         if log_item:
-            
-            if payload['CYCLE'] == '001' and payload['STATUS'] == 'Success': #Special for first profile
+            if payload['CYCLE'] == '000' and payload['STATUS'] == 'Success': #Special for prelude
                 send_mail(
-                    payload['FLOAT_SERIAL_NO'] + ": "+"First cycle recieved",
+                    payload['FLOAT_SERIAL_NO'] + ": "+"Prelude Proccessed",
                     payload['STATUS'],
                     'from@example.com',
                     ['randerson@whoi.edu','dnicholson@whoi.edu'],
                     fail_silently=False,
                 )
-            elif log_item[0].STATUS == 'Success' and payload['STATUS'] == 'Fail': #Transition from success to fail
+            elif payload['CYCLE'] == '001' and payload['STATUS'] == 'Success': #Special for first profile
                 send_mail(
-                    'BGC Processing '+payload['STATUS'] + ' - SN: ' + payload['FLOAT_SERIAL_NO'] + ' Cycle: ' + payload['CYCLE'],
-                    payload.get('DETAILS'),
+                    payload['FLOAT_SERIAL_NO'] + ": "+"First cycle proccessed",
+                    payload['STATUS'],
                     'from@example.com',
-                    ['randerson@whoi.edu', 'dnicholson@whoi.edu'],
+                    ['randerson@whoi.edu','dnicholson@whoi.edu'],
                     fail_silently=False,
                 )
-            elif log_item[0].STATUS == 'Fail' and payload['STATUS'] == 'Success': #Transition from fail to success
+            elif payload['STATUS'] != 'Success' and payload['DETAILS'] != 'Incomplete MSG transmission, no <EOT> tag': #New message, but error proccessing
                 send_mail(
                     'BGC Processing '+payload['STATUS'] + ' - SN: ' + payload['FLOAT_SERIAL_NO'] + ' Cycle: ' + payload['CYCLE'],
                     payload.get('DETAILS'),
                     'from@example.com',
-                    ['randerson@whoi.edu'],
+                    ['randerson@whoi.edu',],
                     fail_silently=False,
                 )
 
         else: #No process log record
             #Mission Prelude
-            send_mail(
-                payload['FLOAT_SERIAL_NO'] + ": "+"Mission prelude recieved",
-                payload.get('DETAILS'),
-                'from@example.com',
-                ['randerson@whoi.edu','dnicholson@whoi.edu'],
-                fail_silently=False,
-            )
+            if payload['CYCLE'] == '000':
+                send_mail(
+                    payload['FLOAT_SERIAL_NO'] + ": "+"Mission prelude recieved",
+                    payload.get('DETAILS'),
+                    'from@example.com',
+                    ['randerson@whoi.edu','dnicholson@whoi.edu'],
+                    fail_silently=False,
+                )
+
 
     except Exception:
         pass
