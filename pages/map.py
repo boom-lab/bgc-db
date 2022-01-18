@@ -5,6 +5,7 @@ import pandas as pd
 import numpy as np
 
 from env_data.models import cycle_metadata
+from deployments.models import deployment
 
 
 def update_map(request):
@@ -17,9 +18,11 @@ def update_map(request):
 
         for d in deployments:
             #Data for traces
+            sn = deployment.objects.get(PLATFORM_NUMBER=d).FLOAT_SERIAL_NO
             lat = list(cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).order_by('-GpsFixDate').all().values_list('GpsLat', flat=True))
             lon = list(cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).order_by('-GpsFixDate').all().values_list('GpsLong', flat=True))
             profile_id = list(cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).order_by('-GpsFixDate').all().values_list('PROFILE_ID', flat=True))
+            profile_id = [x.split('.')[1] for x in profile_id] #Remove wmo number
             time_start_p = pd.Series(cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).order_by(
                 '-GpsFixDate').all().values_list('TimeStartTelemetry', flat=True))
             time_start_p_human = time_start_p.dt.strftime('%Y-%m-%d %H:%M')
@@ -37,7 +40,7 @@ def update_map(request):
                 lon = lon,
                 lat = lat,
                 marker = {'size': 10},
-                name = d,
+                name = "WMO: "+ d +" SN: "+sn,
                 customdata = hov_data,
                 hovertemplate ='Profile: %{customdata[0]}<br>Profile Start: %{customdata[1]}<br>Lat: %{customdata[2]}<br>Long: %{customdata[3]}',
                 showlegend=False
