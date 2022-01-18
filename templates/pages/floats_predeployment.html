@@ -25,6 +25,7 @@
           <thead>
             <tr>
               <th scope="col">Serial Number</th>
+              <th scope="col">WMO</th>
               <th scope="col">Funder</th>
               <th scope="col">Platform Type</th>
               <th scope="col">Location</th>
@@ -45,6 +46,7 @@
               {% for deployment in deployments %}
               <tr>
                 <th>{{ deployment.FLOAT_SERIAL_NO }}</th>
+                <th>{{ deployment.PLATFORM_NUMBER }}</th>
                 <td>{{ deployment.FUNDER }}</td>
                 <td>{{ deployment.PLATFORM_TYPE.VALUE }}</td>
                 <td>{{ deployment.last_event.LOCATION }}</td>
