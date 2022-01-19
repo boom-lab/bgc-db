@@ -2,6 +2,7 @@ from django.conf.urls import url
 from env_data import views
 
 urlpatterns = [ 
+    url(r'api/continuous_data_get$', views.GetConData.as_view()), #Public, get
     url(r'api/discrete_data_get$', views.GetDisData.as_view()), #Public, get
     url(r'api/park_data_get$', views.GetParkData.as_view()), #Public, get
     url(r'api/cycle_meta_get$', views.GetCycleMeta.as_view()), #Public, get

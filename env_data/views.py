@@ -1,15 +1,24 @@
-from env_data.serializers import CycleMetaSerializer, DisProfileSerializer, ParkSerializer
+from env_data.serializers import CycleMetaSerializer, DisProfileSerializer, ParkSerializer, ConProfileSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
 from .models import continuous_profile, discrete_profile, park, cycle_metadata, mission_reported
 from django.http.response import JsonResponse
 from rest_framework import status, generics
-from django_filters.rest_framework import DjangoFilterBackend, FilterSet
-from rest_framework.response import Response
+from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import get_object_or_404
 from django.db.models import Max, Count
 
 #----------------------GET Data APIs------------------------------#
+class GetConData(generics.ListAPIView): #Read only, currently only filters by pressure, date add, profile id and platform number. output fields can be controlled.
+    serializer_class = ConProfileSerializer
+    queryset=continuous_profile.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filter_fields ={
+        "DEPLOYMENT__PLATFORM_NUMBER":['exact'],
+        "DATE_ADD":['gt','lt','range','exact'],
+        "PROFILE_ID":['exact'],
+        "PRES":['gt','lt','range','exact'],
+    }
 
 class GetDisData(generics.ListAPIView): #Read only, currently only filters by pressure, date add, profile id and platform number. output fields can be controlled.
     serializer_class = DisProfileSerializer
