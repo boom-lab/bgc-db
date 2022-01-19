@@ -11,13 +11,14 @@ from django.db.models import Max, Count
 
 #----------------------GET Data APIs------------------------------#
 
-class GetDisData(generics.ListAPIView): #Read only, currently only filters by pressure, date add, and platform number. output fields can be controlled.
+class GetDisData(generics.ListAPIView): #Read only, currently only filters by pressure, date add, profile id and platform number. output fields can be controlled.
     serializer_class = DisProfileSerializer
     queryset=discrete_profile.objects.all()
     filter_backends = [DjangoFilterBackend]
     filter_fields ={"PRES":['gt','lt','range','exact'],
         "DATE_ADD":['gt','lt','range','exact'],
-        "DEPLOYMENT__PLATFORM_NUMBER":['exact']
+        "DEPLOYMENT__PLATFORM_NUMBER":['exact'],
+        "PROFILE_ID":['exact']
     }
 
 class GetParkData(generics.ListAPIView): #Read only, currently only filters by pressure, date add, date measured, and platform number. output fields can be controlled.
