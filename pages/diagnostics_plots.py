@@ -539,7 +539,7 @@ def update_cohort_latest_plot(request):
                     overlaying="x",
                     side="bottom",
                     position=0.0,
-                    range=[0, 10],
+                    range=[0, .8],
                     showline=True,
                     linewidth=1,
                     linecolor="#43b53b",
