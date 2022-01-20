@@ -1,7 +1,7 @@
-from django.conf.urls import url 
+from django.conf.urls import re_path
 from .views import Sensors, GetSensorMeta
  
 urlpatterns = [ 
-    url(r'^api/sensors$', Sensors.as_view()), #Token, patch or post
-    url(r'^api/sensor_metadata', GetSensorMeta.as_view()), #public, get
+    re_path(r'^api/sensors$', Sensors.as_view()), #Token, patch or post
+    re_path(r'^api/sensor_metadata', GetSensorMeta.as_view()), #public, get
 ]

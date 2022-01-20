@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import deployment
 from django.utils.safestring import mark_safe 
 from django.urls import reverse
-from django.conf.urls import url
+from django.conf.urls import re_path
 from import_export.admin import ExportMixin
 
 from .views import admin_detail_view, export_metadata
@@ -64,9 +64,9 @@ class DeploymentAdmin(ExportMixin, admin.ModelAdmin):
     def get_urls(self):
         urls = super(DeploymentAdmin, self).get_urls()
         my_urls = [
-            url(r'^detail_view/(?P<entry_id>\d+)/$', self.admin_site.admin_view(admin_detail_view), 
+            re_path(r'^detail_view/(?P<entry_id>\d+)/$', self.admin_site.admin_view(admin_detail_view), 
                 {'admin_site' :self.admin_site}, name='detail_view'), #detail view
-            url(r'^export_metadata/(?P<entry_id>\d+)/$', self.admin_site.admin_view(export_metadata), name='export_metadata'), #export metadata
+            re_path(r'^export_metadata/(?P<entry_id>\d+)/$', self.admin_site.admin_view(export_metadata), name='export_metadata'), #export metadata
         ]
         return my_urls + urls
 
