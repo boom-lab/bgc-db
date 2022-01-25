@@ -1,34 +1,120 @@
 from django.http import JsonResponse
 import plotly.graph_objs as go
 from plotly.offline import plot
-from plotly.subplots import make_subplots
 import pandas as pd
-import math
-import time
 import json
-import numpy as np
 import cmocean
-from datetime import datetime
-from pytz import timezone
 
 from env_data.models import continuous_profile, cycle_metadata, discrete_profile
-from .plot_helpers import var_translation
+from .plot_helpers import var_translation, var_ranges, cmocean_to_plotly_simple
 
-def cmocean_to_plotly(cmap, pl_entries):
-    """Function to sample cmocean colors and output list of rgb values for plotly
-    cmap = color map from cmocean
-    pl_entries = number of samples to take"""
-    
-    h = 1.0/(pl_entries-1)
-    pl_colorscale = []
+def update_compare_latest_profiles(request):
+    if request.is_ajax and request.method == "GET":
+        # get the selections
+        deployments = request.GET.getlist("deployments[]", None)
+        var_selected = request.GET.get("var_selected", None)
 
-    for k in range(pl_entries):
-        C = list(map(np.uint8, np.array(cmap(k*h)[:3])*255))
-        pl_colorscale.append('rgb'+str((C[0], C[1], C[2])))
+        #Get list of latest profiles
+        profile_ids_q = cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER__in=deployments).order_by(
+            '-DEPLOYMENT__id','-PROFILE_ID').distinct('DEPLOYMENT__id').values_list("PROFILE_ID")
 
-    return pl_colorscale
+        #latest continuous data query
+        if var_selected not in ["NITRATE","VK_PH","IB_PH","IK_PH"]:
+            con_query = continuous_profile.objects.filter(PROFILE_ID__in=profile_ids_q).order_by(
+                "PROFILE_ID", "PRES").values_list("DEPLOYMENT__FLOAT_SERIAL_NO","DEPLOYMENT__PLATFORM_NUMBER", 
+                "PROFILE_ID", "PRES", var_selected)
+                
+            con_data = pd.DataFrame(con_query, columns=["FLOAT_SERIAL_NO","PLATFORM_NUMBER", "PROFILE_ID", "PRES", var_selected])
 
-def update_cohort_latest_plot(request):
+        #Latest discrete data query
+        dis_query = discrete_profile.objects.filter(PROFILE_ID__in=profile_ids_q).order_by(
+            "PROFILE_ID", "PRES").values_list("DEPLOYMENT__FLOAT_SERIAL_NO","DEPLOYMENT__PLATFORM_NUMBER", 
+            "PROFILE_ID", "PRES", var_selected)
+
+        dis_data = pd.DataFrame(dis_query, columns=["FLOAT_SERIAL_NO","PLATFORM_NUMBER", "PROFILE_ID", "PRES", var_selected])
+
+        wmos = dis_data.PLATFORM_NUMBER.unique()
+
+        #Colors
+        colors = cmocean_to_plotly_simple(cmocean.cm.phase,len(wmos))
+
+        fig = go.Figure()
+
+        #each float (seperate plot)
+        for i, wmo in enumerate(wmos):
+
+            #------------------Continuous Traces-------------------#
+            if var_selected not in ["NITRATE","VK_PH","IB_PH","IK_PH"]:
+                #subset to one float
+                data_sub = con_data.loc[con_data.PLATFORM_NUMBER==wmo,:]
+                sn = data_sub.reset_index().loc[0, "FLOAT_SERIAL_NO"]
+
+                fig.add_trace(
+                    go.Scatter(
+                        x=data_sub.loc[:, var_selected],
+                        y=data_sub.loc[:, "PRES"]*-1,
+                        mode='lines',
+                        marker = {
+                            'color': colors[i],
+                        },
+                        #customdata = hov_data,
+                        hovertemplate ='%{x:.3f} <br>%{y:.0f}',
+                        name="SN: "+sn,
+                        xaxis="x"
+                    ),
+                )
+
+            #---------------Discrete Traces----------------------#
+            dis_data_sub = dis_data.loc[dis_data.PLATFORM_NUMBER==wmo,:]
+            sn = dis_data_sub.reset_index().loc[0, "FLOAT_SERIAL_NO"]
+
+            fig.add_trace(
+                go.Scatter(
+                    x=dis_data_sub.loc[:, var_selected],
+                    y=dis_data_sub.loc[:, "PRES"]*-1,
+                    mode='markers',
+                    marker = {
+                         'color': colors[i],
+                    },
+                    #customdata = hov_data,
+                    hovertemplate ='%{x:.3f} <br>%{y:.0f}',
+                    name="SN: "+sn,
+                    xaxis="x"
+                ),
+            )
+            # ---------------Formatting--------------------------#
+            fig.update_layout(
+                template = "ggplot2",
+                xaxis = dict(
+                    title=var_translation[var_selected],
+                    showline=True,
+                    linewidth=1,
+                    linecolor="#000000",
+                    mirror=True,
+                    range=var_ranges[var_selected]
+                ),
+                yaxis = dict(
+                    title=var_translation["PRES"],
+                    showline=True,
+                    linewidth=1,
+                    linecolor="#000000",
+                    mirror=True
+                ),
+                font = {"size":12},
+                height=800,
+                showlegend=False,
+                margin={'t': 0, 'l':0,'r':0,'b':0},
+                yaxis_range=[-2000,0],
+            )
+
+        plot_div = plot(fig,output_type='div', include_plotlyjs=False, config= {
+            'displaylogo': False, 'modeBarButtonsToRemove':['lasso2d', 'select2d','resetScale2d']})  
+
+        return JsonResponse(plot_div, status = 200, safe=False)
+
+    return JsonResponse({}, status = 400)
+
+def update_latest_profiles_plots(request):
     """"""
     if request.is_ajax and request.method == "GET":
 
@@ -369,7 +455,7 @@ def update_cohort_latest_plot(request):
                             color="#FEBD17"
                         ),
                         position=0.20,
-                        range=[34.5, 37.5],
+                        range=var_ranges["PSAL"],
                         showline=True,
                         linewidth=1,
                         linecolor="#FEBD17"
@@ -413,7 +499,7 @@ def update_cohort_latest_plot(request):
                     overlaying="x",
                     side="bottom",
                     position=0.14,
-                    range=[0, .001],
+                    range=var_ranges["BBP700"],
                     showline=True,
                     linewidth=1,
                     linecolor="#343c91",
@@ -434,7 +520,7 @@ def update_cohort_latest_plot(request):
                     overlaying="x",
                     side="bottom",
                     position=0.07,
-                    range=[0, 3],
+                    range=var_ranges["CDOM"],
                     showline=True,
                     linewidth=1,
                     linecolor="#023440",
@@ -455,7 +541,7 @@ def update_cohort_latest_plot(request):
                     overlaying="x",
                     side="top",
                     position=.78,
-                    range=[0, 30],
+                    range=var_ranges["TEMP"],
                     showline=True,
                     linewidth=1,
                     linecolor="#c9324e",
@@ -476,7 +562,7 @@ def update_cohort_latest_plot(request):
                     overlaying="x",
                     side="top",
                     position=.85,
-                    range=[0, 300],
+                    range=var_ranges["DOXY"],
                     showline=True,
                     linewidth=1,
                     linecolor="#1f77b4",
@@ -497,7 +583,7 @@ def update_cohort_latest_plot(request):
                     overlaying="x",
                     side="top",
                     position=.92,
-                    range=[0, 35],
+                    range=var_ranges["NITRATE"],
                     showline=True,
                     linewidth=1,
                     linecolor="#bc925a",
@@ -518,7 +604,7 @@ def update_cohort_latest_plot(request):
                     overlaying="x",
                     side="top",
                     position=1,
-                    range=[7.7, 8.2],
+                    range=var_ranges["PH_IN_SITU_TOTAL"],
                     showline=True,
                     linewidth=1,
                     linecolor="#a8018c",
@@ -539,7 +625,7 @@ def update_cohort_latest_plot(request):
                     overlaying="x",
                     side="bottom",
                     position=0.0,
-                    range=[0, .8],
+                    range=var_ranges["CHLA"],
                     showline=True,
                     linewidth=1,
                     linecolor="#43b53b",

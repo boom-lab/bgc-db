@@ -70,7 +70,7 @@
         console.log(vars_selected)
         $.ajax({
             type: 'GET',
-            url: "ajax/update_cohort_latest_plot",
+            url: "ajax/update_latest_profiles_plots",
             data: {"year_selected": year_selected, "vars_selected":vars_selected},
             success: function (response) {
                 //If sucessful, delete current plot and create new container
