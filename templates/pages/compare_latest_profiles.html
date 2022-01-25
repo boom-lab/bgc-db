@@ -9,9 +9,13 @@
 {% endblock header %}
 {% block content %}
 <div class="container-fluid">
+    <div class='row'>
+        <h2>Latest Profiles</h2>
+    </div>
+
     <div class="row">
         <!-- Controls -->
-        <div class="col-1">
+        <div class="col-2">
             <label>Floats</label>
             <div class="row">
                 <select id="deployment_selector" name="deployment_selector" class="selectpicker" data-live-search="true" data-select-on-tab="true" multiple>
@@ -34,6 +38,10 @@
                     <option value="IB_PH">pH Ib</option>
                     <option value="IK_PH">pH Ik</option>
                 </select>
+            </div>
+            <div class="row mt-5"></div>
+            <div class='row'>
+                <p>Some profiles may be off the scale. Click "Autoscale" in upper right of plot to see all profiles.</p>
             </div>
         </div>
         <!-- Plot -->
