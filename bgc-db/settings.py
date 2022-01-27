@@ -72,6 +72,7 @@ INSTALLED_APPS = [
     'choices.apps.ChoicesConfig',
     'logs.apps.LogsConfig',
     'pages.apps.PagesConfig',
+    'sensor_qc.apps.SensorQcConfig',
     'rest_framework',
     'rest_framework.authtoken',
     'django_extensions',

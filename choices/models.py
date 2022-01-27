@@ -225,3 +225,14 @@ class tracking_error_types(models.Model):
         verbose_name_plural = "Tracking - Error Types"
     def __str__(self): 
         return str(self.VALUE)
+
+class qc_levels(models.Model):
+
+    VALUE = models.CharField(max_length=100, unique=True)
+    DISPLAY = models.CharField(max_length=200)
+    DESCRIPTION = models.CharField(max_length=2000, blank=True, null=True)
+    
+    class Meta:
+        verbose_name_plural = "QC Levels"
+    def __str__(self): 
+        return str(self.VALUE)

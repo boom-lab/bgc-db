@@ -41,4 +41,4 @@ class sensor(models.Model):
 
     #Default return
     def __str__(self): 
-        return str(self.DEPLOYMENT)
+        return str(self.DEPLOYMENT) + " "+ str(self.SENSOR)

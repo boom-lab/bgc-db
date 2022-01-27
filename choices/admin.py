@@ -92,3 +92,8 @@ class TrackingErrorTypesAdmin(ExportMixin, admin.ModelAdmin):
     list_display = ['VALUE','DESCRIPTION']
     list_per_page = 100
 admin.site.register(cm.tracking_error_types, TrackingErrorTypesAdmin)
+
+class QCLevelsAdmin(ExportMixin, admin.ModelAdmin):
+    list_display = ['VALUE','DISPLAY','DESCRIPTION']
+    list_per_page = 100
+admin.site.register(cm.qc_levels, QCLevelsAdmin)
