@@ -3,6 +3,7 @@ from django.http import JsonResponse
 from django.db.models import Sum
 from deployments.models import deployment
 from env_data.models import continuous_profile, cycle_metadata, discrete_profile
+from sensor_qc.models import sensor_qc
 import pandas as pd
 import cmocean
 from datetime import datetime, timedelta
@@ -12,7 +13,7 @@ import pages.engineering_plots as ep
 from .plot_helpers import cmocean_to_plotly
 
 
-
+#---------------------------Float pages ----------------------------#
 def index(request):
     deployments = deployment.objects.filter(LAUNCH_DATE__isnull=False).filter(HISTORICAL=False)
 
@@ -29,21 +30,6 @@ def floats_predeployment(request):
     }
     return render(request, 'pages/floats_predeployment.html', context)
 
-def profile_explorer(request):
-    return render(request, 'pages/profile_explorer.html')
-
-def compare_latest_profiles(request):
-    return render(request, 'pages/compare_latest_profiles.html')
-
-def cohort(request):
-    return render(request, 'pages/cohort.html')
-
-def latest_profiles(request):
-    return render(request, 'pages/latest_profiles.html')
-
-def display_map(request):
-    return render(request, 'pages/map.html')
-
 def float_tracking(request):
     deps = deployment.objects.filter(PLATFORM_TYPE='NAVIS_EBR').order_by('FLOAT_SERIAL_NO')
     context = {'deployments':deps}
@@ -52,7 +38,12 @@ def float_tracking(request):
 def float_serial_no(request):
     deps = deployment.objects.filter(PLATFORM_TYPE='NAVIS_EBR').order_by('FLOAT_SERIAL_NO')
     context = {'deployments':deps}
-    return render(request, 'pages/float_serial_no.html', context) 
+    return render(request, 'pages/float_serial_no.html', context)
+
+def sensor_qc_render(request):
+    sensor_qcs = sensor_qc.objects.all()
+    context = {'sensor_qcs':sensor_qcs}
+    return render(request, 'pages/sensor_qc.html',context)
 
 def float_detail(request):
     FLOAT_SERIAL_NO = request.GET.get('FLOAT_SERIAL_NO', None)
@@ -74,12 +65,23 @@ def float_detail(request):
         dfilters['PLATFORM_TYPE'] = PLATFORM_TYPE
     dep = deployment.objects.get(**dfilters)
 
+    qcfilters = {}
+    if PLATFORM_NUMBER:
+        qcfilters['SENSOR__DEPLOYMENT__PLATFORM_NUMBER'] = PLATFORM_NUMBER
+    else:
+        qcfilters['SENSOR__DEPLOYMENT__FLOAT_SERIAL_NO'] = FLOAT_SERIAL_NO
+        qcfilters['SENSOR__DEPLOYMENT__PLATFORM_TYPE'] = PLATFORM_TYPE
+
     n_reports = cycle_metadata.objects.filter(**filters).count()
 
     #If deployed
     if n_reports > 0:
 
         latest_cycle_meta = cycle_metadata.objects.filter(**filters).order_by("-GpsFixDate").first()
+
+        #Sensor QC data
+        sensor_qcs = sensor_qc.objects.filter(**qcfilters)
+        print(sensor_qcs)
 
         abpres_plot = ep.single_var_plot(filters, "AirBladderPressure", y_label="Pressure", legend_label="Air Bladder Pressure")
         buoy_pump_time_plot = ep.single_var_plot(filters, "BuoyancyPumpOnTime", y_label="Time", 
@@ -100,6 +102,7 @@ def float_detail(request):
             'cycle_metadata': latest_cycle_meta,
             'deployment':dep,
             'monthly_upload':monthly_upload,
+            'sensor_qcs':sensor_qcs,
             'battery_plot':ep.volts_plot(filters),
             'amps_plot':ep.amps_plot(filters),
             'buoyancy_plot':ep.buoyancy_position_plot(filters),
@@ -119,8 +122,28 @@ def float_detail(request):
             'cycle_metadata': None,
             'calc':None,
             'deployment':dep,
+            'sensor_qcs':None
         }
         return render(request, 'pages/float_detail.html', context)
+
+#------------------------ Data pages -------------------------#
+def profile_explorer(request):
+    return render(request, 'pages/profile_explorer.html')
+
+def compare_latest_profiles(request):
+    return render(request, 'pages/compare_latest_profiles.html')
+
+def cohort(request):
+    return render(request, 'pages/cohort.html')
+
+def latest_profiles(request):
+    return render(request, 'pages/latest_profiles.html')
+
+def display_map(request):
+    return render(request, 'pages/map.html')
+
+
+#---------------------Other ------------------------------#
 
 def get_profiles_list(request):
     # for populating selector dropdown

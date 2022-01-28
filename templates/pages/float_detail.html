@@ -10,12 +10,13 @@
 {% block content %}
 <div class="container-fluid">
     <div class="row">
-        <!-- Table -->
+        <!-- Table Column -->
         <div class="col-3">
             <p>Serial Number: {{ deployment.FLOAT_SERIAL_NO }} WMO: {{ deployment.PLATFORM_NUMBER }}</p>
             <p>Platform Type: {{ deployment.PLATFORM_TYPE }}</p>
             <p>Deployment Date: {{ deployment.LAUNCH_DATE }}</p>
-            <h3 class="mt-5">Latest Report:</h3>
+            <!-- Latest Report Table-->
+            <h3 class="mt-5">Latest Report</h3>
             <table class="table tabel-sm table-hover">
                 <tbody>
                     <tr>
@@ -52,6 +53,28 @@
                         <td>{{ monthly_upload }}</td>
                     </tr>
                 </tbody>
+            </table>
+            <!-- Sensor QC -->
+            <h3 class="mt-5">Sensor QC</h3>
+            <table class="table table-sm table-hover">
+                <thead>
+                    <tr>
+                      <th scope="col">Sensor</th>
+                      <th scope="col">Start Cycle</th>
+                      <th scope="col">End Cycle</th>
+                      <th scope="col">QC Level</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                      {% for qc in sensor_qcs %}
+                      <tr>
+                        <td>{{ qc.SENSOR.SENSOR }}</td>
+                        <td>{{ qc.START_CYCLE }}</td>
+                        <td>{{ qc.END_CYCLE }}</td>
+                        <td>{{ qc.QC_LEVEL }}</td>
+                      </tr>
+                      {% endfor %}
+                  </tbody>
             </table>
         </div>
         <!-- Plots -->

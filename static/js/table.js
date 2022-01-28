@@ -15,7 +15,9 @@ $(document).ready(function() {
                     1: ''
                 }
             }
-        }
+        },
+        pageLength: 25,
+        lengthMenu: [ 25, 50, 75, 100 ]
     });
     table.searchPanes.container().appendTo('#filters');
     table.searchPanes.resizePanes();

@@ -1,0 +1,57 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+{% block header %}
+    <!-- Datatabes -->
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.24/datatables.min.js"></script>
+    <!-- <script type="text/javascript" src="https://cdn.datatables.net/searchpanes/1.2.1/js/dataTables.searchPanes.min.js"></script> -->
+    <script type="text/javascript" src="https://cdn.datatables.net/select/1.3.3/js/dataTables.select.min.js"></script>
+    <script src="{% static 'js/table.js' %}"></script>
+
+    <!-- Datatables -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.24/datatables.min.css"/>
+    <!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/searchpanes/1.2.1/css/searchPanes.dataTables.min.css"/> -->
+    <link rel="stylesheet" href="{% static 'css/select.dataTables.css' %}">
+{% endblock header %}
+{% block content %}
+
+<section class="status-table-container">
+  <div class='row'>
+      <h2>Sensor QC</h2>
+  </div>
+  <div class='row'>
+    <!-- <div id="filters" class="col-2"></div> -->
+    <div class='col'>
+      <table id="statustable" class="table table-sm table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Float Serial Number</th>
+              <th scope="col">WMO</th>
+              <th scope="col">Sensor</th>
+              <th scope="col">Sensor Serial Number</th>
+              <th scope="col">Start Cycle</th>
+              <th scope="col">End Cycle</th>
+              <th scope="col">QC Level</th>
+              <th scope="col">Problem</th>
+            </tr>
+          </thead>
+          <tbody>
+              {% for qc in sensor_qcs %}
+              <tr>
+                <td>{{ qc.SENSOR.DEPLOYMENT.FLOAT_SERIAL_NO }}</td>
+                <td>{{ qc.SENSOR.DEPLOYMENT.PLATFORM_NUMBER }}</td>
+                <td>{{ qc.SENSOR.SENSOR }}</td>
+                <td>{{ qc.SENSOR.SENSOR_SERIAL_NO }}</td>
+                <td>{{ qc.START_CYCLE }}</td>
+                <td>{{ qc.END_CYCLE }}</td>
+                <td>{{ qc.QC_LEVEL }}</td>
+                <td>{{ qc.PROBLEM }}</td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block footer %}
+{% endblock footer %}

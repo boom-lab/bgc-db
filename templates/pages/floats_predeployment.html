@@ -21,13 +21,12 @@
   <div class='row'>
     <!-- <div id="filters" class="col-2"></div> -->
     <div class='col'>
-      <table id="statustable" class="table tabel-sm">
+      <table id="statustable" class="table table-sm">
           <thead>
             <tr>
               <th scope="col">Serial Number</th>
               <th scope="col">WMO</th>
               <th scope="col">Funder</th>
-              <th scope="col">Platform Type</th>
               <th scope="col">Location</th>
               <th scope="col">Latest Event</th>
               <th scope="col">Comment</th>
@@ -48,7 +47,6 @@
                 <th>{{ deployment.FLOAT_SERIAL_NO }}</th>
                 <td>{{ deployment.PLATFORM_NUMBER }}</td>
                 <td>{{ deployment.FUNDER }}</td>
-                <td>{{ deployment.PLATFORM_TYPE.VALUE }}</td>
                 <td>{{ deployment.last_event.LOCATION }}</td>
                 <td>{{ deployment.last_event.EVENT }}</td>
                 <td>{{ deployment.last_event.COMMENT }}</td>
