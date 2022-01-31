@@ -39,7 +39,7 @@ def send_email(payload, log_item):
                     ['randerson@whoi.edu','dnicholson@whoi.edu'],
                     fail_silently=False,
                 )
-            elif payload['STATUS'] != 'Success' and payload['DETAILS'] != 'Incomplete MSG transmission, no <EOT> tag': #New message, but error proccessing
+            elif payload['STATUS'] != 'Success' and 'no <EOT> tag' not in payload['DETAILS']: #New message, but error proccessing
                 send_mail(
                     'BGC Processing '+payload['STATUS'] + ' - SN: ' + payload['FLOAT_SERIAL_NO'] + ' Cycle: ' + payload['CYCLE'],
                     payload.get('DETAILS'),
@@ -49,7 +49,7 @@ def send_email(payload, log_item):
                 )
 
         else: #No process log record
-            #Mission Prelude
+            #Mission Prelude (incomplete or complete)
             if payload['CYCLE'] == '000':
                 send_mail(
                     payload['FLOAT_SERIAL_NO'] + ": "+"Mission prelude recieved",
