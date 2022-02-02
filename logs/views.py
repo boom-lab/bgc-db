@@ -39,7 +39,7 @@ def send_email(payload, log_item):
                     ['randerson@whoi.edu','dnicholson@whoi.edu'],
                     fail_silently=False,
                 )
-            elif payload['STATUS'] != 'Success' and 'no <EOT> tag' not in payload['DETAILS']: #New message, but error proccessing
+            elif payload['STATUS'] != 'Success' and 'no <EOT> tag' not in payload['DETAILS'] and payload['DETAILS'] != log_item.DETAILS: #New message, but error proccessing. Ignore <EOT> errors, don't send email if already sent one.
                 send_mail(
                     'BGC Processing '+payload['STATUS'] + ' - SN: ' + payload['FLOAT_SERIAL_NO'] + ' Cycle: ' + payload['CYCLE'],
                     payload.get('DETAILS'),
