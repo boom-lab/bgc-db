@@ -56,8 +56,8 @@ nominal drift pressure [dbar]           {{ d.NOMINAL_DRIFT_PRES }}
 cycles for drift pressure               {{ d.CYCLES_FOR_DRIFT_PRES }}
 nominal profile pressure [dbar]         {{ d.NOMINAL_PROFILE_PRES }}
 cycles for profile pressure             {{ d.CYCLES_FOR_PROFILE_PRES }}
-profile sampling method                 {{ d.PROFILE_SAMPLING_METHOD }}
-profile sampling method(2)              {{ d.PROFILE_SAMPLING_METHOD_2 }}
+Profile Sampling Method                 {{ d.PROFILE_SAMPLING_METHOD }}
+Profile Sampling Method(2)              {{ d.PROFILE_SAMPLING_METHOD_2 }}
 pump type                               260ml                         
 {% for s in sensors -%}
 {{ "%-40s" | format(s.aoml_sensor()+' sensor type',) }}{{s.SENSOR_MODEL}}
