@@ -12,6 +12,22 @@ const var_translation = {
     "CDOM":"Coloured dissolved organic matter (ppb)"
 }
 
+const var_ranges = {
+    "TEMP":[0, 30],
+    "PRES":[-2000,0],
+    "PSAL": [34.5, 37.5],
+    "DOXY":[0, 300],
+    "CHLA":[0, .7],
+    "BBP700":[0, .0004],
+    "PH_IN_SITU_TOTAL":[7.7, 8.2],
+    "NITRATE":[-5, 35],
+    "CDOM":[0, 3],
+    "VRS_PH":[-2,0],
+    "VK_PH":[-3,0],
+    "IB_PH":[-.0000001,0],
+    "IK_PH":[-.0000001,0]
+}
+
 function removeAllChildNodes(parent) {
     while (parent.firstChild) {
         parent.removeChild(parent.firstChild);
@@ -70,6 +86,7 @@ function create_plot(response, var_selected){
                 linewidth: 1,
                 mirror: true,
                 zeroline: false,
+                range: var_ranges[var_selected]
             },
             yaxis:{title:"Pressure",
                 linewidth:1,
@@ -103,15 +120,19 @@ function create_plot(response, var_selected){
         
     }
 }
+
+
 function slider_update(start, end){
+    //Called when slider is changed
 
     var plotDivs = document.getElementsByClassName("cohort_plot");
     //For each plot
     for (let plot of plotDivs){
 
-        let days = data[plot.id]['DAY'];
-        days = days.concat(days);
-        let indexes = days.map((elm, idx) => elm <= start | elm >= end ? idx : '').filter(String);
+        let cycles = data[plot.id]['CYCLE_ID'];
+        cycles = cycles.concat(cycles);
+        let indexes = cycles.map((elm, idx) => elm <= start-1 | elm >= end+1 ? idx : '').filter(String);
+
 
         //turn all traces on
         var update_vis = {
@@ -175,35 +196,13 @@ $("#year_selector").change(function (e) {
 })
 
 var range_all_sliders = {
-    'min': [     1 ],
-    'max': [ 365 ]
+    'min': [     0 ],
+    'max': [ 200 ]
 };
 
-function month_formatter(value) {
-    value = Math.round(value)
-    let month = value
-    if (value==1){
-        month='Jan';
-    }
-    if (value==60){
-        month='Mar';
-    }
-    if (value==121){
-        month='May';
-    }
-    if (value==182){
-        month='Jul';
-    }
-    if (value==244){
-        month='Sep';
-    }
-    if (value==305){
-        month='Nov';
-    }
-    if (value==365){
-        month='Jan';
-    }
-    return month
+function tooltip_formatter(value) {
+    value_rounded = Math.round(value)
+    return value_rounded
 }
 
 function dateFromDay(day){
@@ -219,37 +218,24 @@ function dateFromDay(day){
 var slider = document.getElementById('slider');
 
 noUiSlider.create(slider, {
-    start: [1, 365],
+    start: [0, 200],
     connect: true,
     step: 1,
     tooltips:[
         {
-            to: dateFromDay,
+            to: tooltip_formatter,
             from: function (value) {return Number(value.replace(',-', ''));}
         },
         {
-            to: dateFromDay,
+            to: tooltip_formatter,
             from: function (value) {return Number(value.replace(',-', ''));}
         }
     ],
-    range: {
-        'min': 1,
-        'max': 365
-    },
     range: range_all_sliders,
     pips: {
-        mode: 'values',
-        values: [1, 60,121,182,244,305,365],
-        density: 8,
-        stepped: true,
-        format: {
-            to: month_formatter,
-            // 'from' the formatted value.
-            // Receives a string, should return a number.
-            from: function (value) {
-                return Number(value.replace(',-', ''));
-            }
-        }
+        mode: 'count',
+        values: 5,
+        density: 5
     }
 });
 
