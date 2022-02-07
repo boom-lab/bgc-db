@@ -18,15 +18,15 @@ def navis_crc(command_string):
 
 
 def gen_commands(data):
+    print(data)
     #Create mission configuration command string
     output = ""
     for key, value in data.items():
         if key not in ['DEPLOYMENT','ADD_DATE','COMMENTS', 'ActivateRecoveryMode']: #Ignore these fields
-            if value: #Ignore blank entries
+            if value is not None: #Ignore blank entries
                 command = key + "(" + str(value) + ")" #command
                 white_space = (32 - len(command)) * " "
                 crc = '%04X' % navis_crc(command) #checksum
-                print(crc)
                 output = output + command + white_space + "[0x" + str(crc).lower() + "]" + "\n" #add to output as new line
 
         if key == "ActivateRecoveryMode" and value: #Recovery mode command
