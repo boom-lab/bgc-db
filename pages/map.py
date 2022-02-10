@@ -13,6 +13,7 @@ def update_map(request):
     if request.is_ajax and request.method == "GET":
         # get the selections
         deployments = request.GET.getlist("deployments[]", None)
+        print(deployments)
 
         fig = go.Figure(go.Scattergeo())
 

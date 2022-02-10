@@ -319,3 +319,45 @@ def compare_floats_data(request):
         return JsonResponse(plot_data, status=200)
 
     return JsonResponse({}, status = 400)
+
+def map_data(request):
+    
+    if request.is_ajax and request.method == "GET":
+        # get the selections
+        deployments = request.GET.getlist("deployments[]", None)
+
+        results = []
+        for d in deployments:
+            crt = {}
+            #info 
+            deployment_entry = deployment.objects.get(PLATFORM_NUMBER=d)
+            crt['sn'] = deployment_entry.FLOAT_SERIAL_NO
+            crt['wmo'] = deployment_entry.PLATFORM_NUMBER
+
+            #Positions for traces
+            hist_lat = list(cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).order_by('-GpsFixDate').all().values_list('GpsLat', flat=True))
+            hist_lon = list(cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).order_by('-GpsFixDate').all().values_list('GpsLong', flat=True))
+
+            combined = [None]*(len(hist_lon)+len(hist_lat))
+            combined[::2] = hist_lon
+            combined[1::2] = hist_lat
+            crt['hist_positions'] = combined
+
+            # profile_id = list(cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).order_by('-GpsFixDate').all().values_list('PROFILE_ID', flat=True))
+            # profile_id = [x.split('.')[1] for x in profile_id] #Remove wmo number
+            # time_start_p = pd.Series(cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).order_by(
+            #     '-GpsFixDate').all().values_list('TimeStartTelemetry', flat=True))
+            # time_start_p_human = time_start_p.dt.strftime('%Y-%m-%d %H:%M')
+            # time_start_p_human = time_start_p_human.replace(np.nan, '')
+            # #Hover data
+            # hov_data = np.stack((profile_id, time_start_p_human, lat, lon),axis = -1)
+
+            #Data for current location points
+            crt['lat'] = cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).order_by('-GpsFixDate').first().GpsLat
+            crt['long'] = cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).order_by('-GpsFixDate').first().GpsLong
+
+            results.append(crt)
+
+        return JsonResponse({'results': results }, status = 200)
+
+    return JsonResponse({}, status = 400)
