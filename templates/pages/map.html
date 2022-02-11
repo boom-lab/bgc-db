@@ -46,6 +46,10 @@
         infoBox: true
     });
 
+    //Allows js to run in infobox (link to float detail page)
+    viewer.infoBox.frame.setAttribute("sandbox", "allow-same-origin allow-popups allow-forms allow-scripts");
+    viewer.infoBox.frame.src = "about:blank";
+
     function update_map(deployments){
     //Function to update the map by first removing everything, then adding back new deployment seleciton lines and points
         $.ajax({
@@ -95,7 +99,7 @@
         float.description = '<h3>WMO</h3><p>'+deployment['wmo']+'</p>'+
             '<h3>Current Position</h3>'+
             '<p>Lat: '+deployment['lat']+' Long: '+deployment['long']+'</p>'+
-            '<a target="_blank" href="/float_detail?FLOAT_SERIAL_NO='+deployment['sn']+'&PLATFORM_TYPE=NAVIS_EBR">Float Detail Page</a>';
+            "<a target='_blank' href='/float_detail?FLOAT_SERIAL_NO="+deployment['sn']+"&PLATFORM_TYPE=NAVIS_EBR'>Float Detail Page</a>";
     }
 
     function add_lines(deployment){
