@@ -14,16 +14,22 @@
     </style>
 {% endblock header %}
 {% block content %}
+
 <div class="mapwrapper">
+
     <div id="cesiumContainer"></div>
     <div class="dep_select_div">
         <select id="deployment_selector" name="deployment_selector" class="selectpicker" data-live-search="true" multiple>
         </select>
     </div>
+    <div class="spinner-border overlay" role="status" id="mapspinner">
+        <span class="sr-only">Loading...</span>
+    </div>
 </div>
 {% endblock %}
 {% block footer %}
 <script>
+
     Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJmMGVmNzRhYi0xYmYzLTQzMzMtODgyOC03YzNkYzhiMGNmY2YiLCJpZCI6ODIwOTksImlhdCI6MTY0NDUxODc2MH0.EsUnOM3XA-Mt1Mw-X9dlcbZrO_zEhORXCPTLpyG-ibc';  
 
     //Starting camera position and home button
@@ -50,6 +56,14 @@
     viewer.infoBox.frame.setAttribute("sandbox", "allow-same-origin allow-popups allow-forms allow-scripts");
     viewer.infoBox.frame.src = "about:blank";
 
+    function hideSpinner(){
+        var spinner = document.getElementById("mapspinner") //Loading spinner
+        spinner.style.display = "none"
+
+        var spinner = document.getElementById("cesiumContainer") //Loading spinner
+        spinner.style.opacity = 1
+    }
+
     function update_map(deployments){
     //Function to update the map by first removing everything, then adding back new deployment seleciton lines and points
         $.ajax({
@@ -57,11 +71,16 @@
             url: "ajax/map_data",
             data: {"deployments": deployments},
             success: function (response) {
+                
+
                 //If sucessful, add points and lines
                 viewer.entities.removeAll(); //Remove all lines and points
                 response['results'].forEach(function (item, index){
                     add_points(item) //Add points
                     add_lines(item)
+                    if(index+1 == response['results'].length){
+                        hideSpinner();
+                    }
                 })
             },
             error: function (response) {
@@ -73,7 +92,6 @@
     function add_points(deployment){
     //Adds points to map
 
-        console.log(deployment['sn'])
         //Points
         var float = viewer.entities.add({
             name : deployment['sn'],

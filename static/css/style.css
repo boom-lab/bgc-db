@@ -52,6 +52,17 @@ label {
     margin-top: 10%
 }
 
+.overlay {
+  z-index: 9;
+}
+
+#cesiumContainer{
+  width: 100%;
+  height: calc(100vh - 70px);
+  position: absolute;
+  opacity: 0;;
+}
+
 #slider {
     margin: 3rem 2rem 3rem 8rem;
 }
