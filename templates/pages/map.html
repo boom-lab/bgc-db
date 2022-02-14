@@ -52,6 +52,13 @@
         infoBox: true
     });
 
+    //Hide loading spinner once basemap has loaded
+    viewer.scene.globe.tileLoadProgressEvent.addEventListener(function (queuedTileCount) {
+        if(viewer.scene.globe.tilesLoaded){
+            hideSpinner()
+        }
+    });
+
     //Allows js to run in infobox (link to float detail page)
     viewer.infoBox.frame.setAttribute("sandbox", "allow-same-origin allow-popups allow-forms allow-scripts");
     viewer.infoBox.frame.src = "about:blank";
@@ -78,9 +85,6 @@
                 response['results'].forEach(function (item, index){
                     add_points(item) //Add points
                     add_lines(item)
-                    if(index+1 == response['results'].length){
-                        hideSpinner();
-                    }
                 })
             },
             error: function (response) {
@@ -135,13 +139,6 @@
             color : Cesium.Color.BLUE
         });
     }
-
-
-
-
-
-
-
 
 
 
