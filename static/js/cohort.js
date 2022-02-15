@@ -22,7 +22,7 @@ const var_ranges = {
     "PH_IN_SITU_TOTAL":[7.7, 8.2],
     "NITRATE":[-5, 35],
     "CDOM":[0, 3],
-    "VRS_PH":[-2,0],
+    "VRS_PH":[-1,-.85],
     "VK_PH":[-3,0],
     "IB_PH":[-.0000001,0],
     "IK_PH":[-.0000001,0]

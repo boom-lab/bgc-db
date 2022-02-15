@@ -183,7 +183,7 @@ def cohort_data(request):
         cycle_meta = pd.DataFrame(cycle_meta_q, columns=["PROFILE_ID","CYCLE_ID","FLOAT_SERIAL_NO","PLATFORM_NUMBER","TimeStartProfile"])
 
         #Continuous data
-        if var_selected != "NITRATE":
+        if var_selected not in ["NITRATE","VK_PH","IB_PH","IK_PH"]:
             query = continuous_profile.objects.filter(PROFILE_ID__in=cycle_meta.PROFILE_ID).order_by("PROFILE_ID", "PRES").values_list(
                 "DEPLOYMENT__PLATFORM_NUMBER","PROFILE_ID", "PRES", var_selected)
             data = pd.DataFrame(query, columns=["PLATFORM_NUMBER","PROFILE_ID", "PRES", var_selected])
@@ -206,7 +206,7 @@ def cohort_data(request):
         #Loop through each float
         for wmo in cycle_meta.PLATFORM_NUMBER.unique():
             #continuous
-            if var_selected != "NITRATE":
+            if var_selected not in ["NITRATE","VK_PH","IB_PH","IK_PH"]:
                 grouped_data = data.loc[data.PLATFORM_NUMBER==wmo,:].groupby("PROFILE_ID")
                 var_flat = grouped_data[var_selected].apply(list).tolist()
                 pres_flat = grouped_data["PRES"].apply(list).tolist()
