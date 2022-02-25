@@ -261,3 +261,18 @@ def wmo_assigned(request):
     deployed_floats_WMO = deployment.objects.filter(**filters).values_list('PLATFORM_NUMBER', flat=True)
 
     return JsonResponse({'FLOAT_SERIAL_NO':list(deployed_floats_SN),'PLATFORM_NUMBER':list(deployed_floats_WMO)})
+
+@api_view(['GET'])
+def latest_cycle(request):
+    
+    #Get parameters
+    PLATFORM_NUMBER = request.GET.get('PLATFORM_NUMBER', None)
+    if not PLATFORM_NUMBER:
+        return JsonResponse({'details':'Error: PLATFORM_NUMBER (WMO) must be specified'}, 
+        status=status.HTTP_400_BAD_REQUEST) 
+
+    entry = get_object_or_404(deployment, PLATFORM_NUMBER=PLATFORM_NUMBER)
+
+    last_cycle = entry.last_cycle
+
+    return JsonResponse({'last_cycle':last_cycle})
