@@ -257,6 +257,7 @@ def wmo_assigned(request):
         status=status.HTTP_400_BAD_REQUEST) 
     
     filters['PLATFORM_NUMBER__isnull'] = False
-    deployed_floats = deployment.objects.filter(**filters).values_list('FLOAT_SERIAL_NO', flat=True)
+    deployed_floats_SN = deployment.objects.filter(**filters).values_list('FLOAT_SERIAL_NO', flat=True)
+    deployed_floats_WMO = deployment.objects.filter(**filters).values_list('PLATFORM_NUMBER', flat=True)
 
-    return JsonResponse({'FLOAT_SERIAL_NO':list(deployed_floats)})
+    return JsonResponse({'FLOAT_SERIAL_NO':list(deployed_floats_SN),'PLATFORM_NUMBER':list(deployed_floats_WMO)})
