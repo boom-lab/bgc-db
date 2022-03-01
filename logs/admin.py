@@ -12,7 +12,7 @@ def set_reprocess(modeladmin, request, queryset):
     queryset.update(STATUS='Reprocess')
 
 class FileProcessingAdmin(ExportMixin, admin.ModelAdmin):
-    list_display = ['DIRECTORY','FLOAT_SERIAL_NO','CYCLE','STATUS','DETAILS','DATE', ]
+    list_display = ['DIRECTORY','FLOAT_SERIAL_NO','CYCLE','STATUS','DETAILS','DATE_PROCESSED','DATE_FILE_MODIFIED' ]
     #list_display_links = ('Record_Date',)
     search_fields = ('STATUS','FLOAT_SERIAL_NO')
     list_per_page = 25

@@ -19,6 +19,28 @@ def get_file_status(request):
 
     return JsonResponse(result)
 
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def put_process_log(request):
+    #Updates or adds process log entries
+
+    directory = request.GET['DIRECTORY']
+    payload = json.loads(request.body)
+    
+    try:
+        
+        log_item = file_processing.objects.filter(DIRECTORY=directory)
+        send_email(payload, log_item) #only send email if new record
+        if log_item: #Log entry already exists
+            log_item.update(**payload)
+            return JsonResponse({'status': 'updated'}, safe=False, status=status.HTTP_200_OK)
+        else: #Create new entry
+            file_processing.objects.create(DIRECTORY=directory, **payload)
+            return JsonResponse({'status': 'added'}, safe=False, status=status.HTTP_200_OK)
+    except Exception:
+        return JsonResponse({'error': 'Something terrible went wrong'}, safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
 def send_email(payload, log_item):
     #Sends warning/error or recieved first cycle/prelude email messages
     try:
@@ -63,23 +85,3 @@ def send_email(payload, log_item):
     except Exception:
         pass
 
-@api_view(['PUT'])
-@permission_classes([IsAuthenticated])
-def put_process_log(request):
-    #Updates or adds process log entries
-
-    directory = request.GET['DIRECTORY']
-    payload = json.loads(request.body)
-    
-    try:
-        
-        log_item = file_processing.objects.filter(DIRECTORY=directory)
-        send_email(payload, log_item) #only send email if new record
-        if log_item: #Log entry already exists
-            log_item.update(**payload)
-            return JsonResponse({'status': 'updated'}, safe=False, status=status.HTTP_200_OK)
-        else: #Create new entry
-            file_processing.objects.create(DIRECTORY=directory, **payload)
-            return JsonResponse({'status': 'added'}, safe=False, status=status.HTTP_200_OK)
-    except Exception:
-        return JsonResponse({'error': 'Something terrible went wrong'}, safe=False, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
