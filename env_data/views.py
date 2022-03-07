@@ -1,7 +1,7 @@
-from env_data.serializers import CycleMetaSerializer, DisProfileSerializer, ParkSerializer, ConProfileSerializer
+from env_data.serializers import CycleMetaSerializer, DisProfileSerializer, ParkSerializer, ConProfileSerializer, NitrateConProfileSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes
-from .models import continuous_profile, discrete_profile, park, cycle_metadata, mission_reported
+from .models import continuous_profile, nitrate_continuous_profile, discrete_profile, park, cycle_metadata, mission_reported
 from django.http.response import JsonResponse
 from rest_framework import status, generics
 from django_filters.rest_framework import DjangoFilterBackend
@@ -12,6 +12,17 @@ from django.db.models import Max, Count
 class GetConData(generics.ListAPIView): #Read only, currently only filters by pressure, date add, profile id and platform number. output fields can be controlled.
     serializer_class = ConProfileSerializer
     queryset=continuous_profile.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filter_fields ={
+        "DEPLOYMENT__PLATFORM_NUMBER":['exact'],
+        "DATE_ADD":['gt','lt','range','exact'],
+        "PROFILE_ID":['exact'],
+        "PRES":['gt','lt','range','exact'],
+    }
+
+class GetNitrateConData(generics.ListAPIView): #Read only, currently only filters by pressure, date add, profile id and platform number. output fields can be controlled.
+    serializer_class = NitrateConProfileSerializer
+    queryset=nitrate_continuous_profile.objects.all()
     filter_backends = [DjangoFilterBackend]
     filter_fields ={
         "DEPLOYMENT__PLATFORM_NUMBER":['exact'],
@@ -63,6 +74,21 @@ def con_profile_delete(request):
         if res[0]==0: #If nothing was deleted
             return JsonResponse({'status': 'nothing deleted'}, status=status.HTTP_400_BAD_REQUEST)
         return JsonResponse({'status': 'deleted '+str(res[0])+" entries"}, status=status.HTTP_200_OK)
+
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def nitrate_con_profile_delete(request):
+    if request.method == 'DELETE':
+        profile_id = request.GET.get('PROFILE_ID', None)
+        filters={"PROFILE_ID":profile_id}
+        query = nitrate_continuous_profile.objects.filter(**filters)
+        res = query.delete()
+
+        if res[0]==0: #If nothing was deleted
+            return JsonResponse({'status': 'nothing deleted'}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({'status': 'deleted '+str(res[0])+" entries"}, status=status.HTTP_200_OK)
+
         
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])

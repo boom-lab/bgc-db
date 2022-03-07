@@ -1,5 +1,5 @@
 from rest_framework import serializers 
-from .models import continuous_profile, discrete_profile, park, cycle_metadata, mission_reported
+from .models import continuous_profile, nitrate_continuous_profile, discrete_profile, park, cycle_metadata, mission_reported
 
 class ConProfileSerializer(serializers.ModelSerializer):
  
@@ -9,6 +9,26 @@ class ConProfileSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs): #Custom output fields
         super(ConProfileSerializer, self).__init__(*args, **kwargs)
+
+        #Filters which fields are returned
+        fields = self.context['request'].query_params.get('output_fields')
+        if fields:
+            fields = fields.split(',')
+            # Drop any fields that are not specified in the `output_fields` argument.
+            allowed = set(fields)
+            existing = set(self.fields.keys())
+            for field_name in existing - allowed:
+                self.fields.pop(field_name)
+
+
+class NitrateConProfileSerializer(serializers.ModelSerializer):
+ 
+    class Meta:
+        model = nitrate_continuous_profile
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs): #Custom output fields
+        super(NitrateConProfileSerializer, self).__init__(*args, **kwargs)
 
         #Filters which fields are returned
         fields = self.context['request'].query_params.get('output_fields')

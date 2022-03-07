@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import cycle_metadata, continuous_profile, discrete_profile, park, mission_reported
+from .models import cycle_metadata, continuous_profile, discrete_profile, park, mission_reported, nitrate_continuous_profile
 
 # Register your models here.
 class CycleMetadataAdmin(admin.ModelAdmin):
@@ -30,6 +30,14 @@ class ContinuousProfileAdmin(admin.ModelAdmin):
 
 
 admin.site.register(continuous_profile, ContinuousProfileAdmin)
+
+class NitrateContinuousProfileAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in nitrate_continuous_profile._meta.fields]
+    list_display_links = None
+    list_per_page = 25
+
+
+admin.site.register(nitrate_continuous_profile, NitrateContinuousProfileAdmin)
 
 class DiscreteProfileAdmin(admin.ModelAdmin):
     list_display = [field.name for field in discrete_profile._meta.fields]

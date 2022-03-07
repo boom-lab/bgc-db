@@ -151,6 +151,31 @@ class continuous_profile(models.Model):
     def __str__(self): 
         return str(self.DEPLOYMENT)
 
+# Nitrate continuous profile samples
+class nitrate_continuous_profile(models.Model):
+
+    #fields of the model
+    DEPLOYMENT = models.ForeignKey(deployment, on_delete=models.PROTECT)
+    DATE_ADD = models.DateTimeField() #creation of record in db
+    PROFILE_ID = models.CharField(default=0, max_length=20)
+    
+    #nitrate data fields
+    SAMPLE_TIME = models.DateTimeField()
+    DARK_CURRENT = models.FloatField("Dark Current", blank=True, null=True)
+    PRES = models.FloatField("Pressure dbar", blank=True, null=True)
+    NO3 = models.FloatField("Nitrate umol/kg", blank=True, null=True)
+    BL_B = models.FloatField("Baseline Incercept", blank=True, null=True)
+    BL_M = models.FloatField("Baseline Slope", blank=True, null=True)
+    RMS_ERROR = models.FloatField("RMS Error", blank=True, null=True)
+    WL_240 = models.FloatField(blank=True, null=True)
+    ABS_240 = models.FloatField(blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = "Nitrate Continuous Profile"
+
+    #Default return
+    def __str__(self): 
+        return str(self.DEPLOYMENT)
 
 class discrete_profile(models.Model):
     #fields of the model
