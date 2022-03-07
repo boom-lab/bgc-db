@@ -32,9 +32,6 @@ def put_process_log(request):
         
         log_item = file_processing.objects.filter(DIRECTORY=directory)
 
-        date_processed = datetime.strptime(payload["DATE_PROCESSED"],'%Y-%m-%dT%H:%M:%SZ')
-        date_modified = datetime.strptime(payload["DATE_FILE_MODIFIED"],'%Y-%m-%dT%H:%M:%SZ')
-        print(((date_modified + timedelta(days=1)) < date_processed))
         send_email(payload, log_item) #only send email if new record
         if log_item: #Log entry already exists
             log_item.update(**payload)
