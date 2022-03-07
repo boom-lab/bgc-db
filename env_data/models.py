@@ -163,6 +163,8 @@ class nitrate_continuous_profile(models.Model):
     SAMPLE_TIME = models.DateTimeField()
     DARK_CURRENT = models.FloatField("Dark Current", blank=True, null=True)
     PRES = models.FloatField("Pressure dbar", blank=True, null=True)
+    TEMP = models.FloatField("Temperature C", blank=True, null=True)
+    PSAL = models.FloatField("Salinity", blank=True, null=True)
     NO3 = models.FloatField("Nitrate umol/kg", blank=True, null=True)
     BL_B = models.FloatField("Baseline Incercept", blank=True, null=True)
     BL_M = models.FloatField("Baseline Slope", blank=True, null=True)
