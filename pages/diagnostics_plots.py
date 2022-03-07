@@ -5,7 +5,7 @@ import pandas as pd
 import json
 import cmocean
 
-from env_data.models import continuous_profile, cycle_metadata, discrete_profile
+from env_data.models import continuous_profile, cycle_metadata, discrete_profile, nitrate_continuous_profile
 from .plot_helpers import var_translation, var_ranges, cmocean_to_plotly_simple
 
 def update_compare_latest_profiles(request):
@@ -26,6 +26,13 @@ def update_compare_latest_profiles(request):
                 
             con_data = pd.DataFrame(con_query, columns=["FLOAT_SERIAL_NO","PLATFORM_NUMBER", "PROFILE_ID", "PRES", var_selected])
 
+        if var_selected == "NITRATE":
+            nitrate_con_query = nitrate_continuous_profile.objects.filter(PROFILE_ID__in=profile_ids_q).order_by(
+                "PROFILE_ID", "PRES").values_list("DEPLOYMENT__FLOAT_SERIAL_NO","DEPLOYMENT__PLATFORM_NUMBER", 
+                "PROFILE_ID", "PRES", "NO3")
+
+            nitrate_data = pd.DataFrame(nitrate_con_query, columns=["FLOAT_SERIAL_NO","PLATFORM_NUMBER", "PROFILE_ID", "PRES", "NITRATE"])
+
         #Latest discrete data query
         dis_query = discrete_profile.objects.filter(PROFILE_ID__in=profile_ids_q).order_by(
             "PROFILE_ID", "PRES").values_list("DEPLOYMENT__FLOAT_SERIAL_NO","DEPLOYMENT__PLATFORM_NUMBER", 
@@ -44,16 +51,41 @@ def update_compare_latest_profiles(request):
         for i, wmo in enumerate(wmos):
 
             #------------------Continuous Traces-------------------#
-            if var_selected not in ["NITRATE","VK_PH","IB_PH","IK_PH"]:
+            if var_selected not in ["VK_PH","IB_PH","IK_PH"]:
                 #subset to one float
-                data_sub = con_data.loc[con_data.PLATFORM_NUMBER==wmo,:]
-                sn = data_sub.reset_index().loc[0, "FLOAT_SERIAL_NO"]
+                if var_selected == "NITRATE":
+                    data_sub = nitrate_data.loc[nitrate_data.PLATFORM_NUMBER==wmo,:]
+                else:
+                    data_sub = con_data.loc[con_data.PLATFORM_NUMBER==wmo,:]
 
+                if not data_sub.empty:
+                    sn = data_sub.reset_index().loc[0, "FLOAT_SERIAL_NO"]
+
+                    fig.add_trace(
+                        go.Scatter(
+                            x=data_sub.loc[:, var_selected],
+                            y=data_sub.loc[:, "PRES"]*-1,
+                            mode='lines',
+                            marker = {
+                                'color': colors[i],
+                            },
+                            #customdata = hov_data,
+                            hovertemplate ='%{x:.3f} <br>%{y:.0f}',
+                            name="SN: "+sn,
+                            xaxis="x"
+                        ),
+                    )
+
+            #---------------Discrete Traces----------------------#
+            dis_data_sub = dis_data.loc[dis_data.PLATFORM_NUMBER==wmo,:]
+            sn = dis_data_sub.reset_index().loc[0, "FLOAT_SERIAL_NO"]
+
+            if var_selected != "NITRATE":
                 fig.add_trace(
                     go.Scatter(
-                        x=data_sub.loc[:, var_selected],
-                        y=data_sub.loc[:, "PRES"]*-1,
-                        mode='lines',
+                        x=dis_data_sub.loc[:, var_selected],
+                        y=dis_data_sub.loc[:, "PRES"]*-1,
+                        mode='markers',
                         marker = {
                             'color': colors[i],
                         },
@@ -63,25 +95,6 @@ def update_compare_latest_profiles(request):
                         xaxis="x"
                     ),
                 )
-
-            #---------------Discrete Traces----------------------#
-            dis_data_sub = dis_data.loc[dis_data.PLATFORM_NUMBER==wmo,:]
-            sn = dis_data_sub.reset_index().loc[0, "FLOAT_SERIAL_NO"]
-
-            fig.add_trace(
-                go.Scatter(
-                    x=dis_data_sub.loc[:, var_selected],
-                    y=dis_data_sub.loc[:, "PRES"]*-1,
-                    mode='markers',
-                    marker = {
-                         'color': colors[i],
-                    },
-                    #customdata = hov_data,
-                    hovertemplate ='%{x:.3f} <br>%{y:.0f}',
-                    name="SN: "+sn,
-                    xaxis="x"
-                ),
-            )
             # ---------------Formatting--------------------------#
             fig.update_layout(
                 template = "ggplot2",
@@ -130,6 +143,11 @@ def update_latest_profiles_plots(request):
             "PROFILE_ID", "PRES").values_list("DEPLOYMENT__FLOAT_SERIAL_NO","DEPLOYMENT__PLATFORM_NUMBER", 
             "PROFILE_ID", "PRES", "PSAL","TEMP","DOXY","CHLA","BBP700","CDOM","PH_IN_SITU_TOTAL")
 
+        #latest nitrate continuous data
+        nitrate_query = nitrate_continuous_profile.objects.filter(PROFILE_ID__in=profile_ids_q).order_by(
+            "PROFILE_ID", "PRES").values_list("DEPLOYMENT__FLOAT_SERIAL_NO","DEPLOYMENT__PLATFORM_NUMBER", 
+            "PROFILE_ID", "PRES", "NO3")
+
         #Latest discrete data query
         dis_query = discrete_profile.objects.filter(PROFILE_ID__in=profile_ids_q).order_by(
             "PROFILE_ID", "PRES").values_list("DEPLOYMENT__FLOAT_SERIAL_NO","DEPLOYMENT__PLATFORM_NUMBER", 
@@ -142,6 +160,9 @@ def update_latest_profiles_plots(request):
         #Get data and convert to dataframes
         data = pd.DataFrame(query, columns=["FLOAT_SERIAL_NO","PLATFORM_NUMBER", "PROFILE_ID", "PRES", "PSAL",
             "TEMP","DOXY","CHLA","BBP700","CDOM","PH_IN_SITU_TOTAL"])
+
+        nitrate_data = pd.DataFrame(nitrate_query, columns=["FLOAT_SERIAL_NO","PLATFORM_NUMBER", 
+            "PROFILE_ID", "PRES", "NITRATE"])
 
         dis_data = pd.DataFrame(dis_query, columns=["FLOAT_SERIAL_NO","PLATFORM_NUMBER", 
             "PROFILE_ID", "PRES", "PSAL","TEMP","DOXY","CHLA","BBP700","CDOM","PH_IN_SITU_TOTAL","NITRATE"])
@@ -293,6 +314,25 @@ def update_latest_profiles_plots(request):
                         xaxis="x8"
                     ),
                 )
+            
+            #Nitrate
+            if vars_selected["NITRATEck"]:
+                n_data_sub = nitrate_data.loc[nitrate_data.PLATFORM_NUMBER==wmo,:]
+                fig.add_trace(
+                    go.Scatter(
+                        x=n_data_sub.loc[:, "NITRATE"],
+                        y=n_data_sub.loc[:, "PRES"]*-1,
+                        mode='lines',
+                        marker = {
+                            'color': "#bc925a",
+                        },
+                        #customdata = hov_data,
+                        hovertemplate ='%{x:.3f}',
+                        name="Nitrate",
+                        xaxis="x6"
+                    ),
+                )
+                
             #--------------------Discrete Traces ----------------------
             #subset to one float
             dis_data_sub = dis_data.loc[dis_data.PLATFORM_NUMBER==wmo,:]

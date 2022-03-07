@@ -5,10 +5,10 @@ import plotly.graph_objs as go
 import numpy as np
 from plotly.offline import plot
 
-from env_data.models import continuous_profile, cycle_metadata, discrete_profile
+from env_data.models import continuous_profile, cycle_metadata, discrete_profile, nitrate_continuous_profile
 
 
-continuous_exclude_vars = ['NITRATE','VRS_PH','VK_PH','IB_PH','IK_PH']
+continuous_exclude_vars = ['VRS_PH','VK_PH','IB_PH','IK_PH']
 
 def add_bottom_trace(fig, bot_data, y_data, hov_data, wmo, mode='lines'):
     # Bottom x axis trace
@@ -112,8 +112,13 @@ def update_profile_plot(request):
                 
                 #Bottom Axis
                 if bot_var not in continuous_exclude_vars:
-                    #Continuous data queries and convert to list
-                    bot = continuous_profile.objects.filter(PROFILE_ID=profile).all().values_list(bot_var, flat=True)
+                    if bot_var == "NITRATE":
+                        bot = nitrate_continuous_profile.objects.filter(PROFILE_ID=profile).order_by("PRES").all().values_list("NO3", flat=True)
+                        PRES = nitrate_continuous_profile.objects.filter(PROFILE_ID=profile).order_by("PRES").all().values_list("PRES", flat=True)
+                        y_data = np.array(PRES)*-1
+                    else:
+                        #Continuous data queries and convert to list
+                        bot = continuous_profile.objects.filter(PROFILE_ID=profile).all().values_list(bot_var, flat=True)
 
                     #Convert lists to arrays
                     bot_data = np.array(bot)
@@ -122,7 +127,12 @@ def update_profile_plot(request):
 
                 #Continuous top axis
                 if top_var and (top_var not in continuous_exclude_vars):
-                    top = continuous_profile.objects.filter(PROFILE_ID=profile).all().values_list(top_var, flat=True)
+                    if top_var == "NITRATE":
+                        top = nitrate_continuous_profile.objects.filter(PROFILE_ID=profile).order_by("PRES").all().values_list("NO3", flat=True)
+                        PRES = nitrate_continuous_profile.objects.filter(PROFILE_ID=profile).order_by("PRES").all().values_list("PRES", flat=True)
+                        y_data = np.array(PRES)*-1
+                    else:
+                        top = continuous_profile.objects.filter(PROFILE_ID=profile).all().values_list(top_var, flat=True)
                     top_data = np.array(top)
 
                     add_top_trace(fig, top_data, y_data, top_var, hov_data, wmo)

@@ -64,20 +64,23 @@ function create_plot(response, var_selected){
         }
 
         //Discrete data series, each profile
-        for ( let i = 0 ; i < dp['dis_x'].length ; i++ ) {
-            const result = {
-                x: dp['dis_x'][i],
-                y: dp['dis_y'][i],
-                type: 'scatter',
-                mode: 'markers',
-                marker: {
-                    'color': dp['continuous_colors'][i],
-                },
-                hovertemplate: `X: %{x}<br>PRES: %{y:.0f}`,
-                name:`Profile: ${dp['CYCLE_ID'][i]}<br>${dp['TIME_START_PROFILE'][i]}`
-            };
-            data.push(result);
+        if (var_selected != "NITRATE"){
+            for ( let i = 0 ; i < dp['dis_x'].length ; i++ ) {
+                const result = {
+                    x: dp['dis_x'][i],
+                    y: dp['dis_y'][i],
+                    type: 'scatter',
+                    mode: 'markers',
+                    marker: {
+                        'color': dp['continuous_colors'][i],
+                    },
+                    hovertemplate: `X: %{x}<br>PRES: %{y:.0f}`,
+                    name:`Profile: ${dp['CYCLE_ID'][i]}<br>${dp['TIME_START_PROFILE'][i]}`
+                };
+                data.push(result);
+            }
         }
+
 
         const layout = {
             xaxis: {

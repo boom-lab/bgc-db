@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 from django.db.models import Sum
 from deployments.models import deployment
-from env_data.models import continuous_profile, cycle_metadata, discrete_profile
+from env_data.models import continuous_profile, cycle_metadata, discrete_profile, nitrate_continuous_profile
 from sensor_qc.models import sensor_qc
 import pandas as pd
 import cmocean
@@ -81,7 +81,6 @@ def float_detail(request):
 
         #Sensor QC data
         sensor_qcs = sensor_qc.objects.filter(**qcfilters)
-        print(sensor_qcs)
 
         abpres_plot = ep.single_var_plot(filters, "AirBladderPressure", y_label="Pressure", legend_label="Air Bladder Pressure")
         buoy_pump_time_plot = ep.single_var_plot(filters, "BuoyancyPumpOnTime", y_label="Time", 
@@ -195,6 +194,12 @@ def cohort_data(request):
         dis_data = pd.DataFrame(query, columns=["PLATFORM_NUMBER","PROFILE_ID", "PRES", var_selected])
         dis_data = dis_data.fillna("")
 
+        if var_selected == "NITRATE":
+            query = nitrate_continuous_profile.objects.filter(PROFILE_ID__in=cycle_meta.PROFILE_ID).order_by("PROFILE_ID", "PRES").values_list(
+                "DEPLOYMENT__PLATFORM_NUMBER","PROFILE_ID", "PRES", "NO3")
+            data = pd.DataFrame(query, columns=["PLATFORM_NUMBER","PROFILE_ID", "PRES", "NITRATE"])
+            data = data.fillna("")
+
         #Remove cycle metadata that does not have continuous data (failed profile cycle)
         keep_profiles = dis_data.PROFILE_ID.unique()
         cycle_meta = cycle_meta.loc[cycle_meta.PROFILE_ID.isin(keep_profiles),:]
@@ -206,7 +211,7 @@ def cohort_data(request):
         #Loop through each float
         for wmo in cycle_meta.PLATFORM_NUMBER.unique():
             #continuous
-            if var_selected not in ["NITRATE","VK_PH","IB_PH","IK_PH"]:
+            if var_selected not in ["VK_PH","IB_PH","IK_PH"]:
                 grouped_data = data.loc[data.PLATFORM_NUMBER==wmo,:].groupby("PROFILE_ID")
                 var_flat = grouped_data[var_selected].apply(list).tolist()
                 pres_flat = grouped_data["PRES"].apply(list).tolist()
@@ -228,7 +233,6 @@ def cohort_data(request):
             #continuous colormaps
             n_colors = len(cycle_id)
             cont_colors = cmocean_to_plotly(cmocean.cm.dense, n_colors)
-            #print(cont_colors)
             plot_data[wmo] = {"x":var_flat,
                 "y":pres_flat,
                 "dis_x":dis_var_flat,
@@ -303,7 +307,6 @@ def compare_floats_data(request):
             #continuous colormaps
             n_colors = len(cycle_id)
             cont_colors = cmocean_to_plotly(cmocean.cm.dense, n_colors)
-            #print(cont_colors)
             plot_data[wmo] = {"x":var_flat,
                 "y":pres_flat,
                 "dis_x":dis_var_flat,
