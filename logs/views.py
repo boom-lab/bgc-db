@@ -7,6 +7,7 @@ from .models import file_processing
 import json
 from rest_framework import status
 from django.db.models import Q
+from datetime import datetime, timedelta
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -26,10 +27,14 @@ def put_process_log(request):
 
     directory = request.GET['DIRECTORY']
     payload = json.loads(request.body)
-    
+
     try:
         
         log_item = file_processing.objects.filter(DIRECTORY=directory)
+
+        date_processed = datetime.strptime(payload["DATE_PROCESSED"],'%Y-%m-%dT%H:%M:%SZ')
+        date_modified = datetime.strptime(payload["DATE_FILE_MODIFIED"],'%Y-%m-%dT%H:%M:%SZ')
+        print(((date_modified + timedelta(days=1)) < date_processed))
         send_email(payload, log_item) #only send email if new record
         if log_item: #Log entry already exists
             log_item.update(**payload)
@@ -45,6 +50,9 @@ def send_email(payload, log_item):
     #Sends warning/error or recieved first cycle/prelude email messages
     try:
         if log_item:
+            date_processed = datetime.strptime(payload["DATE_PROCESSED"],'%Y-%m-%dT%H:%M:%SZ')
+            date_modified = datetime.strptime(payload["DATE_FILE_MODIFIED"],'%Y-%m-%dT%H:%M:%SZ')
+
             if payload['CYCLE'] == '000' and payload['STATUS'] == 'Success': #Special for prelude
                 send_mail(
                     payload['FLOAT_SERIAL_NO'] + ": "+"Prelude Proccessed",
@@ -61,7 +69,7 @@ def send_email(payload, log_item):
                     ['randerson@whoi.edu','dnicholson@whoi.edu'],
                     fail_silently=False,
                 )
-            elif payload['STATUS'] != 'Success' and 'no <EOT> tag' not in payload['DETAILS'] and payload['DETAILS'] != log_item.DETAILS: #New message, but error proccessing. Ignore <EOT> errors, don't send email if already sent one.
+            elif payload['STATUS'] != 'Success' and ((date_modified + timedelta(days=1)) < date_processed): #New message, but error proccessing. Ignore <EOT> errors, don't send email if already sent one.
                 send_mail(
                     'BGC Processing '+payload['STATUS'] + ' - SN: ' + payload['FLOAT_SERIAL_NO'] + ' Cycle: ' + payload['CYCLE'],
                     payload.get('DETAILS'),
