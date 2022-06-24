@@ -505,13 +505,16 @@ def latest_profiles_data(request):
         
         #Get data and convert to dataframes
         con_data = pd.DataFrame(con_query, columns=["PLATFORM_NUMBER", "PRES", "PSAL",
-            "TEMP","DOXY","CHLA","BBP700","CDOM","PH_IN_SITU_TOTAL"]).dropna()
+            "TEMP","DOXY","CHLA","BBP700","CDOM","PH_IN_SITU_TOTAL"])
+        con_data = con_data.where(pd.notnull(con_data), None)
 
         nitrate_data = pd.DataFrame(nitrate_query, columns=["PLATFORM_NUMBER", 
-            "PRES", "NITRATE"]).dropna()
+            "PRES", "NITRATE"])
+        nitrate_data = nitrate_data.where(pd.notnull(nitrate_data), None)
 
         dis_data = pd.DataFrame(dis_query, columns=["PLATFORM_NUMBER", 
-            "PRES", "PSAL","TEMP","DOXY","CHLA","BBP700","CDOM","PH_IN_SITU_TOTAL","NITRATE"]).dropna()
+            "PRES", "PSAL","TEMP","DOXY","CHLA","BBP700","CDOM","PH_IN_SITU_TOTAL","NITRATE"])
+        dis_data = dis_data.where(pd.notnull(dis_data), None)
         
         plot_data =[]
         for cycle in cycle_meta_query:
