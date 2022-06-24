@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.db.models import Sum, Max
 from django.forms.models import model_to_dict
@@ -17,6 +17,9 @@ import pytz
 import pages.engineering_plots as ep
 from .plot_helpers import cmocean_to_plotly
 
+#----------------Redirect--------------------#
+def newsite(request):
+    return redirect("http://argo-db-frontend.s3-website-us-east-1.amazonaws.com/")
 
 #---------------------------Float pages ----------------------------#
 def index(request):

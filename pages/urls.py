@@ -4,7 +4,8 @@ from . import views, engineering_plots, diagnostics_plots, map, profile_explorer
 
 urlpatterns = [
     #Float pages
-    path('',views.index, name='index'),
+    path('',views.newsite, name='newsite'),
+    #path('',views.index, name='index'),
     path('index',views.index),
     path('floats_predeployment',views.floats_predeployment),
     path('float_detail',views.float_detail, name='float_detail'),
