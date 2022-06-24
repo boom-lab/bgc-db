@@ -372,7 +372,6 @@ def single_var_plot(filters, var, y_label, legend_label, y_range=None):
 
     fig = go.Figure()
 
-    #Air Bladder Pressure
     fig.add_trace(
         go.Scatter(
             x=data["ProfileId"],
@@ -581,7 +580,6 @@ def duration_plot(filters):
     # Formatting
     fig.update_layout(
         template = "ggplot2",
-        #title = "Amps",
         xaxis = {'title':"Cycle",},
         yaxis = {'title':"Phase Duration (days)",
             "tickvals":tickvals,

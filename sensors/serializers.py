@@ -1,6 +1,11 @@
 from rest_framework import serializers 
 from .models import sensor, deployment
 
+class SensorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = sensor
+        fields = [field.name for field in sensor._meta.fields]
+
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
     """
     A ModelSerializer that takes an additional `fields` argument that
@@ -21,10 +26,6 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
             for field_name in existing - allowed:
                 self.fields.pop(field_name)
 
-class SensorSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = sensor
-        fields = [field.name for field in sensor._meta.fields]
 
 class AddSensorSerializer(serializers.ModelSerializer): 
     class Meta:
@@ -61,3 +62,5 @@ class SensorMetaSerializer(DynamicFieldsModelSerializer,serializers.ModelSeriali
                 representation[key] = deployment_representation[key]
 
         return representation
+
+

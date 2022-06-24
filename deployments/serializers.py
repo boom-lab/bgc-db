@@ -1,10 +1,46 @@
-from env_data.serializers import CycleMetaSerializer
-from rest_framework import serializers 
+from pyexpat import model
+from rest_framework import serializers
+
+from logs.serializers import DeploymentTrackingSerializer 
 from .models import deployment
-from missions.serializers import AddMissionSerializer
+from missions.serializers import AddMissionSerializer, MissionSerializer
 from sensors.serializers import AddSensorSerializer, SensorSerializer
 from missions.models import mission
 from sensors.models import sensor
+
+#Fields from deployment table with nested sensor data
+class DeploymentMetaSerializer(serializers.ModelSerializer):
+
+    #Reformat
+    DEPLOYMENT_PLATFORM = serializers.CharField(source="DEPLOYMENT_PLATFORM.VALUE", allow_null=True)
+    LAUNCH_DATE = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
+    last_report = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
+    next_report = serializers.DateTimeField(format="%Y-%m-%d %H:%M")
+    age = serializers.IntegerField(source="age.days", allow_null=True)
+    last_event = serializers.CharField(source="last_event.EVENT", allow_null=True)
+    comment = serializers.CharField(source="last_event.COMMENT", allow_null=True)
+
+    class Meta:
+        model = deployment
+
+        fields = [field.name for field in deployment._meta.fields if field.name not in ['IMEI', 'SIM']]
+        fields.extend(['sensors','last_report','days_since_last','next_report','last_event','last_cycle','last_location','comment','status','age',
+        'incoming_status','internal_inspection_status','pressure_test_status','docktest_status','flow_through_status'])
+        read_only_fields = fields
+
+    def __init__(self, *args, **kwargs): #For gettting request to results column filter of sensor data
+        super(DeploymentMetaSerializer, self).__init__(*args, **kwargs)
+        self.fields['sensors'] = SensorSerForDeployment(many=True, context=self.context)
+
+        #Filters which fields are returned
+        fields = self.context['request'].query_params.get('deployment_fields')
+        if fields:
+            fields = fields.split(',')
+            # Drop any fields that are not specified in the `fields` argument.
+            allowed = set(fields)
+            existing = set(self.fields.keys())
+            for field_name in existing - allowed:
+                self.fields.pop(field_name)
 
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
     """
@@ -71,26 +107,16 @@ class SensorSerForDeployment(serializers.ModelSerializer):
             for field_name in existing - allowed:
                 self.fields.pop(field_name)
 
-#Fields from deployment table with nested sensor data
-class DeploymentMetaSerializer(serializers.ModelSerializer):
 
+
+class TrackingSerializer(serializers.ModelSerializer):
+    deployment_tracking = DeploymentTrackingSerializer(many=True)
     class Meta:
         model = deployment
+        fields = ("FLOAT_SERIAL_NO", "deployment_tracking")
 
-        fields = [field.name for field in deployment._meta.fields if field.name not in ['IMEI', 'SIM']]
-        fields.extend(['sensors']) #'status','last_report','next_report','age',
-        read_only_fields = fields
 
-    def __init__(self, *args, **kwargs): #For gettting request to results column filter of sensor data
-        super(DeploymentMetaSerializer, self).__init__(*args, **kwargs)
-        self.fields['sensors'] = SensorSerForDeployment(many=True, context=self.context)
 
-        #Filters which fields are returned
-        fields = self.context['request'].query_params.get('deployment_fields')
-        if fields:
-            fields = fields.split(',')
-            # Drop any fields that are not specified in the `fields` argument.
-            allowed = set(fields)
-            existing = set(self.fields.keys())
-            for field_name in existing - allowed:
-                self.fields.pop(field_name)
+
+
+

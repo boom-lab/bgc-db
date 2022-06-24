@@ -127,7 +127,7 @@ class GetDeploymentMeta(generics.ListAPIView): #Read only
         'START_DATE','LAUNCH_DATE','LAUNCH_LATITUDE','LAUNCH_LONGITUDE','FLOAT_CONTROLLER_SERIAL_NO','GPS_SERIAL_NO',
         'BATTERY_VOLTAGE','NOMINAL_DRIFT_PRES','CYCLES_FOR_DRIFT_PRES','NOMINAL_PROFILE_PRES','CYCLES_FOR_PROFILE_PRES']:
         
-        filter_fields[numfield] = ['gt','lt','range','exact']
+        filter_fields[numfield] = ['gt','lt','range','exact','isnull']
 
 class PostUpdate(generics.UpdateAPIView, generics.CreateAPIView): #Post new metadata, Update (patch), token
     permission_classes=[IsAuthenticated]

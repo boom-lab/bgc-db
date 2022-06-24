@@ -213,9 +213,10 @@ class deployment(models.Model):
 
     @property
     def age(self):
+        """Age of float"""
         n_reports = self.cycle_metadata.count()
         if n_reports == 0:
-            return None
+            return timedelta(days=0)
         if self.DEATH_DATE:
             return self.DEATH_DATE - self.LAUNCH_DATE
         return datetime.now(timezone.utc) - self.LAUNCH_DATE
