@@ -223,5 +223,6 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:8081',
     'http://127.0.0.1:8000',
     'http://localhost:50559',
-    'http://localhost:3000'
+    'http://localhost:3000',
+    'http://argo-db-frontend.s3-website-us-east-1.amazonaws.com/'
 ]
