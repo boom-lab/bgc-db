@@ -444,7 +444,6 @@ def compare_latest_profiles_data(request):
 
         plot_data = []
 
-        #latest continuous data query
         if var_selected not in ["NITRATE","VK_PH","IB_PH","IK_PH"]:
             for dep in deployments:
                 #Get most recent cycle metadata record
@@ -457,7 +456,6 @@ def compare_latest_profiles_data(request):
 
                 con_data = pd.DataFrame(con_query, columns=["PRES",var_selected])
                 con_data = con_data.dropna()
-                #TODO get continous nitrate data
 
                 #Get discrete data
                 dis_query = discrete_profile.objects.filter(PROFILE_ID=profile).order_by(
@@ -471,6 +469,57 @@ def compare_latest_profiles_data(request):
                     "WMO":dep,
                     "CON_PRES":con_data.PRES.to_list(),
                     "CON_"+var_selected: con_data[var_selected].to_list(),
+                    "DIS_PRES":dis_data.PRES.to_list(),
+                    "DIS_"+var_selected: dis_data[var_selected].to_list()
+                })
+        
+        elif var_selected == "NITRATE":
+            for dep in deployments:
+                #Get most recent cycle metadata record
+                profile = cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=dep).order_by(
+                    '-PROFILE_ID').first()
+
+                #Get continuous data
+                con_query = nitrate_continuous_profile.objects.filter(PROFILE_ID=profile).order_by(
+                    "PRES").values_list("PRES", "NO3")
+
+                con_data = pd.DataFrame(con_query, columns=["PRES",var_selected])
+                con_data = con_data.dropna()
+
+                #Get discrete data
+                dis_query = discrete_profile.objects.filter(PROFILE_ID=profile).order_by(
+                    "PRES").values_list("PRES", var_selected)
+
+                dis_data = pd.DataFrame(dis_query, columns=["PRES",var_selected])
+                dis_data = dis_data.dropna()
+
+                plot_data.append({
+                    "SN":profile.DEPLOYMENT.FLOAT_SERIAL_NO,
+                    "WMO":dep,
+                    "CON_PRES":con_data.PRES.to_list(),
+                    "CON_"+var_selected: con_data[var_selected].to_list(),
+                    "DIS_PRES":dis_data.PRES.to_list(),
+                    "DIS_"+var_selected: dis_data[var_selected].to_list()
+                })
+
+        elif var_selected  in ["VK_PH","IB_PH","IK_PH"]:
+            for dep in deployments:
+                #Get most recent cycle metadata record
+                profile = cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=dep).order_by(
+                    '-PROFILE_ID').first()
+
+                #Get discrete data
+                dis_query = discrete_profile.objects.filter(PROFILE_ID=profile).order_by(
+                    "PRES").values_list("PRES", var_selected)
+
+                dis_data = pd.DataFrame(dis_query, columns=["PRES",var_selected])
+                dis_data = dis_data.dropna()
+
+                plot_data.append({
+                    "SN":profile.DEPLOYMENT.FLOAT_SERIAL_NO,
+                    "WMO":dep,
+                    "CON_PRES":[],
+                    "CON_"+var_selected: [],
                     "DIS_PRES":dis_data.PRES.to_list(),
                     "DIS_"+var_selected: dis_data[var_selected].to_list()
                 })
