@@ -19,7 +19,7 @@ from .plot_helpers import cmocean_to_plotly
 
 #----------------Redirect--------------------#
 def newsite(request):
-    return redirect("http://argo-db-frontend.s3-website-us-east-1.amazonaws.com/")
+    return redirect("http://argo.whoifloatgroup.org/")
 
 #---------------------------Float pages ----------------------------#
 def index(request):
