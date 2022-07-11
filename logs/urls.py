@@ -1,7 +1,7 @@
-from django.conf.urls import re_path
+from django.urls import path
 from logs import views
 
 urlpatterns = [
-    re_path('api/processing/filestatus', views.get_file_status), #Token, get
-    re_path('api/processing/put', views.put_process_log) #Token, put
+    path('api/processing/filestatus', views.get_file_status), #Token, get
+    path('api/processing/put', views.put_process_log) #Token, put
 ]

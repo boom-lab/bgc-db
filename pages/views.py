@@ -1,9 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from django.http import JsonResponse
 from django.db.models import Sum, Max
 from django.forms.models import model_to_dict
 from deployments.models import deployment
-from deployments.serializers import DeploymentMetaSerializer, TrackingSerializer
+from deployments.serializers import TrackingSerializer
 from sensor_qc.serializers import SensorQCdataSerializer, SensorQCserializer
 from rest_framework import generics
 from env_data.models import continuous_profile, cycle_metadata, discrete_profile, nitrate_continuous_profile, park
@@ -14,142 +14,14 @@ import cmocean
 from datetime import datetime, timedelta
 import pytz
 
-import pages.engineering_plots as ep
-from .plot_helpers import cmocean_to_plotly
-
 #----------------Redirect--------------------#
 def newsite(request):
-    return redirect("http://argo.whoifloatgroup.org/")
+    page = request.META['PATH_INFO']
+    return redirect("http://argo.whoifloatgroup.org"+page)
 
-#---------------------------Float pages ----------------------------#
-def index(request):
-    deployments = deployment.objects.filter(LAUNCH_DATE__isnull=False).filter(HISTORICAL=False)
 
-    context = {
-        'deployments': deployments,
-    }
-    return render(request, 'pages/index.html', context)
 
-def floats_predeployment(request):
-    deployments = deployment.objects.filter(LAUNCH_DATE__isnull=True).filter(HISTORICAL=False)
-
-    context = {
-        'deployments': deployments,
-    }
-    return render(request, 'pages/floats_predeployment.html', context)
-
-def float_tracking(request):
-    deps = deployment.objects.filter(PLATFORM_TYPE='NAVIS_EBR').order_by('FLOAT_SERIAL_NO')
-    context = {'deployments':deps}
-    return render(request, 'pages/float_tracking.html', context)
-
-def float_serial_no(request):
-    deps = deployment.objects.filter(PLATFORM_TYPE='NAVIS_EBR').order_by('FLOAT_SERIAL_NO')
-    context = {'deployments':deps}
-    return render(request, 'pages/float_serial_no.html', context)
-
-def sensor_qc_render(request):
-    sensor_qcs = sensor_qc.objects.all()
-    context = {'sensor_qcs':sensor_qcs}
-    return render(request, 'pages/sensor_qc.html',context)
-
-def float_detail(request):
-    FLOAT_SERIAL_NO = request.GET.get('FLOAT_SERIAL_NO', None)
-    PLATFORM_TYPE = request.GET.get('PLATFORM_TYPE', None)
-    PLATFORM_NUMBER = request.GET.get('PLATFORM_NUMBER', None)
-
-    filters={}
-    if PLATFORM_NUMBER:
-        filters['DEPLOYMENT__PLATFORM_NUMBER'] = PLATFORM_NUMBER
-    else:
-        filters['DEPLOYMENT__FLOAT_SERIAL_NO'] = FLOAT_SERIAL_NO
-        filters['DEPLOYMENT__PLATFORM_TYPE'] = PLATFORM_TYPE
-
-    dfilters = {}
-    if PLATFORM_NUMBER:
-        dfilters['PLATFORM_NUMBER'] = PLATFORM_NUMBER
-    else:
-        dfilters['FLOAT_SERIAL_NO'] = FLOAT_SERIAL_NO
-        dfilters['PLATFORM_TYPE'] = PLATFORM_TYPE
-    dep = deployment.objects.get(**dfilters)
-
-    qcfilters = {}
-    if PLATFORM_NUMBER:
-        qcfilters['SENSOR__DEPLOYMENT__PLATFORM_NUMBER'] = PLATFORM_NUMBER
-    else:
-        qcfilters['SENSOR__DEPLOYMENT__FLOAT_SERIAL_NO'] = FLOAT_SERIAL_NO
-        qcfilters['SENSOR__DEPLOYMENT__PLATFORM_TYPE'] = PLATFORM_TYPE
-
-    n_reports = cycle_metadata.objects.filter(**filters).count()
-
-    #If deployed
-    if n_reports > 0:
-
-        latest_cycle_meta = cycle_metadata.objects.filter(**filters).order_by("-GpsFixDate").first()
-
-        #Sensor QC data
-        sensor_qcs = sensor_qc.objects.filter(**qcfilters)
-
-        abpres_plot = ep.single_var_plot(filters, "AirBladderPressure", y_label="Pressure", legend_label="Air Bladder Pressure")
-        buoy_pump_time_plot = ep.single_var_plot(filters, "BuoyancyPumpOnTime", y_label="Time", 
-            legend_label="Buoyancy Pump On Time")
-        vacuum_plot = ep.single_var_plot(filters, "Vacuum", y_label="Pressure", legend_label="Internal Vacuum")
-
-        #Monthly upload
-        now = datetime.utcnow()
-        now = now.replace(tzinfo=pytz.utc)
-        last_month = now - timedelta(days=30)
-        if dep.LAUNCH_DATE < last_month:
-            query = cycle_metadata.objects.filter(TimeStartProfile__gte=last_month).aggregate(msg=Sum('MSG_BYTES'),log=Sum('LOG_BYTES'),isus=Sum('ISUS_BYTES'))
-            monthly_upload = round((query['msg'] + query['log'] + query['isus'])/1000,1)
-        else:
-            monthly_upload = ""
-
-        context = {
-            'cycle_metadata': latest_cycle_meta,
-            'deployment':dep,
-            'monthly_upload':monthly_upload,
-            'sensor_qcs':sensor_qcs,
-            'battery_plot':ep.volts_plot(filters),
-            'amps_plot':ep.amps_plot(filters),
-            'buoyancy_plot':ep.buoyancy_position_plot(filters),
-            'air_bladder_pres_plot': abpres_plot,
-            'buoy_pump_time_plot': buoy_pump_time_plot,
-            'duration_plot':ep.duration_plot(filters),
-            'con_attempt_plot':ep.con_attempt_plot(filters),
-            'upload_attempt_plot':ep.upload_attempt_plot(filters),
-            'surface_duration_plot':ep.surface_duration_plot(filters),
-            'park_pres_plot':ep.park_pres_plot(filters),
-            'profile_start_pres_plot':ep.profile_start_pres_plot(filters),
-            'vacuum_plot':vacuum_plot
-        }
-        return render(request, 'pages/float_detail.html', context)
-    else: #Pre deployment
-        context = {
-            'cycle_metadata': None,
-            'calc':None,
-            'deployment':dep,
-            'sensor_qcs':None
-        }
-        return render(request, 'pages/float_detail.html', context)
-
-#------------------------ Data pages -------------------------#
-def profile_explorer(request):
-    return render(request, 'pages/profile_explorer.html')
-
-def compare_latest_profiles(request):
-    return render(request, 'pages/compare_latest_profiles.html')
-
-def cohort(request):
-    return render(request, 'pages/cohort.html')
-
-def latest_profiles(request):
-    return render(request, 'pages/latest_profiles.html')
-
-def display_map(request):
-    return render(request, 'pages/map.html')
-
-#---------NEW Front End Using React - Data for Plots and Maps -------#
+#---------Front End - Data for Plots and Maps -------#
 
 # Sensor QC page
 class GetSensorQCdata(generics.ListAPIView): #Read only
@@ -180,7 +52,7 @@ def serial_number_data(request):
 
     return JsonResponse({}, status = 400)
 
-def float_detail_FE(request):
+def float_detail(request):
     FLOAT_SERIAL_NO = request.GET.get('FLOAT_SERIAL_NO', None)
     PLATFORM_TYPE = request.GET.get('PLATFORM_TYPE', None)
     PLATFORM_NUMBER = request.GET.get('PLATFORM_NUMBER', None)
@@ -325,7 +197,7 @@ def float_detail_FE(request):
         }
         JsonResponse(context, status = 200, safe=False)
 
-def map_data_FE(request):
+def map_data(request):
     
     if request.is_ajax and request.method == "GET":
         # get the selections
@@ -683,7 +555,8 @@ def all_profiles_data(request):
         return JsonResponse(plot_data, status=200, safe=False)
 
     return JsonResponse({}, status = 400)
-#---------------------Other ------------------------------#
+
+#---------------------Selector Lists ------------------------------#
 
 def get_profiles_list(request):
     # for populating selector dropdown
@@ -707,201 +580,5 @@ def get_deployments_list(request):
             res.append({'PLATFORM_NUMBER':item, "LABEL":"WMO: " + str(item) + " SN:" + str(float_serial_no[i])})
 
         return JsonResponse({"deployments":res}, status = 200)
-
-    return JsonResponse({}, status = 400)
-
-def cohort_data(request):
-    # provides flat data to plotly cohort plot
-
-    if request.is_ajax and request.method == "GET":
-        year_selected = request.GET.get('year_selected', None)
-        var_selected = request.GET.get('var_selected', None)
-
-        #Get list of profiles
-        cycle_meta_q = cycle_metadata.objects.filter(DEPLOYMENT__LAUNCH_DATE__year=year_selected).order_by("PROFILE_ID").values_list(
-            "PROFILE_ID","ProfileId","DEPLOYMENT__FLOAT_SERIAL_NO","DEPLOYMENT__PLATFORM_NUMBER","TimeStartProfile")
-        cycle_meta = pd.DataFrame(cycle_meta_q, columns=["PROFILE_ID","CYCLE_ID","FLOAT_SERIAL_NO","PLATFORM_NUMBER","TimeStartProfile"])
-
-        #Continuous data
-        if var_selected not in ["NITRATE","VK_PH","IB_PH","IK_PH"]:
-            query = continuous_profile.objects.filter(PROFILE_ID__in=cycle_meta.PROFILE_ID).order_by("PROFILE_ID", "PRES").values_list(
-                "DEPLOYMENT__PLATFORM_NUMBER","PROFILE_ID", "PRES", var_selected)
-            data = pd.DataFrame(query, columns=["PLATFORM_NUMBER","PROFILE_ID", "PRES", var_selected])
-            data = data.fillna("")
-
-        #Discrete data
-        query = discrete_profile.objects.filter(PROFILE_ID__in=cycle_meta.PROFILE_ID).order_by("PROFILE_ID", "PRES").values_list(
-            "DEPLOYMENT__PLATFORM_NUMBER","PROFILE_ID", "PRES", var_selected)
-        dis_data = pd.DataFrame(query, columns=["PLATFORM_NUMBER","PROFILE_ID", "PRES", var_selected])
-        dis_data = dis_data.fillna("")
-
-        if var_selected == "NITRATE":
-            query = nitrate_continuous_profile.objects.filter(PROFILE_ID__in=cycle_meta.PROFILE_ID).order_by("PROFILE_ID", "PRES").values_list(
-                "DEPLOYMENT__PLATFORM_NUMBER","PROFILE_ID", "PRES", "NO3")
-            data = pd.DataFrame(query, columns=["PLATFORM_NUMBER","PROFILE_ID", "PRES", "NITRATE"])
-            data = data.fillna("")
-
-        #Remove cycle metadata that does not have continuous data (failed profile cycle)
-        keep_profiles = dis_data.PROFILE_ID.unique()
-        cycle_meta = cycle_meta.loc[cycle_meta.PROFILE_ID.isin(keep_profiles),:]
-
-        #Remove discrete data that does not hve continuous data (failed profile cycle)
-        dis_data = dis_data.loc[dis_data.PROFILE_ID.isin(keep_profiles),:]
-
-        plot_data = {}
-        #Loop through each float
-        for wmo in cycle_meta.PLATFORM_NUMBER.unique():
-            #continuous
-            if var_selected not in ["VK_PH","IB_PH","IK_PH"]:
-                grouped_data = data.loc[data.PLATFORM_NUMBER==wmo,:].groupby("PROFILE_ID")
-                var_flat = grouped_data[var_selected].apply(list).tolist()
-                pres_flat = grouped_data["PRES"].apply(list).tolist()
-            else:
-                var_flat = None
-                pres_flat = None
-
-            #discrete
-            dis_grouped_data = dis_data.loc[dis_data.PLATFORM_NUMBER==wmo,:].groupby("PROFILE_ID")
-            dis_var_flat = dis_grouped_data[var_selected].apply(list).tolist()
-            dis_pres_flat = dis_grouped_data["PRES"].apply(list).tolist()
-
-            #Aux data
-            sn = cycle_meta.loc[cycle_meta.PLATFORM_NUMBER==wmo,"FLOAT_SERIAL_NO"].iloc[0]
-            time_start = cycle_meta.loc[cycle_meta.PLATFORM_NUMBER==wmo,"TimeStartProfile"].dt.strftime('%Y-%m-%d').tolist()
-            day = cycle_meta.loc[cycle_meta.PLATFORM_NUMBER==wmo,"TimeStartProfile"].dt.dayofyear.tolist()
-            cycle_id = cycle_meta.loc[cycle_meta.PLATFORM_NUMBER==wmo,"CYCLE_ID"].tolist()
-
-            #continuous colormaps
-            n_colors = len(cycle_id)
-            cont_colors = cmocean_to_plotly(cmocean.cm.dense, n_colors)
-            plot_data[wmo] = {"x":var_flat,
-                "y":pres_flat,
-                "dis_x":dis_var_flat,
-                "dis_y":dis_pres_flat,
-                "TIME_START_PROFILE":time_start,
-                "DAY":day,
-                "CYCLE_ID":cycle_id,
-                "sn":sn,
-                "wmo":wmo,
-                "continuous_colors":cont_colors
-            }
-
-        return JsonResponse(plot_data, status=200)
-
-    return JsonResponse({}, status = 400)
-
-def compare_floats_data(request):
-    # provides flat data to plotly compare floats plot
-
-    if request.is_ajax and request.method == "GET":
-        year_selected = request.GET.get('year_selected', None)
-        var_selected = request.GET.get('var_selected', None)
-
-        #Get list of profiles
-        cycle_meta_q = cycle_metadata.objects.filter(DEPLOYMENT__LAUNCH_DATE__year=year_selected).order_by("PROFILE_ID").values_list(
-            "PROFILE_ID","ProfileId","DEPLOYMENT__FLOAT_SERIAL_NO","DEPLOYMENT__PLATFORM_NUMBER","TimeStartProfile")
-        cycle_meta = pd.DataFrame(cycle_meta_q, columns=["PROFILE_ID","CYCLE_ID","FLOAT_SERIAL_NO","PLATFORM_NUMBER","TimeStartProfile"])
-
-        #Continuous data
-        if var_selected != "NITRATE":
-            query = continuous_profile.objects.filter(PROFILE_ID__in=cycle_meta.PROFILE_ID).order_by("PROFILE_ID", "PRES").values_list(
-                "DEPLOYMENT__PLATFORM_NUMBER","PROFILE_ID", "PRES", var_selected)
-            data = pd.DataFrame(query, columns=["PLATFORM_NUMBER","PROFILE_ID", "PRES", var_selected])
-            data = data.fillna("")
-
-        #Discrete data
-        query = discrete_profile.objects.filter(PROFILE_ID__in=cycle_meta.PROFILE_ID).order_by("PROFILE_ID", "PRES").values_list(
-            "DEPLOYMENT__PLATFORM_NUMBER","PROFILE_ID", "PRES", var_selected)
-        dis_data = pd.DataFrame(query, columns=["PLATFORM_NUMBER","PROFILE_ID", "PRES", var_selected])
-        dis_data = dis_data.fillna("")
-
-        #Remove cycle metadata that does not have continuous data (failed profile cycle)
-        keep_profiles = dis_data.PROFILE_ID.unique()
-        cycle_meta = cycle_meta.loc[cycle_meta.PROFILE_ID.isin(keep_profiles),:]
-
-        #Remove discrete data that does not hve continuous data (failed profile cycle)
-        dis_data = dis_data.loc[dis_data.PROFILE_ID.isin(keep_profiles),:]
-
-        plot_data = {}
-        #Loop through each float
-        for wmo in cycle_meta.PLATFORM_NUMBER.unique():
-            #continuous
-            if var_selected != "NITRATE":
-                grouped_data = data.loc[data.PLATFORM_NUMBER==wmo,:].groupby("PROFILE_ID")
-                var_flat = grouped_data[var_selected].apply(list).tolist()
-                pres_flat = grouped_data["PRES"].apply(list).tolist()
-            else:
-                var_flat = None
-                pres_flat = None
-
-            #discrete
-            dis_grouped_data = dis_data.loc[dis_data.PLATFORM_NUMBER==wmo,:].groupby("PROFILE_ID")
-            dis_var_flat = dis_grouped_data[var_selected].apply(list).tolist()
-            dis_pres_flat = dis_grouped_data["PRES"].apply(list).tolist()
-
-            #Aux data
-            sn = cycle_meta.loc[cycle_meta.PLATFORM_NUMBER==wmo,"FLOAT_SERIAL_NO"].iloc[0]
-            time_start = cycle_meta.loc[cycle_meta.PLATFORM_NUMBER==wmo,"TimeStartProfile"].dt.strftime('%Y-%m-%d').tolist()
-            day = cycle_meta.loc[cycle_meta.PLATFORM_NUMBER==wmo,"TimeStartProfile"].dt.dayofyear.tolist()
-            cycle_id = cycle_meta.loc[cycle_meta.PLATFORM_NUMBER==wmo,"CYCLE_ID"].tolist()
-
-            #continuous colormaps
-            n_colors = len(cycle_id)
-            cont_colors = cmocean_to_plotly(cmocean.cm.dense, n_colors)
-            plot_data[wmo] = {"x":var_flat,
-                "y":pres_flat,
-                "dis_x":dis_var_flat,
-                "dis_y":dis_pres_flat,
-                "TIME_START_PROFILE":time_start,
-                "DAY":day,
-                "CYCLE_ID":cycle_id,
-                "sn":sn,
-                "wmo":wmo,
-                "continuous_colors":cont_colors
-            }
-
-        return JsonResponse(plot_data, status=200)
-
-    return JsonResponse({}, status = 400)
-
-def map_data(request):
-    
-    if request.is_ajax and request.method == "GET":
-        # get the selections
-        deployments = request.GET.getlist("deployments[]", None)
-
-        results = []
-        for d in deployments:
-            crt = {}
-            #info 
-            deployment_entry = deployment.objects.get(PLATFORM_NUMBER=d)
-            crt['sn'] = deployment_entry.FLOAT_SERIAL_NO
-            crt['wmo'] = deployment_entry.PLATFORM_NUMBER
-
-            #Positions for traces
-            hist_lat = list(cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).order_by('-GpsFixDate').all().values_list('GpsLat', flat=True))
-            hist_lon = list(cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).order_by('-GpsFixDate').all().values_list('GpsLong', flat=True))
-
-            combined = [None]*(len(hist_lon)+len(hist_lat))
-            combined[::2] = hist_lon
-            combined[1::2] = hist_lat
-            crt['hist_positions'] = combined
-
-            # profile_id = list(cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).order_by('-GpsFixDate').all().values_list('PROFILE_ID', flat=True))
-            # profile_id = [x.split('.')[1] for x in profile_id] #Remove wmo number
-            # time_start_p = pd.Series(cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).order_by(
-            #     '-GpsFixDate').all().values_list('TimeStartTelemetry', flat=True))
-            # time_start_p_human = time_start_p.dt.strftime('%Y-%m-%d %H:%M')
-            # time_start_p_human = time_start_p_human.replace(np.nan, '')
-            # #Hover data
-            # hov_data = np.stack((profile_id, time_start_p_human, lat, lon),axis = -1)
-
-            #Data for current location points
-            crt['lat'] = cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).order_by('-GpsFixDate').first().GpsLat
-            crt['long'] = cycle_metadata.objects.filter(DEPLOYMENT__PLATFORM_NUMBER=d).order_by('-GpsFixDate').first().GpsLong
-
-            results.append(crt)
-
-        return JsonResponse({'results': results }, status = 200)
 
     return JsonResponse({}, status = 400)
