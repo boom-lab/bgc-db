@@ -180,7 +180,7 @@ class deployment(models.Model):
             return ""
         if latest.PROFILE_ID[-3:] == '000': #first .msg file reported
             return "Prelude"
-        if datetime.now(timezone.utc)-self.last_report > timedelta(days = 10): #Most recent report is older than 10 days
+        if datetime.now(timezone.utc)-self.last_report > timedelta(days = 11): #Most recent report is older than 11 days
             return "Overdue"
         return "Active"
 
