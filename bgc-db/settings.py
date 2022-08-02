@@ -36,16 +36,16 @@ ALLOWED_HOSTS_ENV = os.environ.get('ALLOWED_HOSTS')
 if ALLOWED_HOSTS_ENV:
     ALLOWED_HOSTS.extend(ALLOWED_HOSTS_ENV.split(','))
 
-EC2_PRIVATE_IP = None
-try:
-    EC2_PRIVATE_IP = requests.get(
-        'http://169.254.169.254/latest/meta-data/local-ipv4',
-        timeout=0.01).text
-except requests.exceptions.RequestException:
-    pass
+# EC2_PRIVATE_IP = None
+# try:
+#     EC2_PRIVATE_IP = requests.get(
+#         'http://169.254.169.254/latest/meta-data/local-ipv4',
+#         timeout=0.01).text
+# except requests.exceptions.RequestException:
+#     pass
 
-if EC2_PRIVATE_IP:
-    ALLOWED_HOSTS.append(EC2_PRIVATE_IP)
+# if EC2_PRIVATE_IP:
+#     ALLOWED_HOSTS.append(EC2_PRIVATE_IP)
 
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
@@ -78,7 +78,8 @@ INSTALLED_APPS = [
     'django_extensions',
     'corsheaders',
     'import_export',
-    'django_filters'
+    'django_filters',
+    'ebhealthcheck.apps.EBHealthCheckConfig',
 ]
 
 MIDDLEWARE = [
