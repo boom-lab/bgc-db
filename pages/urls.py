@@ -21,6 +21,6 @@ urlpatterns = [
     path('FE/get_deployments_list', views.get_deployments_list, name = "get_deployments_list"),
 
     #Redirect all other requests to front end site
-    re_path(r'^(?!FE|api).*',views.newsite, name='newsite'),
+    re_path(r'^(?!FE|api|metadata-admin).*',views.newsite, name='newsite'),
     
 ]

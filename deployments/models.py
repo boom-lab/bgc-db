@@ -166,6 +166,8 @@ class deployment(models.Model):
         events = list(self.deployment_tracking.order_by("DATE","id").values_list('EVENT', flat=True))
         if "RETURNED" in events:
             events = events[events.index('RETURNED')+1:]
+        if "FAILED_FLOW_THROUGH" in events:
+            events = events[events.index('FAILED_FLOW_THROUGH')+1:]
         if 'PASSED_FLOW_THROUGH' in events:
             return u'\u2713'
         return ''
