@@ -41,10 +41,14 @@ def serial_number_data(request):
             record["FLOAT_SERIAL_NO"] = dep.FLOAT_SERIAL_NO
             record["PLATFORM_NUMBER"] = dep.PLATFORM_NUMBER
             record["DEPLOYMENT_CRUISE_ID"] = dep.DEPLOYMENT_CRUISE_ID
-            record["LAST_EVENT"] = dep.last_event["EVENT"].VALUE
+            if dep.last_event:
+                record["LAST_EVENT"] = dep.last_event["EVENT"].VALUE
+            else:
+                record["LAST_EVENT"] = None
             for sensor in dep.sensors.prefetch_related("SENSOR").all():
                 record[sensor.SENSOR.VALUE] = sensor.SENSOR_SERIAL_NO
             res.append(record)
+        print(res)
         return JsonResponse(res, status = 200, safe=False)
 
     return JsonResponse({}, status = 400)
