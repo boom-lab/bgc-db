@@ -129,7 +129,9 @@ class deployment(models.Model):
     def incoming_status(self):
         events = list(self.deployment_tracking.order_by("DATE","id").values_list('EVENT', flat=True))
         if "RETURNED" in events:
-            events = events[events.index('RETURNED')+1:]
+            return_indx = len(events) - events[::-1].index('RETURNED') #Index of last occurance of "RETURNED" in list +1
+            events = events[return_indx:]
+
         if 'PASSED_INCOMING' in events:
             return u'\u2713'
         return ''
