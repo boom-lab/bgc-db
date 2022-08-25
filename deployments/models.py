@@ -140,7 +140,8 @@ class deployment(models.Model):
     def internal_inspection_status(self):
         events = list(self.deployment_tracking.order_by("DATE","id").values_list('EVENT', flat=True))
         if "RETURNED" in events:
-            events = events[events.index('RETURNED')+1:]
+            return_indx = len(events) - events[::-1].index('RETURNED') #Index of last occurance of "RETURNED" in list +1
+            events = events[return_indx:]
         if 'PASSED_INTERNAL_INSPECTION' in events:
             return u'\u2713'
         return ''
@@ -149,7 +150,8 @@ class deployment(models.Model):
     def docktest_status(self):
         events = list(self.deployment_tracking.order_by("DATE","id").values_list('EVENT', flat=True))
         if "RETURNED" in events:
-            events = events[events.index('RETURNED')+1:]
+            return_indx = len(events) - events[::-1].index('RETURNED') #Index of last occurance of "RETURNED" in list +1
+            events = events[return_indx:]
         if 'PASSED_DOCKTEST' in events:
             return u'\u2713'
         return ''
@@ -158,7 +160,8 @@ class deployment(models.Model):
     def pressure_test_status(self):
         events = list(self.deployment_tracking.order_by("DATE","id").values_list('EVENT', flat=True))
         if "RETURNED" in events:
-            events = events[events.index('RETURNED')+1:]
+            return_indx = len(events) - events[::-1].index('RETURNED') #Index of last occurance of "RETURNED" in list +1
+            events = events[return_indx:]
         if 'PASSED_PRESSURE_TEST' in events:
             return u'\u2713'
         return ''
@@ -167,7 +170,8 @@ class deployment(models.Model):
     def flow_through_status(self):
         events = list(self.deployment_tracking.order_by("DATE","id").values_list('EVENT', flat=True))
         if "RETURNED" in events:
-            events = events[events.index('RETURNED')+1:]
+            return_indx = len(events) - events[::-1].index('RETURNED') #Index of last occurance of "RETURNED" in list +1
+            events = events[return_indx:]
         if "FAILED_FLOW_THROUGH" in events:
             events = events[events.index('FAILED_FLOW_THROUGH')+1:]
         if 'PASSED_FLOW_THROUGH' in events:
