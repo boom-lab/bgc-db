@@ -89,12 +89,25 @@ def generate_metadata_file(request, entry_id):
             except:
                 pass
 
+        if s.SENSOR.VALUE == "SPECTROPHOTOMETER_NITRATE":
+            s.PREDEPLOYMENT_CALIB_COEFFICIENT = "calibrationfile=" + s.PREDEPLOYMENT_CALIB_COEFFICIENT["calibration file"]
+
         s.PREDEPLOYMENT_CALIB_COEFFICIENT = json.dumps(s.PREDEPLOYMENT_CALIB_COEFFICIENT).replace('"','').strip('{}').replace(':','=').replace(' ','').replace(',',';')
 
     #Render with jinja template
     output = template.render(d=d, sensors=sensors)
     filename="{}_{}.meta".format(d.AOML_ID, d.FLOAT_SERIAL_NO.zfill(4))
     return output, filename
+
+def export_metadata_button(request, entry_id):
+    #Get data from mission
+    output, filename = generate_metadata_file(request, entry_id)
+    
+    #Return file
+    response = HttpResponse(output, content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename='+filename
+    return response
+
 
 def export_metadata(request, entry_ids):
     if len(entry_ids) == 1: #If only one record selected
