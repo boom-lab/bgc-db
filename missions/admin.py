@@ -28,7 +28,7 @@ class MissionAdmin(ExportMixin, admin.ModelAdmin):
 
     list_display = all_fields
     #list_display_links = ('Record_Date',)
-    search_fields = ('DEPLOYMENT',)
+    search_fields = ('DEPLOYMENT__FLOAT_SERIAL_NO',)
     list_per_page = 25
     list_filter = ('DEPLOYMENT',)
     actions = [duplicate_record, config_file]
